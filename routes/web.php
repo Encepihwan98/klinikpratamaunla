@@ -18,3 +18,30 @@ use App\Http\Controllers\HomeController;
 // });
 Route::get('/',[HomeController::class, 'index']);
 
+Route::get('/rawat_jalan', function () {
+    return view('perawatan.rawat-jalan.index');
+});
+
+Route::get('/rawat_jalan/view', function () {
+    return view('perawatan.rawat-jalan.create');
+});
+
+Route::get('/rawat_inap', function () {
+    return view('perawatan.rawat-inap.index');
+});
+
+Route::get('/rawat_inap/view', function () {
+    return view('perawatan.rawat-inap.create');
+});
+
+Route::get('/rawat_darurat', function () {
+    return view('perawatan.rawat-darurat.index');
+});
+
+Route::get('/rawat_darurat/view', function () {
+    return view('perawatan.rawat-darurat.create');
+});
+
+Route::get('/pasien', function () {
+    return view('pasien');
+});
