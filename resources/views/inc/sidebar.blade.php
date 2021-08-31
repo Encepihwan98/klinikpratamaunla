@@ -94,7 +94,7 @@
                 </a>
                 <ul class="collapse submenu list-unstyled" id="components" data-parent="#accordionExample">
                     <li>
-                        <a href="component_tabs.html"> Kasir Umum </a>
+                        <a href="{{url('/kasir_umum')}}"> Kasir Umum </a>
                     </li>
                 </ul>
             </li>
@@ -112,7 +112,7 @@
                 </a>
                 <ul class="collapse submenu list-unstyled" id="elements" data-parent="#accordionExample">
                     <li>
-                        <a href="element_alerts.html"> Rawat Jalan </a>
+                        <a href="{{url('/registrasi/rawat-jalan')}}"> Rawat Jalan </a>
                     </li>
                     <li>
                         <a href="element_avatar.html"> Rawat Inap </a>

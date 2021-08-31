@@ -45,3 +45,15 @@ Route::get('/rawat_darurat/view', function () {
 Route::get('/pasien', function () {
     return view('pasien');
 });
+
+Route::get('/kasir_umum', function () {
+    return view('keuangan.kasir_umum');
+});
+
+Route::get('/kasir_umum/view', function () {
+    return view('keuangan.rincian_transaksi');
+});
+
+Route::get('/registrasi/rawat-jalan', function () {
+    return view('registrasi.registrasi-rawat-jalan');
+});
