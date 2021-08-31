@@ -21,7 +21,6 @@ class CreateVisitServicesTable extends Migration
             $table->unsignedBigInteger('visit_type_id');
             $table->dateTime('treatment_time');
             $table->unsignedBigInteger('officer_id');
-            // $table->text('tarif')->nullable();
             $table->timestamps();
 
             $table->foreign('officer_id')

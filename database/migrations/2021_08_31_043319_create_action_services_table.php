@@ -22,7 +22,6 @@ class CreateActionServicesTable extends Migration
             $table->integer('amount');
             $table->dateTime('treatment_time');
             $table->unsignedBigInteger('officer_id');
-            // $table->text('tarif')->nullable();
             $table->timestamps();
 
             $table->foreign('officer_id')
