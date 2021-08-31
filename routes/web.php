@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -57,3 +58,6 @@ Route::get('/kasir_umum/view', function () {
 Route::get('/registrasi/rawat-jalan', function () {
     return view('registrasi.registrasi-rawat-jalan');
 });
+// Route::get('/', function () {
+//     return view('welcome');
+// });
