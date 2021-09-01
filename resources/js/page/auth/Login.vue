@@ -5,7 +5,6 @@
                 <div class="form-form-wrap">
                     <div class="form-container">
                         <div class="form-content">
-
                             <h1 class="">Sign In</h1>
                             <p class="">Log in to your account to continue.</p>
 
@@ -29,8 +28,8 @@
                                     </div>
                                     <div class="d-sm-flex justify-content-between">
                                         <div class="field-wrapper">
-                                            <router-link class="btn btn-block btn-primary" to="/administrator/user-management">Log In </router-link>
-                                            <!-- <button type="button" class="btn btn-primary" :to="{path: '/administrator/user-management'}">Log In</button> -->
+                                            <router-link class="btn btn-block btn-primary" :to="{name: 'user-management'}">Log In </router-link>
+                                            <!-- <button type="button" class="btn btn-primary" :to="{name: 'user-management'}">Log In</button> -->
                                         </div>
                                     </div>
 

@@ -1899,18 +1899,31 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _route__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./route */ "./resources/js/route.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
 /* harmony import */ var _layout_Base__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./layout/Base */ "./resources/js/layout/Base.vue");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
-window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js").default; // import Vue from 'vue';
-// Library
+window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js").default; // Library
+
 
  // import vuetify from './plugin/vuetify' // path to vuetify export
-// Layout
+// Component
 
- // Use
+ // import Header from './inc/LayoutHeader.vue'
+// Use
+// Vue.component('layout-header', Header)
 
-var app = new Vue({
+var components = __webpack_require__("./resources/js sync recursive \\.vue$/");
+
+components.keys().map(function (key) {
+  if (key.split('/')[1] != 'page') {
+    console.log(key);
+    vue__WEBPACK_IMPORTED_MODULE_2__.default.component(key.split('/').pop().split('.')[0], function () {
+      return __webpack_require__("./resources/js lazy recursive ^.*$")("".concat(key));
+    });
+  }
+});
+var app = new vue__WEBPACK_IMPORTED_MODULE_2__.default({
   el: '#app',
   router: _route__WEBPACK_IMPORTED_MODULE_0__.router,
   render: function render(h) {
@@ -1976,59 +1989,39 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "router": () => (/* binding */ router)
 /* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
-/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
-/* harmony import */ var _page_system_MenuManagement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./page/system/MenuManagement */ "./resources/js/page/system/MenuManagement.vue");
-/* harmony import */ var _page_system_RolesManagement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./page/system/RolesManagement */ "./resources/js/page/system/RolesManagement.vue");
-/* harmony import */ var _page_system_UserManagement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./page/system/UserManagement */ "./resources/js/page/system/UserManagement.vue");
-
- // import BASE from './layout/base'
-// import Login from './page/auth/Login'
-
-var Login = function Login() {
-  return Promise.resolve(/*! import() */).then(__webpack_require__.bind(__webpack_require__, /*! ./page/auth/Login */ "./resources/js/page/auth/Login.vue"));
-};
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 
 
-
-
-vue__WEBPACK_IMPORTED_MODULE_3__.default.use(vue_router__WEBPACK_IMPORTED_MODULE_4__.default);
+vue__WEBPACK_IMPORTED_MODULE_0__.default.use(vue_router__WEBPACK_IMPORTED_MODULE_1__.default);
 
 var pages = __webpack_require__("./resources/js sync recursive \\.vue$/");
 
-var routes = [];
+var routes = [{
+  path: '/',
+  component: function component() {
+    return Promise.resolve(/*! import() */).then(__webpack_require__.bind(__webpack_require__, /*! ./page/auth/Login */ "./resources/js/page/auth/Login.vue"));
+  }
+}];
 pages.keys().forEach(function (element, i) {
   if (element.split('/')[1] == 'page') {
-    console.log(element);
     var urlSplit = element.split('.');
-    var urlSlug = urlSplit[1].split('/')[1];
+    var urlSlug = urlSplit[1].split('/')[2];
     var urlPath = element.split('/').pop().split('.')[0];
-    var fixUrl = '/' + urlSlug + '/' + urlPath.match(/[A-Z][a-z]+/g).join('-').toLowerCase();
-
-    var module = function module() {
-      return __webpack_require__("./resources/js lazy recursive")(element);
-    };
-
+    var urlPathLowerCase = urlPath.match(/[A-Z][a-z]+/g).join('-').toLowerCase();
+    var fixUrl = '/' + urlSlug + '/' + urlPathLowerCase;
     routes.push({
       path: fixUrl,
-      component: module
+      name: urlPathLowerCase,
+      component: function component() {
+        return __webpack_require__("./resources/js lazy recursive ^.*$")("".concat(element));
+      }
     });
   }
-}); // components.keys().map(
-//     // key => Vue.component(key.split('/').pop().split('.')[0], components(key))
-//     console.log(key)
-// );
-// let routes = [
-//     { path: '/', component: Login },
-//     { path: '/login', component: Login },
-//     { path: '/administrator/menu-management', component: MMenu },
-//     { path: '/administrator/role-management', component: MRole },
-//     { path: '/administrator/user-management', component: MUser }
-// ]
-
+});
 console.log(routes);
-var router = new vue_router__WEBPACK_IMPORTED_MODULE_4__.default({
-  // mode: 'history',
+var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__.default({
+  mode: 'history',
   routes: routes
 });
 
@@ -37643,6 +37636,40 @@ component.options.__file = "resources/js/page/auth/Login.vue"
 
 /***/ }),
 
+/***/ "./resources/js/page/kunjungan/RawatInap.vue":
+/*!***************************************************!*\
+  !*** ./resources/js/page/kunjungan/RawatInap.vue ***!
+  \***************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+var render, staticRenderFns
+var script = {}
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_0__.default)(
+  script,
+  render,
+  staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+component.options.__file = "resources/js/page/kunjungan/RawatInap.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/page/system/MenuManagement.vue":
 /*!*****************************************************!*\
   !*** ./resources/js/page/system/MenuManagement.vue ***!
@@ -38285,7 +38312,7 @@ var render = function() {
                             "router-link",
                             {
                               staticClass: "btn btn-block btn-primary",
-                              attrs: { to: "/administrator/user-management" }
+                              attrs: { to: { name: "user-management" } }
                             },
                             [_vm._v("Log In ")]
                           )
@@ -54537,25 +54564,145 @@ Vue.compile = compileToFunctions;
 
 /***/ }),
 
-/***/ "./resources/js lazy recursive":
-/*!*********************************************!*\
-  !*** ./resources/js/ lazy namespace object ***!
-  \*********************************************/
-/***/ ((module) => {
+/***/ "./resources/js lazy recursive ^.*$":
+/*!***********************************************************************!*\
+  !*** ./resources/js/ lazy ^.*$ chunkName: [request] namespace object ***!
+  \***********************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-function webpackEmptyAsyncContext(req) {
-	// Here Promise.resolve().then() is used instead of new Promise() to prevent
-	// uncaught exception popping up in devtools
-	return Promise.resolve().then(() => {
-		var e = new Error("Cannot find module '" + req + "'");
-		e.code = 'MODULE_NOT_FOUND';
-		throw e;
+var map = {
+	"./app": [
+		"./resources/js/app.js",
+		9
+	],
+	"./app.js": [
+		"./resources/js/app.js",
+		9
+	],
+	"./bootstrap": [
+		"./resources/js/bootstrap.js",
+		7
+	],
+	"./bootstrap.js": [
+		"./resources/js/bootstrap.js",
+		7
+	],
+	"./components/ExampleComponent": [
+		"./resources/js/components/ExampleComponent.vue",
+		9
+	],
+	"./components/ExampleComponent.vue": [
+		"./resources/js/components/ExampleComponent.vue",
+		9
+	],
+	"./components/Myheader": [
+		"./resources/js/components/Myheader.vue",
+		9
+	],
+	"./components/Myheader.vue": [
+		"./resources/js/components/Myheader.vue",
+		9
+	],
+	"./components/form/AutoComplete": [
+		"./resources/js/components/form/AutoComplete.vue",
+		9
+	],
+	"./components/form/AutoComplete.vue": [
+		"./resources/js/components/form/AutoComplete.vue",
+		9
+	],
+	"./inc/LayoutHeader": [
+		"./resources/js/inc/LayoutHeader.vue",
+		9
+	],
+	"./inc/LayoutHeader.vue": [
+		"./resources/js/inc/LayoutHeader.vue",
+		9
+	],
+	"./layout/Base": [
+		"./resources/js/layout/Base.vue",
+		9
+	],
+	"./layout/Base.vue": [
+		"./resources/js/layout/Base.vue",
+		9
+	],
+	"./page/auth/Login": [
+		"./resources/js/page/auth/Login.vue",
+		9
+	],
+	"./page/auth/Login.vue": [
+		"./resources/js/page/auth/Login.vue",
+		9
+	],
+	"./page/kunjungan/RawatInap": [
+		"./resources/js/page/kunjungan/RawatInap.vue",
+		9
+	],
+	"./page/kunjungan/RawatInap.vue": [
+		"./resources/js/page/kunjungan/RawatInap.vue",
+		9
+	],
+	"./page/system/MenuManagement": [
+		"./resources/js/page/system/MenuManagement.vue",
+		9
+	],
+	"./page/system/MenuManagement.vue": [
+		"./resources/js/page/system/MenuManagement.vue",
+		9
+	],
+	"./page/system/RolesManagement": [
+		"./resources/js/page/system/RolesManagement.vue",
+		9
+	],
+	"./page/system/RolesManagement.vue": [
+		"./resources/js/page/system/RolesManagement.vue",
+		9
+	],
+	"./page/system/UserManagement": [
+		"./resources/js/page/system/UserManagement.vue",
+		9
+	],
+	"./page/system/UserManagement.vue": [
+		"./resources/js/page/system/UserManagement.vue",
+		9
+	],
+	"./plugin/vuetify": [
+		"./resources/js/plugin/vuetify.js",
+		9,
+		"plugin-vuetify"
+	],
+	"./plugin/vuetify.js": [
+		"./resources/js/plugin/vuetify.js",
+		9,
+		"plugin-vuetify"
+	],
+	"./route": [
+		"./resources/js/route.js",
+		9
+	],
+	"./route.js": [
+		"./resources/js/route.js",
+		9
+	]
+};
+function webpackAsyncContext(req) {
+	if(!__webpack_require__.o(map, req)) {
+		return Promise.resolve().then(() => {
+			var e = new Error("Cannot find module '" + req + "'");
+			e.code = 'MODULE_NOT_FOUND';
+			throw e;
+		});
+	}
+
+	var ids = map[req], id = ids[0];
+	return Promise.all(ids.slice(2).map(__webpack_require__.e)).then(() => {
+		return __webpack_require__.t(id, ids[1] | 16)
 	});
 }
-webpackEmptyAsyncContext.keys = () => ([]);
-webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext;
-webpackEmptyAsyncContext.id = "./resources/js lazy recursive";
-module.exports = webpackEmptyAsyncContext;
+webpackAsyncContext.keys = () => (Object.keys(map));
+webpackAsyncContext.id = "./resources/js lazy recursive ^.*$";
+module.exports = webpackAsyncContext;
 
 /***/ }),
 
@@ -54572,6 +54719,7 @@ var map = {
 	"./inc/LayoutHeader.vue": "./resources/js/inc/LayoutHeader.vue",
 	"./layout/Base.vue": "./resources/js/layout/Base.vue",
 	"./page/auth/Login.vue": "./resources/js/page/auth/Login.vue",
+	"./page/kunjungan/RawatInap.vue": "./resources/js/page/kunjungan/RawatInap.vue",
 	"./page/system/MenuManagement.vue": "./resources/js/page/system/MenuManagement.vue",
 	"./page/system/RolesManagement.vue": "./resources/js/page/system/RolesManagement.vue",
 	"./page/system/UserManagement.vue": "./resources/js/page/system/UserManagement.vue"
@@ -54664,6 +54812,48 @@ webpackContext.id = "./resources/js sync recursive \\.vue$/";
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/create fake namespace object */
+/******/ 	(() => {
+/******/ 		var getProto = Object.getPrototypeOf ? (obj) => (Object.getPrototypeOf(obj)) : (obj) => (obj.__proto__);
+/******/ 		var leafPrototypes;
+/******/ 		// create a fake namespace object
+/******/ 		// mode & 1: value is a module id, require it
+/******/ 		// mode & 2: merge all properties of value into the ns
+/******/ 		// mode & 4: return value when already ns object
+/******/ 		// mode & 16: return value when it's Promise-like
+/******/ 		// mode & 8|1: behave like require
+/******/ 		__webpack_require__.t = function(value, mode) {
+/******/ 			if(mode & 1) value = this(value);
+/******/ 			if(mode & 8) return value;
+/******/ 			if(typeof value === 'object' && value) {
+/******/ 				if((mode & 4) && value.__esModule) return value;
+/******/ 				if((mode & 16) && typeof value.then === 'function') return value;
+/******/ 			}
+/******/ 			var ns = Object.create(null);
+/******/ 			__webpack_require__.r(ns);
+/******/ 			var def = {};
+/******/ 			leafPrototypes = leafPrototypes || [null, getProto({}), getProto([]), getProto(getProto)];
+/******/ 			for(var current = mode & 2 && value; typeof current == 'object' && !~leafPrototypes.indexOf(current); current = getProto(current)) {
+/******/ 				Object.getOwnPropertyNames(current).forEach((key) => (def[key] = () => (value[key])));
+/******/ 			}
+/******/ 			def['default'] = () => (value);
+/******/ 			__webpack_require__.d(ns, def);
+/******/ 			return ns;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -54673,6 +54863,39 @@ webpackContext.id = "./resources/js sync recursive \\.vue$/";
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/ensure chunk */
+/******/ 	(() => {
+/******/ 		__webpack_require__.f = {};
+/******/ 		// This file contains only the entry chunk.
+/******/ 		// The chunk loading function for additional chunks
+/******/ 		__webpack_require__.e = (chunkId) => {
+/******/ 			return Promise.all(Object.keys(__webpack_require__.f).reduce((promises, key) => {
+/******/ 				__webpack_require__.f[key](chunkId, promises);
+/******/ 				return promises;
+/******/ 			}, []));
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/get javascript chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference async chunks
+/******/ 		__webpack_require__.u = (chunkId) => {
+/******/ 			// return url for filenames not based on template
+/******/ 			if (chunkId === "plugin-vuetify") return "js/" + chunkId + ".js";
+/******/ 			// return url for filenames based on template
+/******/ 			return undefined;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/get mini-css chunk filename */
+/******/ 	(() => {
+/******/ 		// This function allow to reference all chunks
+/******/ 		__webpack_require__.miniCssF = (chunkId) => {
+/******/ 			// return url for filenames based on template
+/******/ 			return "" + chunkId + ".css";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -54691,6 +54914,52 @@ webpackContext.id = "./resources/js sync recursive \\.vue$/";
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/load script */
+/******/ 	(() => {
+/******/ 		var inProgress = {};
+/******/ 		// data-webpack is not used as build has no uniqueName
+/******/ 		// loadScript function to load a script via script tag
+/******/ 		__webpack_require__.l = (url, done, key, chunkId) => {
+/******/ 			if(inProgress[url]) { inProgress[url].push(done); return; }
+/******/ 			var script, needAttach;
+/******/ 			if(key !== undefined) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				for(var i = 0; i < scripts.length; i++) {
+/******/ 					var s = scripts[i];
+/******/ 					if(s.getAttribute("src") == url) { script = s; break; }
+/******/ 				}
+/******/ 			}
+/******/ 			if(!script) {
+/******/ 				needAttach = true;
+/******/ 				script = document.createElement('script');
+/******/ 		
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 		
+/******/ 				script.src = url;
+/******/ 			}
+/******/ 			inProgress[url] = [done];
+/******/ 			var onScriptComplete = (prev, event) => {
+/******/ 				// avoid mem leaks in IE.
+/******/ 				script.onerror = script.onload = null;
+/******/ 				clearTimeout(timeout);
+/******/ 				var doneFns = inProgress[url];
+/******/ 				delete inProgress[url];
+/******/ 				script.parentNode && script.parentNode.removeChild(script);
+/******/ 				doneFns && doneFns.forEach((fn) => (fn(event)));
+/******/ 				if(prev) return prev(event);
+/******/ 			}
+/******/ 			;
+/******/ 			var timeout = setTimeout(onScriptComplete.bind(null, undefined, { type: 'timeout', target: script }), 120000);
+/******/ 			script.onerror = onScriptComplete.bind(null, script.onerror);
+/******/ 			script.onload = onScriptComplete.bind(null, script.onload);
+/******/ 			needAttach && document.head.appendChild(script);
+/******/ 		};
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
@@ -54713,6 +54982,11 @@ webpackContext.id = "./resources/js sync recursive \\.vue$/";
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	(() => {
+/******/ 		__webpack_require__.p = "/";
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/jsonp chunk loading */
 /******/ 	(() => {
 /******/ 		// no baseURI
@@ -54725,7 +54999,44 @@ webpackContext.id = "./resources/js sync recursive \\.vue$/";
 /******/ 			"css/app": 0
 /******/ 		};
 /******/ 		
-/******/ 		// no chunk on demand loading
+/******/ 		__webpack_require__.f.j = (chunkId, promises) => {
+/******/ 				// JSONP chunk loading for javascript
+/******/ 				var installedChunkData = __webpack_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+/******/ 				if(installedChunkData !== 0) { // 0 means "already installed".
+/******/ 		
+/******/ 					// a Promise means "currently loading".
+/******/ 					if(installedChunkData) {
+/******/ 						promises.push(installedChunkData[2]);
+/******/ 					} else {
+/******/ 						if("css/app" != chunkId) {
+/******/ 							// setup Promise in chunk cache
+/******/ 							var promise = new Promise((resolve, reject) => (installedChunkData = installedChunks[chunkId] = [resolve, reject]));
+/******/ 							promises.push(installedChunkData[2] = promise);
+/******/ 		
+/******/ 							// start chunk loading
+/******/ 							var url = __webpack_require__.p + __webpack_require__.u(chunkId);
+/******/ 							// create error before stack unwound to get useful stacktrace later
+/******/ 							var error = new Error();
+/******/ 							var loadingEnded = (event) => {
+/******/ 								if(__webpack_require__.o(installedChunks, chunkId)) {
+/******/ 									installedChunkData = installedChunks[chunkId];
+/******/ 									if(installedChunkData !== 0) installedChunks[chunkId] = undefined;
+/******/ 									if(installedChunkData) {
+/******/ 										var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 										var realSrc = event && event.target && event.target.src;
+/******/ 										error.message = 'Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')';
+/******/ 										error.name = 'ChunkLoadError';
+/******/ 										error.type = errorType;
+/******/ 										error.request = realSrc;
+/******/ 										installedChunkData[1](error);
+/******/ 									}
+/******/ 								}
+/******/ 							};
+/******/ 							__webpack_require__.l(url, loadingEnded, "chunk-" + chunkId, chunkId);
+/******/ 						} else installedChunks[chunkId] = 0;
+/******/ 					}
+/******/ 				}
+/******/ 		};
 /******/ 		
 /******/ 		// no prefetching
 /******/ 		
