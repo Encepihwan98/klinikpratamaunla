@@ -8,7 +8,7 @@
 
 // Utilities
 const semver = __webpack_require__(/*! semver */ "./node_modules/semver/index.js")
-const fs = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module 'fs'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+const fs = __webpack_require__(/*! fs */ "?2387")
 
 // Injects a <link> element into ./public/index.html
 function injectHtmlLink (api, href, attrs) {
@@ -116,7 +116,7 @@ function mergeSassVariables (opt, file) {
 
 // Update local file with supplied callback
 function updateFile (api, file, callback) {
-  const { EOL } = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module 'os'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+  const { EOL } = __webpack_require__(/*! os */ "?fbfd")
   file = api.resolve(file)
   let content = fs.existsSync(file)
     ? fs.readFileSync(file, { encoding: 'utf8' })
@@ -3424,6 +3424,26 @@ try {
   __webpack_require__(/*! ./iterator.js */ "./node_modules/yallist/iterator.js")(Yallist)
 } catch (er) {}
 
+
+/***/ }),
+
+/***/ "?2387":
+/*!********************!*\
+  !*** fs (ignored) ***!
+  \********************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?fbfd":
+/*!********************!*\
+  !*** os (ignored) ***!
+  \********************/
+/***/ (() => {
+
+/* (ignored) */
 
 /***/ }),
 

@@ -22,7 +22,7 @@ const components = require.context('./', true, /\.vue$/i);
 components.keys().map(
     key => {
         if(key.split('/')[1] != 'pages') {
-            console.log(key);
+            console.log(key.split('/').pop().split('.')[0]);
             Vue.component(key.split('/').pop().split('.')[0], () => import(/* webpackChunkName: "[request]" */ `${key}`))
         }
     }

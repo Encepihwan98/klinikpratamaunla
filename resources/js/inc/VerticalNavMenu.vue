@@ -50,12 +50,10 @@
         <nav-menu-link
           title="User Management"
           :to="{ name: 'user-management' }"
-          target="_blank"
         ></nav-menu-link>
         <nav-menu-link
           title="Role Management"
-          :to="{ name: 'RoleManagement' }"
-          target="_blank"
+          :to="{ name: 'roles-management' }"
         ></nav-menu-link>
       </nav-menu-group>
 
@@ -89,16 +87,7 @@ import {
   mdiAccountCogOutline,
 } from '@mdi/js'
 
-import NavMenuSectionTitle from './NavMenuComponent/NavMenuSectionTitle.vue'
-import NavMenuGroup from './NavMenuComponent/NavMenuGroup.vue'
-import NavMenuLink from './NavMenuComponent/NavMenuLink.vue'
-
 export default {
-  components: {
-    NavMenuSectionTitle,
-    NavMenuGroup,
-    NavMenuLink,
-  },
   props: {
     isDrawerOpen: {
       type: Boolean,
