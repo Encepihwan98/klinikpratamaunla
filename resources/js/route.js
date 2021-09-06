@@ -6,11 +6,11 @@ Vue.use(VueRouter)
 const pages = require.context('./', true, /\.vue$/i);
 
 let routes = [
-    {path: '/', component: () => import(/* webpackChunkName: "[request]" */ `./page/auth/Login`) }
+    {path: '/', component: () => import(/* webpackChunkName: "[request]" */ `./pages/auth/Login`) }
 ]
 
 pages.keys().forEach((element, i) => {
-    if(element.split('/')[1] == 'page') {
+    if(element.split('/')[1] == 'pages') {
         let urlSplit = element.split('.')
         let urlSlug = urlSplit[1].split('/')[2]
         let urlPath = element.split('/').pop().split('.')[0]

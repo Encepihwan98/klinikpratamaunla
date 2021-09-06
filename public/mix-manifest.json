@@ -1,5 +1,15 @@
 {
     "/js/app.js": "/js/app.js",
-    "/js/plugin-vuetify.js": "/js/plugin-vuetify.js",
+    "/js/plugins-vue-composition-api.js": "/js/plugins-vue-composition-api.js",
+    "/js/plugins-vuetify.js": "/js/plugins-vuetify.js",
+    "/js/plugins-vuetify-default-preset.js": "/js/plugins-vuetify-default-preset.js",
+    "/js/plugins-vuetify-default-preset-preset-classes-scss.js": "/js/plugins-vuetify-default-preset-preset-classes-scss.js",
+    "/js/plugins-vuetify-default-preset-preset-dark-scss.js": "/js/plugins-vuetify-default-preset-preset-dark-scss.js",
+    "/js/plugins-vuetify-default-preset-preset-libs-apex-chart-scss.js": "/js/plugins-vuetify-default-preset-preset-libs-apex-chart-scss.js",
+    "/js/plugins-vuetify-default-preset-preset-misc-scss.js": "/js/plugins-vuetify-default-preset-preset-misc-scss.js",
+    "/js/plugins-vuetify-default-preset-preset-mixins-scss.js": "/js/plugins-vuetify-default-preset-preset-mixins-scss.js",
+    "/js/plugins-vuetify-default-preset-preset-pages-auth-scss.js": "/js/plugins-vuetify-default-preset-preset-pages-auth-scss.js",
+    "/js/plugins-vuetify-default-preset-preset-rtl-scss.js": "/js/plugins-vuetify-default-preset-preset-rtl-scss.js",
+    "/js/plugins-vuetify-default-preset-preset-variables-scss.js": "/js/plugins-vuetify-default-preset-preset-variables-scss.js",
     "/css/app.css": "/css/app.css"
 }

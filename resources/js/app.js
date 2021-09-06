@@ -5,11 +5,11 @@ window.Vue = require('vue').default;
 // Library
 import { router } from './route'
 import Vue from 'vue';
-// import vuetify from './plugin/vuetify' // path to vuetify export
+import vuetify from './plugins/vuetify' // path to vuetify export
 
 // Component
 
-import Base from './layout/Base'
+import Base from './layouts/Base'
 // import Header from './inc/LayoutHeader.vue'
 
 // Use
@@ -21,7 +21,7 @@ const components = require.context('./', true, /\.vue$/i);
 
 components.keys().map(
     key => {
-        if(key.split('/')[1] != 'page') {
+        if(key.split('/')[1] != 'pages') {
             console.log(key);
             Vue.component(key.split('/').pop().split('.')[0], () => import(/* webpackChunkName: "[request]" */ `${key}`))
         }
@@ -31,6 +31,6 @@ components.keys().map(
 const app = new Vue({
     el:'#app',
     router,
+    vuetify,
     render (h) { return h(Base) }
-    // vuetify,
 })

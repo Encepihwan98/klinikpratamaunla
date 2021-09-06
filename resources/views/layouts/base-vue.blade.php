@@ -13,23 +13,33 @@
         <link rel="dns-prefetch" href="//fonts.gstatic.com">
         <link rel="stylesheet" href="{{url('plugins/font-icons/fontawesome/css/fontawesome.min.css')}}">
         <!-- Styles -->
-        <link href="{{url('css/app.css')}}" rel="stylesheet" type="text/css" />
-        <link href="{{url('bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
+        {{-- <link href="{{url('bootstrap/css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
         <link href="{{url('assets/css/plugins.css')}}" rel="stylesheet" type="text/css" />
+        <link href="{{ url('assets/css/dashboard/dash_2.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{url('plugins/animate/animate.css')}}" rel="stylesheet" type="text/css" />
         <link href="{{ url('assets/css/authentication/form-2.css') }}" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" type="text/css" href="{{ url('assets/css/forms/theme-checkbox-radio.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ url('assets/css/forms/switches.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ url('assets/css/forms/switches.css') }}"> --}}
+        <link href="{{url('css/app.css')}}" rel="stylesheet" type="text/css" />
 
         @yield('style')
     </head>
     <body>
         <div id="app"></div>
         <script src="{{mix('js/app.js')}}"></script>
-        <script src="{{url('assets/js/libs/jquery-3.1.1.min.js')}}"></script>
+        {{-- <script src="{{url('assets/js/libs/jquery-3.1.1.min.js')}}"></script>
         <script src="{{url('bootstrap/js/popper.min.js')}}"></script>
         <script src="{{url('bootstrap/js/bootstrap.min.js')}}"></script>
+        <script src="{{ url('plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+        <script src="{{ url('assets/js/app.js') }}"></script>
+        <script>
+            $(document).ready(function() {
+                App.init();
+            });
+        </script>
+        <script src="{{ url('assets/js/custom.js') }}"></script>
         <script src="{{ url('assets/js/authentication/form-2.js') }}"></script>
+        <script src="{{ url('assets/js/dashboard/dash_2.js') }}"></script> --}}
         @yield('script')
 
     </body>
