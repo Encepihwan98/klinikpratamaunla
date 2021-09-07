@@ -9,6 +9,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>@yield('titlle')</title>
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
         <link rel="dns-prefetch" href="//fonts.gstatic.com">
         <link rel="stylesheet" href="{{url('plugins/font-icons/fontawesome/css/fontawesome.min.css')}}">

@@ -42,6 +42,239 @@
         :to="{ name: 'dashboard' }"
         :icon="icons.mdiHomeOutline"
       ></nav-menu-link>
+
+      <nav-menu-section-title title="MAIN NAVIGATOR"></nav-menu-section-title>
+      <nav-menu-group
+        title="Daftar Kunjungan"
+        :icon="icons.mdiFileOutline"
+      >
+        <nav-menu-link
+          title="Rawat Jalan"
+          :to="{ name: 'rawat-jalan' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Rawat Inap"
+          :to="{ name: 'rawat-inap' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Rawat Darurat (IGD)"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+      </nav-menu-group>
+
+       <nav-menu-group
+        title="Keuangan"
+        :icon="icons.mdiFileOutline"
+      >
+        <nav-menu-link
+          title="Kasir Umum"
+          :to="{ name: 'user-management' }"
+        ></nav-menu-link>
+      </nav-menu-group>
+
+      <nav-menu-group
+        title="Regis Trasi"
+        :icon="icons.mdiFileOutline"
+      >
+        <nav-menu-link
+          title="Reg. Rawat Jalan"
+          :to="{ name: 'user-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Reg. Rawat Inap"
+          :to="{ name: 'rawat-inap' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Reg. Rawat Darurat"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+      </nav-menu-group>
+
+      <nav-menu-group
+      title="Penunjang"
+      :icon="icons.mdiFileOutline"
+      >
+        <nav-menu-link
+          title="Laboratorium"
+          :to="{ name: 'user-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Radiologi"
+          :to="{ name: 'rawat-inap' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Operasi"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Insenerator"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="UTDRS"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Kamar Jenazah"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+      </nav-menu-group>
+
+      <nav-menu-group
+      title="Farmasi & Logsistik"
+      :icon="icons.mdiFileOutline"
+      >
+        <nav-menu-link
+          title="Apotek"
+          :to="{ name: 'user-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Logistik"
+          :to="{ name: 'rawat-inap' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Stock"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Suplier"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Penerimaan"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+      </nav-menu-group>
+
+       <nav-menu-section-title title="ADMIN AREA"></nav-menu-section-title>
+        <nav-menu-link
+          title="Daftar Pasien"
+          :icon="icons.mdiFileOutline"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+          <nav-menu-link
+          title="Daftar Pegawai"
+          :icon="icons.mdiFileOutline"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Tarif"
+          :icon="icons.mdiFileOutline"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+          <nav-menu-link
+          title="Poliklinik/Ruangan"
+          :icon="icons.mdiFileOutline"
+          :to="{ name: 'user-management' }"
+        ></nav-menu-link>
+
+        <nav-menu-group
+        title="Master Data"
+        :icon="icons.mdiFileOutline"
+        >
+        <nav-menu-link
+          title="Daftar Agama"
+          :to="{ name: 'user-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Cara Pembayaran"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Gizi"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Insenerator"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Kasus "
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Kegiatan"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Oksigen"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Pekerjaan"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Pemeriksaan Jenazah"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Pemeriksaan Umum"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Pendidikan"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Penyakit"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Prosedure"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Suku"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar TIndakan"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Tindakan Operasi"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Tipe Diagnosa"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar UTDRS"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Wilayah"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Laundry"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Logistik"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Poliklinik"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Registrasi"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Daftar Rujukan"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+         <nav-menu-link
+          title="Jenis Visite"
+          :to="{ name: 'roles-management' }"
+        ></nav-menu-link>
+
+      </nav-menu-group>
+
       <nav-menu-section-title title="SYSTEM"></nav-menu-section-title>
       <nav-menu-group
         title="System"
