@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import { ref } from "@vue/composition-api";
-import {
+  import { ref } from "@vue/composition-api";
+  import {
   mdiMagnify,
   mdiBellOutline,
   mdiGithub
