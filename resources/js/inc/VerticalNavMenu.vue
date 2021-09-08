@@ -40,12 +40,12 @@
       <nav-menu-link
         title="Dashboard"
         :to="{ name: 'dashboard' }"
-        :icon="icons.mdiHomeOutline"
+        icon="far fa-home"
       ></nav-menu-link>
       <nav-menu-section-title title="SYSTEM"></nav-menu-section-title>
       <nav-menu-group
         title="System"
-        :icon="icons.mdiFileOutline"
+        icon="far fa-cogs"
       >
         <nav-menu-link
           title="User Management"
@@ -58,56 +58,27 @@
       </nav-menu-group>
 
     </v-list>
-    <!-- <a
-      href="https://themeselection.com/products/materio-vuetify-vuejs-admin-template"
-      target="_blank"
-      rel="nofollow"
-    >
-      <v-img
-        src="assets/images/pro/upgrade-banner-light.png"
-        alt="upgrade-banner"
-        transition="scale-transition"
-        class="upgrade-banner mx-auto"
-        max-width="230"
-      ></v-img>
-    </a> -->
   </v-navigation-drawer>
 </template>
 
 <script>
-// eslint-disable-next-line object-curly-newline
 import {
   mdiHomeOutline,
-  mdiAlphaTBoxOutline,
-  mdiEyeOutline,
-  mdiCreditCardOutline,
-  mdiTable,
   mdiFileOutline,
-  mdiFormSelect,
-  mdiAccountCogOutline,
 } from '@mdi/js'
 
 export default {
   props: {
-    isDrawerOpen: {
-      type: Boolean,
-      default: null,
-    },
+    isDrawerOpen: false,
   },
   setup() {
     return {
       icons: {
         mdiHomeOutline,
-        mdiAlphaTBoxOutline,
-        mdiEyeOutline,
-        mdiCreditCardOutline,
-        mdiTable,
         mdiFileOutline,
-        mdiFormSelect,
-        mdiAccountCogOutline,
       },
     }
-  },
+  }
 }
 </script>
 
