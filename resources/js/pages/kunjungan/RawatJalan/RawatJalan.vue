@@ -41,7 +41,7 @@
                     <td>Dahlian</td>
                     <td>
                       <v-btn icon :to="{name:'rawat-jalan-detail'}">
-                        <v-icon large>fad fa-eye</v-icon>
+                        <v-icon small>far fa-search-plus</v-icon>
                       </v-btn>
                     </td>
                 </tr>

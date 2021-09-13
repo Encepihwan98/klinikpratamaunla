@@ -45,6 +45,7 @@
 
       <nav-menu-section-title title="MAIN NAVIGATOR"></nav-menu-section-title>
       <nav-menu-group
+        small 
         title="Daftar Kunjungan"
         :icon="icons.mdiFileOutline"
       >
@@ -58,7 +59,7 @@
         ></nav-menu-link>
         <nav-menu-link
           title="Rawat Darurat (IGD)"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'rawat-darurat' }"
         ></nav-menu-link>
       </nav-menu-group>
 
@@ -68,25 +69,25 @@
       >
         <nav-menu-link
           title="Kasir Umum"
-          :to="{ name: 'user-management' }"
+          :to="{ name: 'keuangan' }"
         ></nav-menu-link>
       </nav-menu-group>
 
       <nav-menu-group
-        title="Regis Trasi"
+        title="Registrasi"
         :icon="icons.mdiFileOutline"
       >
         <nav-menu-link
           title="Reg. Rawat Jalan"
-          :to="{ name: 'user-management' }"
+          :to="{ name: 'reg-rawat-jalan' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Reg. Rawat Inap"
-          :to="{ name: 'rawat-inap' }"
+          :to="{ name: 'reg-rawat-inap' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Reg. Rawat Darurat"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'reg-rawat-darurat' }"
         ></nav-menu-link>
       </nav-menu-group>
 
@@ -95,28 +96,29 @@
       :icon="icons.mdiFileOutline"
       >
         <nav-menu-link
+         
           title="Laboratorium"
-          :to="{ name: 'user-management' }"
+          :to="{ name: 'laboratorium' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Radiologi"
-          :to="{ name: 'rawat-inap' }"
+          :to="{ name: 'radiologi' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Operasi"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'operasi' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Insenerator"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'insenerator' }"
         ></nav-menu-link>
         <nav-menu-link
           title="UTDRS"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'utdrs' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Kamar Jenazah"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'kamar-jenazah' }"
         ></nav-menu-link>
       </nav-menu-group>
 

@@ -65,27 +65,25 @@
             v-model="tab"
             background-color="grey lighten-3"
             lefted
-            
-            icons-and-text
             >
             <v-tabs-slider></v-tabs-slider>
 
-            <v-tab href="#tab-1">
+            <v-tab class="caption font-weight-bold" href="#tab-1">
                 Penunjang
             </v-tab>
 
-            <v-tab href="#tab-2">
+            <v-tab class="caption font-weight-bold" href="#tab-2">
                 Diagnosa
             </v-tab>
 
-            <v-tab href="#tab-3">
+            <v-tab class="caption font-weight-bold" href="#tab-3">
+                Tindakan/Pemeriksaan
+            </v-tab>
+            <v-tab class="caption font-weight-bold" href="#tab-4">
                 Pemeriksaan Umum
             </v-tab>
-            <v-tab href="#tab-4">
+            <v-tab class="caption font-weight-bold" href="#tab-5">
                 Resep
-            </v-tab>
-            <v-tab href="#tab-5">
-                Tindakan/Diagnosa
             </v-tab>
             </v-tabs>
 
@@ -104,29 +102,38 @@
                 value="tab-2"
             >
                 <v-card flat>
-                <v-card-text>tab 2</v-card-text>
+                <v-card-text>
+                    <diagnosa></diagnosa>
+                </v-card-text>
                 </v-card>
             </v-tab-item>
 
             <v-tab-item
                 value="tab-3"
+                
             >
                 <v-card flat>
-                <v-card-text>tab 3</v-card-text>
+                <v-card-text>
+                    <tindakan></tindakan>
+                </v-card-text>
                 </v-card>
             </v-tab-item>
             <v-tab-item
                 value="tab-4"
             >
                 <v-card flat>
-                <v-card-text>tab 4</v-card-text>
+                <v-card-text>
+                    <pemeriksaan-umum></pemeriksaan-umum>
+                </v-card-text>
                 </v-card>
             </v-tab-item>
             <v-tab-item
                 value="tab-5"
             >
                 <v-card flat>
-                <v-card-text>tab 5</v-card-text>
+                <v-card-text>
+                    <resep></resep>
+                </v-card-text>
                 </v-card>
             </v-tab-item>
             </v-tabs-items>
@@ -146,8 +153,12 @@
   mdiBellOutline,
   mdiGithub
 } from "@mdi/js";
+import Diagnosa from '../../../components/kunjungan/Diagnosa.vue';
+import Tindakan from '../../../components/kunjungan/Tindakan.vue';
+import Resep from '../../../components/kunjungan/Resep.vue';
 
 export default {
+  components: { Diagnosa, Tindakan, Resep },
   setup() {
     const isDrawerOpen = ref(null);
 
