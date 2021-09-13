@@ -48,6 +48,7 @@
         "vue": "^2.6.11",
         "vue-apexcharts": "^1.6.2",
         "vue-router": "^3.5.2",
+        "vue-sweetalert2": "^5.0.2",
         "vuetify": "^2.5.8",
         "vuex": "^3.4.0"
     }

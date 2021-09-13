@@ -1,7 +1,10 @@
 <template>
   <v-app>
     <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
-    <app-bar :isDrawerOpen="isDrawerOpen" @updateNavbar="isDrawerOpen = $event"></app-bar>
+    <app-bar
+      :isDrawerOpen="isDrawerOpen"
+      @updateNavbar="isDrawerOpen = $event"
+    ></app-bar>
     <v-main>
       <div class="app-content-container boxed-container pa-6">
         <v-card class="mx-auto">
@@ -24,25 +27,26 @@
 
                 <v-col class="d-flex" cols="6" sm="3" md="2">
                   <v-select
+                    v-model="filter.pageLimit"
                     dense
                     :items="selectItem"
                     label="Tampilkan"
+                    @input="filterPage('')"
                     outlined
                   ></v-select>
                 </v-col>
 
                 <v-col class="d-flex" cols="12" sm="6">
                   <v-text-field
-                    v-model="searchQuery"
+                    v-model="filter.searchQuery"
                     dense
-                    append-outer-icon="far fa-search"
+                    append-icon="far fa-search"
                     outlined
-                    clear-icon="fas fa-times-circle"
                     clearable
                     label="Search"
                     type="text"
-                    @click:append-outer="search"
-                    @click:clear="clearMessage"
+                    @click:append="filterPage('')"
+                    @input="filterPage('')"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -54,24 +58,48 @@
                 <thead>
                   <tr>
                     <th class="text-left">
+                      No
+                      <v-icon @click="filterPage('id')" x-small>
+                        {{
+                          filter.sortBy == "id"
+                            ? filter.orderBy == "asc"
+                              ? "fas fa-sort-amount-up"
+                              : "fas fa-sort-amount-down"
+                            : "fas fa-sort-alt"
+                        }}
+                      </v-icon>
+                    </th>
+                    <th class="text-left">
                       Nama
-                      <v-icon x-small>fas fa-arrow-up</v-icon>
-                      <!-- <v-icon x-small>fas fa-arrow-up</v-icon> -->
+                      <v-icon @click="filterPage('name')" x-small>{{
+                        filter.sortBy == "name"
+                          ? filter.orderBy == "asc"
+                            ? "fas fa-sort-amount-up"
+                            : "fas fa-sort-amount-down"
+                          : "fas fa-sort-alt"
+                      }}</v-icon>
                     </th>
                     <th class="text-left">
                       Keterangan
-                      <v-icon x-small>fas fa-arrow-up</v-icon>
+                      <v-icon @click="filterPage('description')" x-small>{{
+                        filter.sortBy == "description"
+                          ? filter.orderBy == "asc"
+                            ? "fas fa-sort-amount-up"
+                            : "fas fa-sort-amount-down"
+                          : "fas fa-sort-alt"
+                      }}</v-icon>
                     </th>
                     <th class="text-left">Aksi</th>
                   </tr>
                 </thead>
-                <tbody v-if="data.data.length > 0">
-                  <tr v-for="item in data.data" :key="item.name">
+                <tbody v-if="data.data.length > 0 && web.isTableLoad == false">
+                  <tr v-for="(item, index) in data.data" :key="item.name">
+                    <td>{{ index + data.from }}</td>
                     <td>{{ item.name }}</td>
                     <td>{{ item.description }}</td>
                     <td>
                       <v-btn small @click="show(item)">
-                        <v-icon small>far fa-search-plus</v-icon>
+                        <v-icon small>far fa-eye</v-icon>
                       </v-btn>
                       <v-btn small @click="edit(item)">
                         <v-icon small>far fa-edit</v-icon>
@@ -79,6 +107,21 @@
                       <v-btn small @click="selectMethod(item, 'delete')">
                         <v-icon small>far fa-trash</v-icon>
                       </v-btn>
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody v-else-if="web.isTableLoad == true" class="text-center">
+                  <tr>
+                    <td colspan="3">
+                      <v-row class="app-content-container" justify="center">
+                        <v-overlay :value="true" :absolute="true">
+                          <v-progress-circular
+                            indeterminate
+                            size="50"
+                            color="primary"
+                          ></v-progress-circular>
+                        </v-overlay>
+                      </v-row>
                     </td>
                   </tr>
                 </tbody>
@@ -95,6 +138,7 @@
               v-model="data.current_page"
               :length="data.last_page"
               :total-visible="7"
+              @input="filterPage('')"
             ></v-pagination>
           </v-card-actions>
         </v-card>
@@ -104,7 +148,7 @@
         :currentData="currentData"
         :condition="condition"
         @updateDialog="dialog.state = $event"
-        @updateData="data = $event"
+        @updateData="$event == true ? filterPage('') : ''"
       ></form-dialog-role>
 
       <confirmation-dialog
@@ -118,14 +162,25 @@
 </template>
 
 <script>
-import { ref } from '@vue/composition-api'
+import { ref } from "@vue/composition-api";
 export default {
   data() {
     const isDrawerOpen = ref(null);
     return {
+      _url: "",
+      web: {
+        isTableLoad: false,
+      },
+      filter: {
+        searchQuery: "",
+        pageLimit: 10,
+        sortBy: "id",
+        orderBy: "asc",
+      },
       isDrawerOpen,
       data: {
-          data: []
+        data: [],
+        current_page: 1,
       },
       currentData: {},
       dialog: {
@@ -137,18 +192,10 @@ export default {
         message: null,
       },
       condition: "store",
-      searchQuery: "",
       selectItem: ["10", "25", "50", "100", "All"],
     };
   },
   methods: {
-    search() {
-      if (this.searchQuery == null) {
-        console.log("error");
-      } else {
-        console.log(this.searchQuery);
-      }
-    },
     show(data) {
       this.currentData = data;
       this.condition = "show";
@@ -168,12 +215,11 @@ export default {
       this.showDialog(false);
     },
     remove() {
-      let url =
-        window.location.origin + "/api/v1/roles/" + this.currentData.uuid;
+      let url = this._url + this.currentData.uuid;
       axios.delete(url).then((response) => {
         if (response.status == 200) {
-          //   this.getData();
-          this.data = response.data.data;
+          this.makeDefaultNotification(response.data.status, response.data.message)
+          this.filterPage("");
         }
       });
     },
@@ -185,9 +231,6 @@ export default {
         this.showDialog(true);
       }
     },
-    clearMessage() {
-      this.searchQuery = "";
-    },
     showDialog(isConfirmation) {
       if (isConfirmation) {
         this.dialogConfirmation.state = !this.dialogConfirmation.state;
@@ -195,18 +238,39 @@ export default {
         this.dialog.state = !this.dialog.state;
       }
     },
-    getData() {
-      let url = window.location.origin + "/api/v1/roles";
+    filterPage(sort_by) {
+      this.web.isTableLoad = true;
+      if (sort_by != "" && sort_by != null && sort_by != "undefined") {
+        this.filter.sortBy == sort_by
+          ? this.filter.orderBy == "asc"
+            ? (this.filter.orderBy = "desc")
+            : (this.filter.orderBy = "asc")
+          : (this.filter.sortBy = sort_by);
+      }
+      let url =
+        this._url +
+        "?page=" +
+        this.data.current_page +
+        "&limit=" +
+        this.filter.pageLimit +
+        "&search=" +
+        this.filter.searchQuery +
+        "&sort_by=" +
+        this.filter.sortBy +
+        "&order_by=" +
+        this.filter.orderBy;
       axios.get(url).then((response) => {
         if (response.status == 200) {
           console.log(response);
           this.data = response.data.data;
+          this.web.isTableLoad = false;
         }
       });
     },
   },
   created() {
-    this.getData();
+    this._url = window.location.origin + "/api/v1/roles/";
+    this.filterPage("");
   },
 };
 </script>

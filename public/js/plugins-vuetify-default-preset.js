@@ -8,7 +8,7 @@
 
 // Utilities
 const semver = __webpack_require__(/*! semver */ "./node_modules/semver/index.js")
-const fs = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module 'fs'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+const fs = __webpack_require__(/*! fs */ "?2387")
 
 // Injects a <link> element into ./public/index.html
 function injectHtmlLink (api, href, attrs) {
@@ -116,7 +116,7 @@ function mergeSassVariables (opt, file) {
 
 // Update local file with supplied callback
 function updateFile (api, file, callback) {
-  const { EOL } = __webpack_require__(Object(function webpackMissingModule() { var e = new Error("Cannot find module 'os'"); e.code = 'MODULE_NOT_FOUND'; throw e; }()))
+  const { EOL } = __webpack_require__(/*! os */ "?fbfd")
   file = api.resolve(file)
   let content = fs.existsSync(file)
     ? fs.readFileSync(file, { encoding: 'utf8' })
@@ -3427,6 +3427,26 @@ try {
 
 /***/ }),
 
+/***/ "?2387":
+/*!********************!*\
+  !*** fs (ignored) ***!
+  \********************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?fbfd":
+/*!********************!*\
+  !*** os (ignored) ***!
+  \********************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
 /***/ "./node_modules/sass-loader/package.json":
 /*!***********************************************!*\
   !*** ./node_modules/sass-loader/package.json ***!
@@ -3434,7 +3454,7 @@ try {
 /***/ ((module) => {
 
 "use strict";
-module.exports = JSON.parse('{"_args":[["sass-loader@12.1.0","D:\\\\laravel\\\\project\\\\simrs_rowasiya"]],"_development":true,"_from":"sass-loader@12.1.0","_id":"sass-loader@12.1.0","_inBundle":false,"_integrity":"sha512-FVJZ9kxVRYNZTIe2xhw93n3xJNYZADr+q69/s98l9nTCrWASo+DR2Ot0s5xTKQDDEosUkatsGeHxcH4QBp5bSg==","_location":"/sass-loader","_phantomChildren":{},"_requested":{"type":"version","registry":true,"raw":"sass-loader@12.1.0","name":"sass-loader","escapedName":"sass-loader","rawSpec":"12.1.0","saveSpec":null,"fetchSpec":"12.1.0"},"_requiredBy":["#DEV:/"],"_resolved":"https://registry.npmjs.org/sass-loader/-/sass-loader-12.1.0.tgz","_spec":"12.1.0","_where":"D:\\\\laravel\\\\project\\\\simrs_rowasiya","author":{"name":"J. Tangelder"},"bugs":{"url":"https://github.com/webpack-contrib/sass-loader/issues"},"dependencies":{"klona":"^2.0.4","neo-async":"^2.6.2"},"description":"Sass loader for webpack","devDependencies":{"@babel/cli":"^7.14.5","@babel/core":"^7.14.5","@babel/preset-env":"^7.14.5","@commitlint/cli":"^12.1.4","@commitlint/config-conventional":"^12.1.4","@webpack-contrib/eslint-config-webpack":"^3.0.0","babel-jest":"^27.0.2","bootstrap-sass":"^3.4.1","bootstrap-v4":"npm:bootstrap@^4.5.3","bootstrap-v5":"npm:bootstrap@^5.0.1","cross-env":"^7.0.3","css-loader":"^5.2.6","del":"^6.0.0","del-cli":"^3.0.1","enhanced-resolve":"^5.8.2","eslint":"^7.28.0","eslint-config-prettier":"^8.3.0","eslint-plugin-import":"^2.23.3","fibers":"^5.0.0","file-loader":"^6.2.0","foundation-sites":"^6.6.3","husky":"^6.0.0","jest":"^27.0.4","lint-staged":"^11.0.0","material-components-web":"^8.0.0","memfs":"^3.2.2","node-sass":"^6.0.0","node-sass-glob-importer":"^5.3.2","npm-run-all":"^4.1.5","prettier":"^2.3.1","sass":"^1.34.1","semver":"^7.3.5","standard-version":"^9.3.0","style-loader":"^2.0.0","webpack":"^5.38.1"},"engines":{"node":">= 12.13.0"},"files":["dist"],"funding":{"type":"opencollective","url":"https://opencollective.com/webpack"},"homepage":"https://github.com/webpack-contrib/sass-loader","keywords":["sass","libsass","webpack","loader"],"license":"MIT","main":"dist/cjs.js","name":"sass-loader","peerDependencies":{"fibers":">= 3.1.0","node-sass":"^4.0.0 || ^5.0.0 || ^6.0.0","sass":"^1.3.0","webpack":"^5.0.0"},"peerDependenciesMeta":{"node-sass":{"optional":true},"sass":{"optional":true},"fibers":{"optional":true}},"repository":{"type":"git","url":"git+https://github.com/webpack-contrib/sass-loader.git"},"scripts":{"build":"cross-env NODE_ENV=production babel src -d dist --copy-files","clean":"del-cli dist","commitlint":"commitlint --from=master","lint":"npm-run-all -l -p \\"lint:**\\"","lint:js":"eslint --cache .","lint:prettier":"prettier --list-different .","prebuild":"npm run clean","prepare":"husky install && npm run build","pretest":"npm run lint","release":"standard-version","security":"npm audit --production","start":"npm run build -- -w","test":"npm run test:coverage","test:coverage":"npm run test:only -- --collectCoverageFrom=\\"src/**/*.js\\" --coverage","test:manual":"npm run build && webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js","test:only":"cross-env NODE_ENV=test jest","test:watch":"npm run test:only -- --watch"},"version":"12.1.0"}');
+module.exports = JSON.parse('{"_from":"sass-loader","_id":"sass-loader@12.1.0","_inBundle":false,"_integrity":"sha512-FVJZ9kxVRYNZTIe2xhw93n3xJNYZADr+q69/s98l9nTCrWASo+DR2Ot0s5xTKQDDEosUkatsGeHxcH4QBp5bSg==","_location":"/sass-loader","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"sass-loader","name":"sass-loader","escapedName":"sass-loader","rawSpec":"","saveSpec":null,"fetchSpec":"latest"},"_requiredBy":["#DEV:/","#USER"],"_resolved":"https://registry.npmjs.org/sass-loader/-/sass-loader-12.1.0.tgz","_shasum":"b73324622231009da6fba61ab76013256380d201","_spec":"sass-loader","_where":"C:\\\\Users\\\\arind\\\\OneDrive\\\\Desktop\\\\simrs_rowasiya","author":{"name":"J. Tangelder"},"bugs":{"url":"https://github.com/webpack-contrib/sass-loader/issues"},"bundleDependencies":false,"dependencies":{"klona":"^2.0.4","neo-async":"^2.6.2"},"deprecated":false,"description":"Sass loader for webpack","devDependencies":{"@babel/cli":"^7.14.5","@babel/core":"^7.14.5","@babel/preset-env":"^7.14.5","@commitlint/cli":"^12.1.4","@commitlint/config-conventional":"^12.1.4","@webpack-contrib/eslint-config-webpack":"^3.0.0","babel-jest":"^27.0.2","bootstrap-sass":"^3.4.1","bootstrap-v4":"npm:bootstrap@^4.5.3","bootstrap-v5":"npm:bootstrap@^5.0.1","cross-env":"^7.0.3","css-loader":"^5.2.6","del":"^6.0.0","del-cli":"^3.0.1","enhanced-resolve":"^5.8.2","eslint":"^7.28.0","eslint-config-prettier":"^8.3.0","eslint-plugin-import":"^2.23.3","fibers":"^5.0.0","file-loader":"^6.2.0","foundation-sites":"^6.6.3","husky":"^6.0.0","jest":"^27.0.4","lint-staged":"^11.0.0","material-components-web":"^8.0.0","memfs":"^3.2.2","node-sass":"^6.0.0","node-sass-glob-importer":"^5.3.2","npm-run-all":"^4.1.5","prettier":"^2.3.1","sass":"^1.34.1","semver":"^7.3.5","standard-version":"^9.3.0","style-loader":"^2.0.0","webpack":"^5.38.1"},"engines":{"node":">= 12.13.0"},"files":["dist"],"funding":{"type":"opencollective","url":"https://opencollective.com/webpack"},"homepage":"https://github.com/webpack-contrib/sass-loader","keywords":["sass","libsass","webpack","loader"],"license":"MIT","main":"dist/cjs.js","name":"sass-loader","peerDependencies":{"fibers":">= 3.1.0","node-sass":"^4.0.0 || ^5.0.0 || ^6.0.0","sass":"^1.3.0","webpack":"^5.0.0"},"peerDependenciesMeta":{"node-sass":{"optional":true},"sass":{"optional":true},"fibers":{"optional":true}},"repository":{"type":"git","url":"git+https://github.com/webpack-contrib/sass-loader.git"},"scripts":{"build":"cross-env NODE_ENV=production babel src -d dist --copy-files","clean":"del-cli dist","commitlint":"commitlint --from=master","lint":"npm-run-all -l -p \\"lint:**\\"","lint:js":"eslint --cache .","lint:prettier":"prettier --list-different .","prebuild":"npm run clean","prepare":"husky install && npm run build","pretest":"npm run lint","release":"standard-version","security":"npm audit --production","start":"npm run build -- -w","test":"npm run test:coverage","test:coverage":"npm run test:only -- --collectCoverageFrom=\\"src/**/*.js\\" --coverage","test:manual":"npm run build && webpack-dev-server test/manual/src/index.js --open --config test/manual/webpack.config.js","test:only":"cross-env NODE_ENV=test jest","test:watch":"npm run test:only -- --watch"},"version":"12.1.0"}');
 
 /***/ })
 

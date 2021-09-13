@@ -63,6 +63,7 @@ export default {
     condition: null,
     data: {},
     currentData: {},
+    refreshData: false,
     dialogItems: [
       {
         name: "",
@@ -90,11 +91,6 @@ export default {
   computed: {
     setData: {
       get() {
-        if (this.currentData != null) {
-          this.role = this.currentData;
-        } else {
-          this.role = {};
-        }
         return this.currentData;
       },
     },
@@ -108,7 +104,7 @@ export default {
     },
     retriveData: {
       get() {
-        return this.currentData;
+        return this.refreshData;
       },
       set(value) {
         this.$emit("updateData", value);
@@ -130,7 +126,8 @@ export default {
       axios.post(url, this.role).then((response) => {
         if (response.status == 200) {
           this.showDialog = false;
-          this.retriveData = response.data.data;
+          this.retriveData = true;
+          this.makeDefaultNotification(response.data.status, response.data.message)
         }
       });
     },
@@ -139,7 +136,8 @@ export default {
       axios.put(url, this.role).then((response) => {
         if (response.status == 200) {
           this.showDialog = false;
-          this.retriveData = response.data.data;
+          this.retriveData = true;
+          this.makeDefaultNotification(response.data.status, response.data.message)
         }
       });
     },
@@ -152,8 +150,9 @@ export default {
     },
   },
   watch: {
-    roleData: function (newValue, oldValue) {
-      console.log(newValue != null);
+    currentData: function (newValue, oldValue) {
+        if(newValue != null) this.role = newValue
+        else this.role = {}
     },
   },
 };

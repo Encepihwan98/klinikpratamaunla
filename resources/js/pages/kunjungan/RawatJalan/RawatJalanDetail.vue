@@ -3,11 +3,11 @@
     <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
-        <v-card 
+        <v-card
             class="my-4 mx-4"
             elevation="4"
         >
-        <v-expansion-panels 
+        <v-expansion-panels
             focusable
             v-model="panel"
         >
@@ -22,7 +22,7 @@
                                     sm="6"
                                     md="4"
                                 >
-                                    <v-text-field 
+                                    <v-text-field
                                         label="Nama Pasien"
                                         placeholder="Pasien"
                                         outlined
@@ -34,25 +34,25 @@
                                     sm="6"
                                     md="4"
                                 >
-                                    <v-text-field 
+                                    <v-text-field
                                         label="Tempat, Tanggal Lahir"
                                         placeholder="Tempat, Tanggal Lahir"
                                         outlined
                                         dense small
                                     ></v-text-field>
-                                </v-col>    
+                                </v-col>
                                 <v-col
                                     cols="12"
                                     sm="6"
                                     md="4"
                                 >
-                                    <v-text-field 
+                                    <v-text-field
                                         label="Alamat"
                                         placeholder="Alamat"
                                         outlined
                                         dense small
                                     ></v-text-field>
-                                </v-col>             
+                                </v-col>
                             </v-row>
                         </v-container>
                     </v-from>
@@ -65,7 +65,7 @@
             v-model="tab"
             background-color="grey lighten-3"
             lefted
-            
+
             icons-and-text
             >
             <v-tabs-slider></v-tabs-slider>

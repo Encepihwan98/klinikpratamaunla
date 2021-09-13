@@ -14,10 +14,9 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Role::paginate(10);
-        return response()->json(['data'=>$data]);
+        return response()->json(['data' => $this->filter($request)]);
     }
 
     /**
@@ -32,7 +31,7 @@ class RoleController extends Controller
             'name' => 'required',
             'description' => 'nullable'
         ]);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()]);
         }
         $store = new Role();
@@ -42,7 +41,7 @@ class RoleController extends Controller
         $store->superuser = $request->superuser ? 1 : 0;
         $store->save();
 
-        return response()->json(['data' => Role::paginate(10)]);
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil ditambahkan!']);
     }
 
     /**
@@ -69,7 +68,7 @@ class RoleController extends Controller
             'name' => 'required',
             'description' => 'nullable'
         ]);
-        if($validator->fails()) {
+        if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()]);
         }
 
@@ -78,7 +77,7 @@ class RoleController extends Controller
             'description' => $request->description,
         ]);
 
-        return response()->json(['data' => Role::paginate(10)]);
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil diubah!']);
     }
 
     /**
@@ -89,12 +88,21 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        if($id == null) {
+        if ($id == null) {
             return response()->json(['errors' => 'ID kosong']);
         }
 
         Role::where('uuid', $id)->delete();
 
-        return response()->json(['data' => Role::paginate(10)]);
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!']);
+    }
+
+    public function filter(Request $request) {
+        $search = isset($request->search) ? ($request->search != "" && $request->search != "null" ? $request->search : "") : "";
+        $data = Role::when(isset($request->search), function ($query) use ($search) {
+            $query->where('name', 'LIKE', '%' . $search . '%');
+        })->orderBy($request->sort_by, $request->order_by)->paginate($request->limit != "" ? $request->limit : 10);
+
+        return $data;
     }
 }
