@@ -203,4 +203,5 @@ export default {
 
 <style lang="scss">
 @import './resources/js/plugins/vuetify/default-preset/preset/pages/auth.scss';
+@import './resources/js/plugins/vuetify/default-preset/preset/variables.scss';
 </style>

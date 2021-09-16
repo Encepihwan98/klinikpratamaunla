@@ -25,8 +25,6 @@ pages.keys().forEach((element, i) => {
     }
 });
 
-console.log(routes);
-
 export const router = new VueRouter({
     mode: 'history',
     routes: routes

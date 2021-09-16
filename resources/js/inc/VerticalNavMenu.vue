@@ -40,7 +40,7 @@
       <nav-menu-link
         title="Dashboard"
         :to="{ name: 'dashboard' }"
-        :icon="icons.mdiHomeOutline"
+        icon="far fa-home"
       ></nav-menu-link>
 
       <nav-menu-section-title title="MAIN NAVIGATOR"></nav-menu-section-title>
@@ -152,23 +152,56 @@
         <nav-menu-link
           title="Daftar Pasien"
           :icon="icons.mdiFileOutline"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-pasien' }"
         ></nav-menu-link>
+        <nav-menu-group
+        title="Daftar Pegawai"
+        :icon="icons.mdiFileOutline"
+        >
           <nav-menu-link
-          title="Daftar Pegawai"
-          :icon="icons.mdiFileOutline"
-          :to="{ name: 'roles-management' }"
-        ></nav-menu-link>
+            title="Daftar Pegawai"
+            :to="{ name: 'daftar-pegawai' }"
+          ></nav-menu-link>
+          <nav-menu-link
+            title="Jabatan"
+            :to="{ name: 'jabatan' }"
+          ></nav-menu-link>
+          <nav-menu-link
+            title="Kategori Kualifikasi"
+            :to="{ name: 'kategori-kualifikasi' }"
+          ></nav-menu-link>
+          <nav-menu-link
+            title="Kualifikasi"
+            :to="{ name: 'kualifikasi' }"
+          ></nav-menu-link>
+        </nav-menu-group>
         <nav-menu-link
           title="Daftar Tarif"
           :icon="icons.mdiFileOutline"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'tarif' }"
         ></nav-menu-link>
+        
+        <nav-menu-group
+        title="Poliklinik/Ruangan"
+        :icon="icons.mdiFileOutline"
+        >
           <nav-menu-link
-          title="Poliklinik/Ruangan"
-          :icon="icons.mdiFileOutline"
-          :to="{ name: 'user-management' }"
-        ></nav-menu-link>
+            title="Poliklinik"
+            :to="{ name: 'poliklinik' }"
+          ></nav-menu-link>
+          <nav-menu-link
+            title="Ruangan"
+            :to="{ name: 'ruangan' }"
+          ></nav-menu-link>
+          <nav-menu-link
+            title="Kamar"
+            :to="{ name: 'kamar' }"
+          ></nav-menu-link>
+          <nav-menu-link
+            title="Ranjang"
+            :to="{ name: 'ranjang' }"
+          ></nav-menu-link>
+        </nav-menu-group>
 
         <nav-menu-group
         title="Master Data"
@@ -280,7 +313,7 @@
       <nav-menu-section-title title="SYSTEM"></nav-menu-section-title>
       <nav-menu-group
         title="System"
-        :icon="icons.mdiFileOutline"
+        icon="far fa-cogs"
       >
         <nav-menu-link
           title="User Management"
@@ -293,56 +326,27 @@
       </nav-menu-group>
 
     </v-list>
-    <!-- <a
-      href="https://themeselection.com/products/materio-vuetify-vuejs-admin-template"
-      target="_blank"
-      rel="nofollow"
-    >
-      <v-img
-        src="assets/images/pro/upgrade-banner-light.png"
-        alt="upgrade-banner"
-        transition="scale-transition"
-        class="upgrade-banner mx-auto"
-        max-width="230"
-      ></v-img>
-    </a> -->
   </v-navigation-drawer>
 </template>
 
 <script>
-// eslint-disable-next-line object-curly-newline
 import {
   mdiHomeOutline,
-  mdiAlphaTBoxOutline,
-  mdiEyeOutline,
-  mdiCreditCardOutline,
-  mdiTable,
   mdiFileOutline,
-  mdiFormSelect,
-  mdiAccountCogOutline,
 } from '@mdi/js'
 
 export default {
   props: {
-    isDrawerOpen: {
-      type: Boolean,
-      default: null,
-    },
+    isDrawerOpen: false,
   },
   setup() {
     return {
       icons: {
         mdiHomeOutline,
-        mdiAlphaTBoxOutline,
-        mdiEyeOutline,
-        mdiCreditCardOutline,
-        mdiTable,
         mdiFileOutline,
-        mdiFormSelect,
-        mdiAccountCogOutline,
       },
     }
-  },
+  }
 }
 </script>
 

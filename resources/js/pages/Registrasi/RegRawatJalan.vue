@@ -10,9 +10,22 @@
     elevation="5"
     >
         <v-card-text>
-        <p class="text-h6 text--primary">
-            Registrasi Rawat Jalan
-        </p>
+          <v-row>
+            <v-col
+              cols="12"
+              sm="10"
+            >
+              <p class="text-h6 text--primary">
+                Registrasi Rawat Jalan
+              </p>
+            </v-col>
+            <v-col
+              cols="12"
+              sm="2"
+            >
+              <form-daftar-pasien></form-daftar-pasien>
+            </v-col>
+          </v-row>
         </v-card-text>
         <v-form>
             <v-container>
@@ -394,8 +407,10 @@
   mdiBellOutline,
   mdiGithub
 } from "@mdi/js";
+import FormDaftarPasien from '../../components/FormDaftarPasien.vue';
 
 export default {
+  components: { FormDaftarPasien },
   setup() {
     const isDrawerOpen = ref(null);
 

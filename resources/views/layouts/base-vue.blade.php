@@ -22,7 +22,43 @@
         <link rel="stylesheet" type="text/css" href="{{ url('assets/css/forms/theme-checkbox-radio.css') }}">
         <link rel="stylesheet" type="text/css" href="{{ url('assets/css/forms/switches.css') }}"> --}}
         <link href="{{url('css/app.css')}}" rel="stylesheet" type="text/css" />
+        <style>
+            .colored-toast.swal2-icon-success {
+            background-color: #a5dc86 !important;
+            }
 
+            .colored-toast.swal2-icon-error {
+            background-color: #f27474 !important;
+            }
+
+            .colored-toast.swal2-icon-warning {
+            background-color: #f8bb86 !important;
+            }
+
+            .colored-toast.swal2-icon-info {
+            background-color: #3fc3ee !important;
+            }
+
+            .colored-toast.swal2-icon-question {
+            background-color: #87adbd !important;
+            }
+
+            .colored-toast .swal2-title {
+            color: white;
+            }
+
+            .colored-toast .swal2-close {
+            color: white;
+            }
+
+            .colored-toast .swal2-html-container {
+            color: white;
+            }
+
+            .swal2-popup {
+            font-size: 12px!important;
+            }
+        </style>
         @yield('style')
     </head>
     <body>
