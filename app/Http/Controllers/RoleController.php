@@ -16,7 +16,12 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        return response()->json(['data' => $this->filter($request)]);
+        if(isset($request->limit)) {
+            $data = $this->filter($request);
+        } else {
+            $data = Role::all();
+        }
+        return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
     }
 
     /**
@@ -28,11 +33,11 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => 'required|unique:m_roles',
             'description' => 'nullable'
         ]);
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()]);
+            return response()->json(['errors' => $validator->errors(),'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
         }
         $store = new Role();
         $store->uuid = Str::uuid();
@@ -41,7 +46,7 @@ class RoleController extends Controller
         $store->superuser = $request->superuser ? 1 : 0;
         $store->save();
 
-        return response()->json(['status' => 'success', 'message' => 'Data berhasil ditambahkan!']);
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan!', 'data' => $this->filter($request)]);
     }
 
     /**
@@ -52,7 +57,8 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = Role::where('uuid',$id)->first();
+        return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
     }
 
     /**
@@ -65,11 +71,11 @@ class RoleController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => 'nullable|unique:m_roles',
             'description' => 'nullable'
         ]);
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()]);
+            return response()->json(['errors' => $validator->errors(), 'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
         }
 
         Role::where('uuid', $id)->update([
@@ -77,7 +83,7 @@ class RoleController extends Controller
             'description' => $request->description,
         ]);
 
-        return response()->json(['status' => 'success', 'message' => 'Data berhasil diubah!']);
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil diubah!', 'data' => $this->filter($request)]);
     }
 
     /**
@@ -86,22 +92,23 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         if ($id == null) {
-            return response()->json(['errors' => 'ID kosong']);
+            return response()->json(['status' => 'error', 'message' => 'Data gagal dihapus!', 'errors' => 'ID kosong']);
         }
 
         Role::where('uuid', $id)->delete();
 
-        return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!']);
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!', 'data' => $this->filter($request)]);
     }
 
     public function filter(Request $request) {
-        $search = isset($request->search) ? ($request->search != "" && $request->search != "null" ? $request->search : "") : "";
-        $data = Role::when(isset($request->search), function ($query) use ($search) {
+        $searchRequest = $request->searchQuery;
+        $search = !empty($searchRequest) && $searchRequest != "null" ? $searchRequest : "";
+        $data = Role::when(!empty($search), function ($query) use ($search) {
             $query->where('name', 'LIKE', '%' . $search . '%');
-        })->orderBy($request->sort_by, $request->order_by)->paginate($request->limit != "" ? $request->limit : 10);
+        })->orderBy($request->sortBy, $request->orderBy)->paginate($request->limit != "" ? $request->limit : 10);
 
         return $data;
     }

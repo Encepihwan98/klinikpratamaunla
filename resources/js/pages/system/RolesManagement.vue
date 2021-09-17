@@ -12,7 +12,7 @@
             <v-container fluid>
               <v-row align="center">
                 <v-col class="d-flex" cols="6" md="6" sm="6">
-                  <p class="text-h5 text--primary">Form Input</p>
+                  <p class="text-h5 text--primary">Manajemen Role</p>
                 </v-col>
 
                 <v-col class="d-flex" cols="6" md="6" sm="6">
@@ -135,7 +135,7 @@
           </v-card-text>
           <v-card-actions class="d-flex justify-center">
             <v-pagination
-              v-model="data.current_page"
+              v-model="filter.page"
               :length="data.last_page"
               :total-visible="7"
               @input="filterPage('')"
@@ -147,8 +147,9 @@
         :dialog="dialog"
         :currentData="currentData"
         :condition="condition"
+        :filter="filter"
         @updateDialog="dialog.state = $event"
-        @updateData="$event == true ? filterPage('') : ''"
+        @updateData="changeData($event)"
       ></form-dialog-role>
 
       <confirmation-dialog
@@ -172,10 +173,12 @@ export default {
         isTableLoad: false,
       },
       filter: {
+        page: 1,
         searchQuery: "",
-        pageLimit: 10,
+        limit: 10,
         sortBy: "id",
         orderBy: "asc",
+        roles: [],
       },
       isDrawerOpen,
       data: {
@@ -192,7 +195,7 @@ export default {
         message: null,
       },
       condition: "store",
-      selectItem: ["10", "25", "50", "100", "All"],
+      selectItem: ["10", "25", "50", "100"],
     };
   },
   methods: {
@@ -215,13 +218,28 @@ export default {
       this.showDialog(false);
     },
     remove() {
-      let url = this._url + this.currentData.uuid;
-      axios.delete(url).then((response) => {
-        if (response.status == 200) {
-          this.makeDefaultNotification(response.data.status, response.data.message)
-          this.filterPage("");
-        }
-      });
+      this.web.isTableLoad = true;
+      axios
+        .delete(`${this._url}${this.currentData.uuid}`, { data: this.filter })
+        .then((response) => {
+          if (response.status == 200) {
+            this.web.isTableLoad = false;
+            this.data = response.data.data;
+            this.filter.page = response.data.data.current_page;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        })
+        .catch((err) => {
+          this.web.isTableLoad = false;
+          this.errors = err.response.data.errors;
+          this.makeDefaultNotification(
+            err.response.data.status,
+            err.response.data.message
+          );
+        });
     },
     selectMethod(data, item) {
       this.currentData = data;
@@ -250,22 +268,25 @@ export default {
       let url =
         this._url +
         "?page=" +
-        this.data.current_page +
+        this.filter.page +
         "&limit=" +
-        this.filter.pageLimit +
-        "&search=" +
+        this.filter.limit +
+        "&searchQuery=" +
         this.filter.searchQuery +
-        "&sort_by=" +
+        "&sortBy=" +
         this.filter.sortBy +
-        "&order_by=" +
+        "&orderBy=" +
         this.filter.orderBy;
       axios.get(url).then((response) => {
         if (response.status == 200) {
-          console.log(response);
           this.data = response.data.data;
+          this.filter.page = response.data.data.current_page;
           this.web.isTableLoad = false;
         }
       });
+    },
+    changeData(newdata) {
+      this.data = newdata;
     },
   },
   created() {

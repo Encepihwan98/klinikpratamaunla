@@ -45,11 +45,14 @@
         "@vuetify/cli-plugin-utils": "^0.0.9",
         "apexcharts": "^3.27.3",
         "core-js": "^3.6.5",
+        "moment": "^2.29.1",
         "vue": "^2.6.11",
         "vue-apexcharts": "^1.6.2",
         "vue-router": "^3.5.2",
         "vue-sweetalert2": "^5.0.2",
+        "vuelidate": "^0.7.6",
         "vuetify": "^2.5.8",
+        "vuetify-mask": "^1.1.2",
         "vuex": "^3.4.0"
     }
 }
