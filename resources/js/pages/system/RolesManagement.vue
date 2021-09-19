@@ -112,7 +112,7 @@
                 </tbody>
                 <tbody v-else-if="web.isTableLoad == true" class="text-center">
                   <tr>
-                    <td colspan="3">
+                    <td colspan="4">
                       <v-row class="app-content-container" justify="center">
                         <v-overlay :value="true" :absolute="true">
                           <v-progress-circular
@@ -127,7 +127,7 @@
                 </tbody>
                 <tbody v-else class="text-center">
                   <tr>
-                    <td colspan="3">Data Kosong!</td>
+                    <td colspan="4">Data Kosong!</td>
                   </tr>
                 </tbody>
               </template>
