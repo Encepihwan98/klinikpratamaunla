@@ -209,103 +209,111 @@
         >
         <nav-menu-link
           title="Daftar Agama"
-          :to="{ name: 'user-management' }"
+          :to="{ name: 'daftar-agama' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Cara Pembayaran"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-cara-pembayaran' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Gizi"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-gizi' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Insenerator"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-insenerator' }"
         ></nav-menu-link>
         <nav-menu-link
-          title="Daftar Kasus "
-          :to="{ name: 'roles-management' }"
+          title="Daftar Kasus"
+          :to="{ name: 'daftar-kasus' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Kegiatan"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-kegiatan' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Oksigen"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-oksigen' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Pekerjaan"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-pekerjaan' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Pemeriksaan Jenazah"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-pemeriksaan-jenazah' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Pemeriksaan Umum"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-pemeriksaan-umum' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Pendidikan"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-pendidikan' }"
+        ></nav-menu-link>
+        <nav-menu-link
+          title="Daftar Perawatan Khusus"
+          :to="{ name: 'daftar-perawatan-khusus' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Penyakit"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-penyakit' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Prosedure"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-prosedure' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Suku"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-suku' }"
         ></nav-menu-link>
          <nav-menu-link
-          title="Daftar TIndakan"
-          :to="{ name: 'roles-management' }"
+          title="Daftar Tindakan"
+          :to="{ name: 'daftar-tindakan' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Tindakan Operasi"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-tindakan-operasi' }"
         ></nav-menu-link>
          <nav-menu-link
-          title="Daftar Tipe Diagnosa"
-          :to="{ name: 'roles-management' }"
+          title="Daftar Type Diagnosa"
+          :to="{ name: 'daftar-type-diagnosa' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar UTDRS"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-utdrs' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Wilayah"
           :to="{ name: 'roles-management' }"
         ></nav-menu-link>
          <nav-menu-link
+          title="Daftar Identitas"
+          :to="{ name: 'daftar-identitas' }"
+        ></nav-menu-link>
+         <nav-menu-link
           title="Daftar Laundry"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-laundry' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Logistik"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-logistik' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Poliklinik"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-poliklinik' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Registrasi"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-registrasi' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Daftar Rujukan"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-rujukan' }"
         ></nav-menu-link>
          <nav-menu-link
           title="Jenis Visite"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'jenis-visite' }"
         ></nav-menu-link>
 
       </nav-menu-group>
