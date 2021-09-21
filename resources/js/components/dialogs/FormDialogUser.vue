@@ -38,7 +38,11 @@
                     outlined
                     clearable
                     :error-messages="errors.username"
-                    :hint="condition == 'update' ? 'Kosongkan jika tidak ingin mengubah' : ''"
+                    :hint="
+                      condition == 'update'
+                        ? 'Kosongkan jika tidak ingin mengubah'
+                        : ''
+                    "
                     :rules="condition == 'update' ? [] : [rules.required]"
                     :disabled="condition == 'show' ? true : false"
                   ></v-text-field>
@@ -51,8 +55,14 @@
                     outlined
                     clearable
                     :error-messages="errors.email"
-                    :hint="condition == 'update' ? 'Kosongkan jika tidak ingin mengubah' : ''"
-                    :rules="condition == 'update' ? [] : [rules.required, rules.email]"
+                    :hint="
+                      condition == 'update'
+                        ? 'Kosongkan jika tidak ingin mengubah'
+                        : ''
+                    "
+                    :rules="
+                      condition == 'update' ? [] : [rules.required, rules.email]
+                    "
                     :disabled="condition == 'show' ? true : false"
                   ></v-text-field>
                 </v-col>
@@ -63,7 +73,11 @@
                     label="Password"
                     outlined
                     clearable
-                    :hint="condition == 'update' ? 'Kosongkan jika tidak ingin mengubah' : ''"
+                    :hint="
+                      condition == 'update'
+                        ? 'Kosongkan jika tidak ingin mengubah'
+                        : ''
+                    "
                     :error-messages="errors.password"
                     :rules="
                       condition == 'update'
@@ -93,7 +107,11 @@
                     :type="
                       input.password_confirmation_state ? 'text' : 'password'
                     "
-                    :hint="condition == 'update' ? 'Kosongkan jika tidak ingin mengubah' : ''"
+                    :hint="
+                      condition == 'update'
+                        ? 'Kosongkan jika tidak ingin mengubah'
+                        : ''
+                    "
                     :rules="
                       condition == 'update' ? [] : [rules.required, rules.match]
                     "
@@ -114,8 +132,11 @@
                       clearable: true,
                       dense: true,
                       rules: condition == 'update' ? [] : [rules.required],
-                      hint: condition == 'update' ? 'Kosongkan jika tidak ingin mengubah' : 'Contoh: (62) 838-xxxx-xxxx',
-                      error_messages: errors.phone
+                      hint:
+                        condition == 'update'
+                          ? 'Kosongkan jika tidak ingin mengubah'
+                          : 'Contoh: (62) 838-xxxx-xxxx',
+                      error_messages: errors.phone,
                     }"
                     v-bind:options="{
                       inputMask: '(##) ###-####-#####',
@@ -290,13 +311,8 @@ export default {
             );
           }
         })
-        .catch((err) => {
-          this.errors = err.response.data.errors;
-          console.log(err.response.data);
-          this.makeDefaultNotification(
-            err.response.data.status,
-            err.response.data.message
-          );
+        .catch((e) => {
+          this.errorState(e);
         });
     },
     update() {
@@ -314,29 +330,29 @@ export default {
             );
           }
         })
-        .catch((err) => {
-          this.errors = err.response.data.errors;
-          console.log(err.response.data);
-          this.makeDefaultNotification(
-            err.response.data.status,
-            err.response.data.message
-          );
+        .catch((e) => {
+          this.errorState(e);
         });
     },
     show(id) {
       let url = `${this._url}${id}`;
-      axios.get(url).then((response) => {
-        if (response.status == 200) {
-          this.user = response.data.data;
-          if(this.condition == 'update') {
-              this.user.username = '';
-              this.user.email = '';
-              this.user.phone = '';
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.user = response.data.data;
+            if (this.condition == "update") {
+              this.user.username = "";
+              this.user.email = "";
+              this.user.phone = "";
+            }
+            this.user.status =
+              response.data.data.status == 1 ? "aktif" : "tidak aktif";
           }
-          this.user.status =
-            response.data.data.status == 1 ? "aktif" : "tidak aktif";
-        }
-      });
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
     },
     popDialog() {
       this.dialogConfirmation.state = !this.dialogConfirmation.state;
@@ -344,6 +360,19 @@ export default {
     clear() {
       this.user = {};
       if (this.$refs.form) this.$refs.form.resetValidation();
+    },
+    errorState(e) {
+      if (e.response.status == 401) {
+        localStorage.removeItem("token");
+        this._token = "";
+        this.$router.push({ name: "index" });
+      } else if (e.response.status == 400) {
+        this.errors = e.response.data.errors;
+        this.makeDefaultNotification(
+          e.response.data.status,
+          e.response.data.message
+        );
+      }
     },
   },
   created() {

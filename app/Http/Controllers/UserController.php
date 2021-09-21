@@ -23,7 +23,7 @@ class UserController extends Controller
         if(isset($request->limit)) {
             $data = $this->filter($request);
         } else {
-            $data = User::all()->roles();
+            $data = User::all();
 
             foreach ($data as $key1 => $value1) {
                 $roles = [];

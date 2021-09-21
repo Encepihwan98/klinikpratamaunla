@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -17,13 +18,20 @@ class AuthController extends Controller
     {
 
         $credentials = $request->only('email', 'password');
-        if ($token = $this->guard()->attempt($credentials)) {
-            return response()->json(['message' => 'Login sukses!',
-            'status' => 'success',], 200)->header('Authorization', $token);
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'errors' => ['Tolong cek kembali email dan password'],
+                'status' => 'error',
+                'message' => 'Login gagal!'
+            ]);
         }
-        return response()->json(['error' => 'Unauthorized',
-        'message' => 'Login gagal!',
-        'status' => 'error'], 401);
+
+        return response()->json([
+            'message' => 'Login sukses!',
+            'status' => 'success',
+            'data'=> $user->createToken($request->email)->plainTextToken], 200);
     }
 
     /**
@@ -31,43 +39,29 @@ class AuthController extends Controller
      */
     public function user(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = $request->user();
+        $roles = [];
+        foreach ($user->roles()->get() as $value2) {
+            array_push($roles, $value2->role()->first()->name);
+        }
+        $user->roles = $roles;
+
         return response()->json([
             'status' => 'success',
-            'data' => $user
+            'message' => 'Data berhasil diambil.',
+            'data' => $user,
         ]);
     }
 
     /**
      * Logout User
      */
-    public function logout()
+    public function logout(Request $request)
     {
-        $this->guard()->logout();
+        $request->user()->currentAccessToken()->delete();
         return response()->json([
             'status' => 'success',
             'message' => 'Logout berhasil.'
         ], 200);
-    }
-
-    /**
-     * Refresh JWT token
-     */
-    public function refresh()
-    {
-        if ($token = $this->guard()->refresh()) {
-            return response()
-                ->json(['status' => 'success', 'message'=> 'token refreshed!'], 200)
-                ->header('Authorization', $token);
-        }
-        return response()->json(['error' => 'refresh_token_error'], 401);
-    }
-
-    /**
-     * Return auth guard
-     */
-    private function guard()
-    {
-        return Auth::guard();
     }
 }

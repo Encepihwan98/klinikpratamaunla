@@ -154,13 +154,8 @@ export default {
             );
           }
         })
-        .catch((err) => {
-          this.errors = err.response.data.errors;
-          console.log(err.response.data);
-          this.makeDefaultNotification(
-            err.response.data.status,
-            err.response.data.message
-          );
+        .catch((e) => {
+          this.errorState(e);
         });
     },
     update() {
@@ -177,29 +172,43 @@ export default {
             );
           }
         })
-        .catch((err) => {
-          this.errors = err.response.data.errors;
-          console.log(err.response.data);
-          this.makeDefaultNotification(
-            err.response.data.status,
-            err.response.data.message
-          );
+        .catch((e) => {
+          this.errorState(e);
         });
     },
     show(id) {
       let url = `${this._url}${id}`;
-      axios.get(url).then((response) => {
-        if (response.status == 200) {
-          this.role = response.data.data;
-        }
-      });
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.role = response.data.data;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
     },
     popDialog() {
       this.dialogConfirmation.state = !this.dialogConfirmation.state;
     },
     clear() {
       this.role = {};
+      this.errors = {};
       if (this.$refs.form) this.$refs.form.resetValidation();
+    },
+    errorState(e) {
+      if (e.response.status == 401) {
+        localStorage.removeItem("token");
+        this._token = "";
+        this.$router.push({ name: "index" });
+      } else if (e.response.status == 400) {
+        this.errors = e.response.data.errors;
+        this.makeDefaultNotification(
+          e.response.data.status,
+          e.response.data.message
+        );
+      }
     },
   },
   created() {

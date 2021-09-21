@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -22,26 +24,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 
-Route::apiResource('/v1/roles', RoleController::class);
-Route::apiResource('/v1/users', UserController::class);
-Route::post('/v1/users/active/{id}', [UserController::class, 'active']);
 // Route::post('/v1/login', [AuthController::class, 'login']);
-
-
-// Route::group([
-
-//     'middleware' => 'api',
-//     'prefix' => 'v1'
-
-// ], function ($router) {
-
-//     Route::post('login', [AuthController::class, 'login']);
-//     // Route::post('logout', 'AuthController@logout');
-//     // Route::post('refresh', 'AuthController@refresh');
-//     // Route::post('me', 'AuthController@me');
-
-// });
-
 
 Route::prefix('v1')->group(function () {
         // Below mention routes are public, user can access those without any restriction.
@@ -50,14 +33,15 @@ Route::prefix('v1')->group(function () {
         // Login User
         Route::post('login', [AuthController::class, 'login']);
 
-        // Refresh the JWT Token
-        Route::get('refresh', [AuthController::class, 'refresh']);
-
         // Below mention routes are available only for the authenticated users.
-        Route::middleware('auth:api')->group(function () {
-            // Get user info
-            Route::get('user', [AuthController::class, 'user']);
-            // Logout user from application
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('user', [AuthController::class, 'user']);
             Route::post('logout', [AuthController::class, 'logout']);
+
+            Route::apiResource('roles', RoleController::class);
+            Route::apiResource('users', UserController::class);
+            Route::apiResource('modules', ModuleController::class);
+
+            Route::post('users/active/{id}', [UserController::class, 'active']);
         });
 });

@@ -3,6 +3,7 @@
     <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
     <app-bar
       :isDrawerOpen="isDrawerOpen"
+      :currentUser="currentUser"
       @updateNavbar="isDrawerOpen = $event"
     ></app-bar>
     <v-main>
@@ -188,20 +189,21 @@
             <v-divider></v-divider>
 
             <v-container fluid>
-                  <v-autocomplete
-                  class="ma-2"
-                    v-model="filter.roles"
-                    outlined
-                    dense
-                    small-chips
-                    label="Roles"
-                    @input="filterPage('')"
-                    :items="roles"></v-autocomplete>
+              <v-autocomplete
+                class="ma-2"
+                v-model="filter.roles"
+                outlined
+                dense
+                small-chips
+                label="Roles"
+                @input="filterPage('')"
+                :items="roles"
+              ></v-autocomplete>
             </v-container>
           </v-navigation-drawer>
         </v-card>
       </div>
-      <form-dialog-user
+      <form-dialog-menu
         :dialog="dialog"
         :currentData="currentData"
         :condition="condition"
@@ -209,7 +211,7 @@
         :filter="filter"
         @updateDialog="dialog.state = $event"
         @updateData="changeData($event)"
-      ></form-dialog-user>
+      ></form-dialog-menu>
 
       <confirmation-dialog
         :confirmationDialog="dialogConfirmation"
@@ -228,6 +230,7 @@ export default {
     const isDrawerOpen = ref(null);
     return {
       _url: "",
+      _token: "",
       web: {
         isTableLoad: false,
         filterOpen: false,
@@ -238,7 +241,7 @@ export default {
         limit: 10,
         sortBy: "id",
         orderBy: "asc",
-        roles:[],
+        roles: [],
       },
       isDrawerOpen,
       data: {
@@ -247,6 +250,7 @@ export default {
       },
       roles: [],
       currentData: {},
+      currentUser: {},
       dialog: {
         state: false,
         title: null,
@@ -293,13 +297,8 @@ export default {
             );
           }
         })
-        .catch((err) => {
-          this.web.isTableLoad = false;
-          this.errors = err.response.data.errors;
-          this.makeDefaultNotification(
-            err.response.data.status,
-            err.response.data.message
-          );
+        .catch((e) => {
+          this.errorState(e);
         });
     },
     active() {
@@ -321,13 +320,8 @@ export default {
             );
           }
         })
-        .catch((err) => {
-          this.web.isTableLoad = false;
-          this.errors = err.response.data.errors;
-          this.makeDefaultNotification(
-            err.response.data.status,
-            err.response.data.message
-          );
+        .catch((e) => {
+          this.errorState(e);
         });
     },
     selectMethod(data, item) {
@@ -373,23 +367,60 @@ export default {
         this.filter.orderBy +
         "&role=" +
         this.filter.roles;
-      axios.get(url).then((response) => {
-        if (response.status == 200) {
-          this.data = response.data.data;
-          this.filter.page = response.data.data.current_page;
-          this.web.isTableLoad = false;
-        }
-      });
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.data = response.data.data;
+            this.filter.page = response.data.data.current_page;
+            this.web.isTableLoad = false;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    getCurrentUser() {
+      let url = window.location.origin + "/api/v1/user/";
+      axios
+        .post(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.currentUser = response.data.data;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
     },
     getRoles() {
       let url = window.location.origin + "/api/v1/roles/";
-      axios.get(url).then((response) => {
-        if (response.status == 200) {
-          this.roles = response.data.data.map(function (data) {
-            return data["name"];
-          });
-        }
-      });
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.roles = response.data.data.map(function (data) {
+              return data["name"];
+            });
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    errorState(e) {
+      if (e.response.status == 401) {
+        localStorage.removeItem("token");
+        this._token = "";
+        this.$router.push({ name: "index" });
+      } else if (e.response.status == 400) {
+        this.web.isTableLoad = false;
+        this.errors = e.response.data.errors;
+        this.makeDefaultNotification(
+          e.response.data.status,
+          e.response.data.message
+        );
+      }
     },
     changeData(newdata) {
       this.data = newdata;
@@ -397,7 +428,12 @@ export default {
   },
   created() {
     this._url = window.location.origin + "/api/v1/users/";
+    this._token = localStorage.getItem("token");
+    window.axios.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${this._token}`;
     this.filterPage("");
+    this.getCurrentUser();
     this.getRoles();
   },
 };

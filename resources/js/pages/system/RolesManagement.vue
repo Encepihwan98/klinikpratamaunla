@@ -3,6 +3,7 @@
     <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
     <app-bar
       :isDrawerOpen="isDrawerOpen"
+      :currentUser="currentUser"
       @updateNavbar="isDrawerOpen = $event"
     ></app-bar>
     <v-main>
@@ -169,6 +170,7 @@ export default {
     const isDrawerOpen = ref(null);
     return {
       _url: "",
+      _token: "",
       web: {
         isTableLoad: false,
       },
@@ -186,6 +188,7 @@ export default {
         current_page: 1,
       },
       currentData: {},
+      currentUser: {},
       dialog: {
         state: false,
         title: null,
@@ -232,13 +235,8 @@ export default {
             );
           }
         })
-        .catch((err) => {
-          this.web.isTableLoad = false;
-          this.errors = err.response.data.errors;
-          this.makeDefaultNotification(
-            err.response.data.status,
-            err.response.data.message
-          );
+        .catch((e) => {
+          errorState(e);
         });
     },
     selectMethod(data, item) {
@@ -277,21 +275,58 @@ export default {
         this.filter.sortBy +
         "&orderBy=" +
         this.filter.orderBy;
-      axios.get(url).then((response) => {
-        if (response.status == 200) {
-          this.data = response.data.data;
-          this.filter.page = response.data.data.current_page;
-          this.web.isTableLoad = false;
-        }
-      });
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.data = response.data.data;
+            this.filter.page = response.data.data.current_page;
+            this.web.isTableLoad = false;
+          }
+        })
+        .catch((e) => {
+          errorState(e);
+        });
     },
     changeData(newdata) {
       this.data = newdata;
     },
+    getCurrentUser() {
+      let url = window.location.origin + "/api/v1/user/";
+      axios
+        .post(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.currentUser = response.data.data;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    errorState(e) {
+      if (e.response.status == 401) {
+        localStorage.removeItem("token");
+        this._token = "";
+        this.$router.push({ name: "index" });
+      } else if (e.response.status == 400) {
+        this.web.isTableLoad = false;
+        this.errors = e.response.data.errors;
+        this.makeDefaultNotification(
+          e.response.data.status,
+          e.response.data.message
+        );
+      }
+    },
   },
   created() {
     this._url = window.location.origin + "/api/v1/roles/";
+    this._token = localStorage.getItem("token");
+    window.axios.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${this._token}`;
     this.filterPage("");
+    this.getCurrentUser();
   },
 };
 </script>

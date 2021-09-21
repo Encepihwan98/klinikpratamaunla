@@ -142,33 +142,38 @@ export default {
     valid: false,
     isPasswordVisible: false,
     user: {},
+    errors: [],
   }),
   methods: {
     login() {
       if (this.$refs.form.validate()) {
         this.isLoad = true;
-        axios
-          .post(window.location.origin + "/api/v1/login", this.user)
-          .then((response) => {
-            console.log(response);
-            if (response.status == 200) {
+        axios.get("/sanctum/csrf-cookie").then((response) => {
+          axios
+            .post(window.location.origin + "/api/v1/login", this.user)
+            .then((response) => {
+              console.log(response);
+              if (response.status == 200) {
+                  localStorage.setItem('token', response.data.data)
+                    this.isLoad = false;
+                    this.$router.push({
+                      name: "user-management"
+                    });
+                    this.makeDefaultNotification(
+                      response.data.status,
+                      response.data.message
+                    );
+              }
+            })
+            .catch((err) => {
+              this.errors = err.response.data.errors;
               this.isLoad = false;
-              this.retriveData = response.data.data;
               this.makeDefaultNotification(
-                response.data.status,
-                response.data.message
+                err.response.data.errors.status[0],
+                err.response.data.errors.message[0]
               );
-            }
-          })
-          .catch((err) => {
-            this.errors = err.response.data.errors;
-            this.isLoad = false;
-            console.log(err);
-            this.makeDefaultNotification(
-              err.response.data.status,
-              err.response.data.message
-            );
-          });
+            });
+        });
       }
     },
     clear() {
