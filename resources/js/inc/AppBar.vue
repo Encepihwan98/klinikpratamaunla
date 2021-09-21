@@ -35,7 +35,7 @@
           </v-icon>
         </v-btn>
 
-        <app-bar-user-menu></app-bar-user-menu>
+        <app-bar-user-menu :currentUser="currentUser"></app-bar-user-menu>
       </div>
     </div>
   </v-app-bar>
@@ -47,6 +47,7 @@ import { mdiMagnify, mdiBellOutline, mdiGithub } from "@mdi/js";
 export default {
   props: {
     isDrawerOpen: false,
+    currentUser: {},
   },
   setup() {
     return {
@@ -67,7 +68,7 @@ export default {
         this.$emit("updateNavbar", value);
       },
     },
-  }
+  },
 };
 </script>
 

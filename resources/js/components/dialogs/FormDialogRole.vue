@@ -1,56 +1,72 @@
 <template>
-  <v-dialog
-    v-model="showDialog"
-    transition="dialog-bottom-transition"
-    persistent
-    max-width="600px"
-  >
-    <v-card>
-      <v-card-title class="d-flex">
-        <span class="text-h5">{{ dialog.title }}</span>
-        <v-icon class="ml-auto" @click="showDialog = false" color="red"
-          >fas fa-times-circle</v-icon
-        >
-      </v-card-title>
-      <v-card-text>
-        <v-container>
-          <v-row>
-            <v-col cols="12" sm="12" md="12">
-              <v-text-field
-                dense
-                v-model="role.name"
-                label="Nama"
-                outlined
-                clearable
-                :disabled="condition == 'show' ? true : false"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="12" md="12">
-              <v-textarea
-                v-model="role.description"
-                outlined
-                clearable
-                label="Keterangan"
-                :disabled="condition == 'show' ? true : false"
-              ></v-textarea>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="showDialog = false">
-          Tutup
-        </v-btn>
-        <v-btn v-if="condition != 'show'" color="blue darken-1" text @click="selectMethod"> Simpan </v-btn>
-      </v-card-actions>
-      <confirmation-dialog
-        :confirmationDialog="dialogConfirmation"
-        :method="condition == 'store' ? store : update"
-        @changeDialogState="dialogConfirmation.state = $event"
-      ></confirmation-dialog>
-    </v-card>
-  </v-dialog>
+  <div>
+    <v-dialog
+      v-model="showDialog"
+      transition="dialog-bottom-transition"
+      persistent
+      max-width="600px"
+    >
+      <v-card>
+        <v-card-title class="d-flex">
+          <span class="text-h5">{{ dialog.title }}</span>
+          <v-icon class="ml-auto" @click="showDialog = false" color="red"
+            >fas fa-times-circle</v-icon
+          >
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-form ref="form" v-model="valid" lazy-validation>
+              <v-row>
+                <v-col cols="12" sm="12" md="12">
+                  <v-text-field
+                    dense
+                    v-model="role.name"
+                    label="Nama"
+                    outlined
+                    clearable
+                    :error-messages="errors.name"
+                    :rules="[rules.required]"
+                    :disabled="condition == 'show' ? true : false"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12" md="12">
+                  <v-textarea
+                    v-model="role.description"
+                    outlined
+                    clearable
+                    label="Keterangan"
+                    :error-messages="errors.description"
+                    :rules="[rules.required]"
+                    :disabled="condition == 'show' ? true : false"
+                  ></v-textarea>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="showDialog = false">
+            Tutup
+          </v-btn>
+          <v-btn
+            v-if="condition != 'show'"
+            color="blue darken-1"
+            text
+            @click="selectMethod"
+          >
+            Simpan
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <confirmation-dialog
+      :confirmationDialog="dialogConfirmation"
+      :method="condition == 'store' ? store : update"
+      @changeDialogState="dialogConfirmation.state = $event"
+    ></confirmation-dialog>
+  </div>
 </template>
 
 <script>
@@ -60,10 +76,9 @@ export default {
       state: false,
       title: null,
     },
+    filter: {},
     condition: null,
-    data: {},
     currentData: {},
-    refreshData: false,
     dialogItems: [
       {
         name: "",
@@ -81,19 +96,21 @@ export default {
   },
   data() {
     return {
+      _url: "",
       role: {},
+      valid: false,
+      data: {},
       dialogConfirmation: {
         state: false,
         message: null,
       },
+      errors: [],
+      rules: {
+        required: (v) => !!v || "Tolong isi form.",
+      },
     };
   },
   computed: {
-    setData: {
-      get() {
-        return this.currentData;
-      },
-    },
     showDialog: {
       get() {
         return this.dialog.state;
@@ -104,7 +121,7 @@ export default {
     },
     retriveData: {
       get() {
-        return this.refreshData;
+        return this.data;
       },
       set(value) {
         this.$emit("updateData", value);
@@ -113,46 +130,94 @@ export default {
   },
   methods: {
     selectMethod() {
-      if (this.condition == "store") {
-        this.dialogConfirmation.message = "menyimpan";
-        this.popDialog();
-      } else {
-        this.dialogConfirmation.message = "mengubah";
-        this.popDialog();
+      if (this.$refs.form.validate()) {
+        if (this.condition == "store") {
+          this.dialogConfirmation.message = "menyimpan";
+          this.popDialog();
+        } else {
+          this.dialogConfirmation.message = "mengubah";
+          this.popDialog();
+        }
       }
     },
     store() {
-      let url = window.location.origin + "/api/v1/roles";
-      axios.post(url, this.role).then((response) => {
-        if (response.status == 200) {
-          this.showDialog = false;
-          this.retriveData = true;
-          this.makeDefaultNotification(response.data.status, response.data.message)
-        }
-      });
+      let req = Object.assign(this.role, this.filter);
+      axios
+        .post(this._url, req)
+        .then((response) => {
+          if (response.status == 200) {
+            this.showDialog = false;
+            this.retriveData = response.data.data;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
     },
     update() {
-      let url = window.location.origin + "/api/v1/roles/" + this.role.uuid;
-      axios.put(url, this.role).then((response) => {
-        if (response.status == 200) {
-          this.showDialog = false;
-          this.retriveData = true;
-          this.makeDefaultNotification(response.data.status, response.data.message)
-        }
-      });
+      let req = Object.assign(this.role, this.filter);
+      axios
+        .put(`${this._url}${this.role.uuid}`, req)
+        .then((response) => {
+          if (response.status == 200) {
+            this.showDialog = false;
+            this.retriveData = response.data.data;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    show(id) {
+      let url = `${this._url}${id}`;
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.role = response.data.data;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
     },
     popDialog() {
       this.dialogConfirmation.state = !this.dialogConfirmation.state;
     },
     clear() {
-      this.roles.name = "";
-      this.roles.description = "";
+      this.role = {};
+      this.errors = {};
+      if (this.$refs.form) this.$refs.form.resetValidation();
+    },
+    errorState(e) {
+      if (e.response.status == 401) {
+        localStorage.removeItem("token");
+        this._token = "";
+        this.$router.push({ name: "index" });
+      } else if (e.response.status == 400) {
+        this.errors = e.response.data.errors;
+        this.makeDefaultNotification(
+          e.response.data.status,
+          e.response.data.message
+        );
+      }
     },
   },
+  created() {
+    this._url = window.location.origin + "/api/v1/roles/";
+  },
   watch: {
-    currentData: function (newValue, oldValue) {
-        if(newValue != null) this.role = newValue
-        else this.role = {}
+    showDialog: function (n, o) {
+      if (n && this.currentData) this.show(this.currentData.uuid);
+      else this.clear();
     },
   },
 };

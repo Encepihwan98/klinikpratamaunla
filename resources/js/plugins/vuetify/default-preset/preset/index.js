@@ -4,7 +4,7 @@ export default {
   theme: {
     themes: {
       light: {
-        primary: '#9155FD',
+        primary: '#0d8cff',
         accent: '#0d6efd',
         secondary: '#8A8D93',
         success: '#56CA00',
@@ -13,7 +13,7 @@ export default {
         error: '#FF4C51',
       },
       dark: {
-        primary: '#9155FD',
+        primary: '#0d8cff',
         accent: '#0d6efd',
         secondary: '#8A8D93',
         success: '#56CA00',
