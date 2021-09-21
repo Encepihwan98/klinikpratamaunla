@@ -4,6 +4,12 @@
     <app-bar></app-bar>
     <v-main>
       <div class="app-content-container boxed-container pa-6">
+        <v-card
+          class="mx-auto"
+          max-width="97%"
+          elevation="5"
+        >
+        <v-container>
         <v-simple-table>
             <template v-slot:default>
             <thead>
@@ -41,7 +47,7 @@
                     <td>Dahlian</td>
                     <td>
                       <v-btn icon :to="{name:'rawat-darurat-detail'}">
-                        <v-icon small>far fa-search-plus</v-icon>
+                        <v-icon small>far fa-eye</v-icon>
                       </v-btn>
                     </td>
                 </tr>
@@ -55,6 +61,8 @@
             </tbody>
             </template>
         </v-simple-table>
+        </v-container>
+        </v-card>
       </div>
     </v-main>
     <footer></footer>
