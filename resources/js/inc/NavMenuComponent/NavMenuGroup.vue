@@ -9,7 +9,7 @@
       </v-icon>
     </template>
     <template #activator>
-      <v-list-item-title>
+      <v-list-item-title class="caption ml-n6">
         {{ title }}
       </v-list-item-title>
     </template>

@@ -12,8 +12,8 @@
         {{ icon || alternateIcon }}
       </v-icon>
     </v-list-item-icon>
-
-    <v-list-item-title>
+ 
+    <v-list-item-title class="caption ml-n6">
       {{ title }}
     </v-list-item-title>
   </v-list-item>
