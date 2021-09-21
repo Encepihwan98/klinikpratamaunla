@@ -374,6 +374,10 @@ export default {
             this.data = response.data.data;
             this.filter.page = response.data.data.current_page;
             this.web.isTableLoad = false;
+            this.getCurrentUser();
+            if (!this.roles || this.roles < 1) {
+              this.getRoles();
+            }
           }
         })
         .catch((e) => {
@@ -433,8 +437,6 @@ export default {
       "Authorization"
     ] = `Bearer ${this._token}`;
     this.filterPage("");
-    this.getCurrentUser();
-    this.getRoles();
   },
 };
 </script>

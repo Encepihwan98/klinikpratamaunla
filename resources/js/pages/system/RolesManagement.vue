@@ -282,6 +282,7 @@ export default {
             this.data = response.data.data;
             this.filter.page = response.data.data.current_page;
             this.web.isTableLoad = false;
+            this.getCurrentUser();
           }
         })
         .catch((e) => {
@@ -326,7 +327,6 @@ export default {
       "Authorization"
     ] = `Bearer ${this._token}`;
     this.filterPage("");
-    this.getCurrentUser();
   },
 };
 </script>
