@@ -1,7 +1,11 @@
 <template>
     <v-app>
         <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
-        <app-bar></app-bar>
+        <app-bar
+          :isDrawerOpen="isDrawerOpen"
+          :currentUser="currentUser"
+          @updateNavbar="isDrawerOpen = $event"
+        ></app-bar>
         <v-main>
             <div class="app-content-container boxed-container pa-6">
             <v-card
@@ -72,6 +76,7 @@
                         <hr>
                     </v-card-title>
                     <v-card-text>
+                      <v-form v-model="valid" lazy-validation>
                         <v-container>
                         <v-row>
                             <v-col
@@ -80,6 +85,7 @@
                             sm="12"
                             >
                                 <v-text-field
+                                    v-model="agama.description"
                                     label="Uraian :"
                                     placeholder="Uraian"
                                     outlined
@@ -89,6 +95,7 @@
                             
                         </v-row>
                         </v-container>
+                        </v-form>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
@@ -180,42 +187,22 @@ export default {
     };
   },
 
-   data: vm => ({
-      dialog: false,
-      items: ['5', '10', '15', '20','25','30','50'],
-      picker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-      date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-      dateFormatted: vm.formatDate((new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)),
-      menu1: false,
-      menu2: false,
-    }),
-
-    computed: {
-      computedDateFormatted () {
-        return this.formatDate(this.date)
+  data() {
+    return {
+      _url: "",
+      agama: {},
+      valid: false,
+      data: {},
+      dialogConfirmation: {
+        state: false,
+        message: null,
       },
-    },
-
-    watch: {
-      date (val) {
-        this.dateFormatted = this.formatDate(this.date)
+      errors: [],
+      rules: {
+        required: (v) => !!v || "Tolong isi form.",
       },
-    },
-
-    methods: {
-      formatDate (date) {
-        if (!date) return null
-
-        const [year, month, day] = date.split('-')
-        return `${month}/${day}/${year}`
-      },
-      parseDate (date) {
-        if (!date) return null
-
-        const [month, day, year] = date.split('/')
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-      },
-    },
+    };
+  },
 };
 
 </script>
