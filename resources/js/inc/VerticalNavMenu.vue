@@ -331,6 +331,10 @@
           title="Role Management"
           :to="{ name: 'roles-management' }"
         ></nav-menu-link>
+        <nav-menu-link
+          title="Menu Management"
+          :to="{ name: 'menu-management' }"
+        ></nav-menu-link>
       </nav-menu-group>
 
     </v-list>

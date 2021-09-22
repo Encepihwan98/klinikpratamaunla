@@ -4,10 +4,7 @@
       <v-card class="auth-card">
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center">
-          <router-link
-            to="/"
-            class="d-flex align-center mx-auto"
-          >
+          <router-link to="/" class="d-flex align-center mx-auto">
             <v-img
               src="/assets/images/logos/logo.svg"
               max-height="30px"
@@ -17,9 +14,7 @@
               class="mr-3"
             ></v-img>
 
-            <h2 class="text-2xl font-weight-semibold">
-              Materio
-            </h2>
+            <h2 class="text-2xl font-weight-semibold">Materio</h2>
           </router-link>
         </v-card-title>
 
@@ -35,50 +30,40 @@
 
         <!-- login form -->
         <v-card-text>
-          <v-form>
+          <v-form ref="form" v-model="valid" lazy-validation>
             <v-text-field
-              v-model="email"
+              v-model="user.email"
               outlined
               label="Email"
               placeholder="john@example.com"
-              :rules="emailRules"
+              :rules="[rules.required, rules.email]"
               class="mb-3"
             ></v-text-field>
 
             <v-text-field
-              v-model="password"
+              v-model="user.password"
               outlined
               :type="isPasswordVisible ? 'text' : 'password'"
               label="Password"
+              :rules="[rules.required]"
               placeholder="············"
-              :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
-              hide-details
+              :append-icon="
+                isPasswordVisible ? 'far fa-eye' : 'far fa-eye-slash'
+              "
               @click:append="isPasswordVisible = !isPasswordVisible"
             ></v-text-field>
 
             <div class="d-flex justify-space-between align-center">
-              <v-checkbox
-                label="Remember Me"
-                hide-details
-                class="pa-2 mt-1"
-              >
+              <v-checkbox label="Remember Me" hide-details class="pa-2 mt-1">
               </v-checkbox>
 
               <!-- forgot link -->
-              <a
-                href="javascript:void(0)"
-                class="pa-2 mt-2 ml-auto"
-              >
+              <a href="javascript:void(0)" class="pa-2 mt-2 ml-auto">
                 Forgot Password?
               </a>
             </div>
 
-            <v-btn
-              block
-              color="accent"
-              class="mt-6"
-              :to="{path: 'system/user-management'}"
-            >
+            <v-btn block color="accent" class="mt-6" @click="login">
               Login
             </v-btn>
           </v-form>
@@ -86,10 +71,8 @@
 
         <!-- create new account  -->
         <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
-          <span class="me-2">
-            New on our platform?
-          </span>
-          <router-link :to="{name:'pages-register'}">
+          <span class="me-2"> New on our platform? </span>
+          <router-link :to="{ name: 'pages-register' }">
             Create an account
           </router-link>
         </v-card-text>
@@ -103,17 +86,18 @@
 
         <!-- social links -->
         <v-card-actions class="d-flex justify-center">
-          <v-btn
-            v-for="link in socialLink"
-            :key="link.icon"
-            icon
-            class="ms-1"
-          >
-            <v-icon :color="$vuetify.theme.dark ? link.colorInDark : link.color">
+          <!-- <v-btn v-for="link in socialLink" :key="link.icon" icon class="ms-1">
+            <v-icon
+              :color="$vuetify.theme.dark ? link.colorInDark : link.color"
+            >
               {{ link.icon }}
             </v-icon>
-          </v-btn>
+          </v-btn> -->
         </v-card-actions>
+        <loading-overlay
+          :overlay="isLoad"
+          @update="isLoad = $event"
+        ></loading-overlay>
       </v-card>
     </div>
 
@@ -122,7 +106,7 @@
       class="auth-mask-bg"
       height="173"
       src="/assets/images/misc/mask-light.png"
-    >
+    />
 
     <!-- tree -->
     <v-img
@@ -144,64 +128,63 @@
 
 <script>
 // eslint-disable-next-line object-curly-newline
-import { mdiFacebook, mdiTwitter, mdiGithub, mdiGoogle, mdiEyeOutline, mdiEyeOffOutline } from '@mdi/js'
-import { ref } from '@vue/composition-api'
+import { ref } from "@vue/composition-api";
+import LoadingOverlay from "../../components/LoadingOverlay.vue";
 
 export default {
-  setup() {
-    const isPasswordVisible = ref(false)
-    const email = ref('')
-    const password = ref('')
-    const socialLink = [
-      {
-        icon: mdiFacebook,
-        color: '#4267b2',
-        colorInDark: '#4267b2',
-      },
-      {
-        icon: mdiTwitter,
-        color: '#1da1f2',
-        colorInDark: '#1da1f2',
-      },
-      {
-        icon: mdiGithub,
-        color: '#272727',
-        colorInDark: '#fff',
-      },
-      {
-        icon: mdiGoogle,
-        color: '#db4437',
-        colorInDark: '#db4437',
-      },
-    ]
-
-    return {
-      isPasswordVisible,
-      email,
-      password,
-      socialLink,
-
-      icons: {
-        mdiEyeOutline,
-        mdiEyeOffOutline,
-      },
-    }
-  },
+  components: { LoadingOverlay },
   data: () => ({
-      emailRules: [
-        value => !!value || 'Required.',
-        value => (value || '').length <= 20 || 'Max 20 characters',
-        value => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          return pattern.test(value) || 'Invalid e-mail.'
-        },
-      ],
-    }),
-
-}
+    rules: {
+      email: (v) => /.+@.+\..+/.test(v) || "Format email tidak valid.",
+      required: (v) => !!v || "Tolong isi form.",
+    },
+    isLoad: false,
+    valid: false,
+    isPasswordVisible: false,
+    user: {},
+    errors: [],
+  }),
+  methods: {
+    login() {
+      if (this.$refs.form.validate()) {
+        this.isLoad = true;
+        axios.get("/sanctum/csrf-cookie").then((response) => {
+          axios
+            .post(window.location.origin + "/api/v1/login", this.user)
+            .then((response) => {
+              console.log(response);
+              if (response.status == 200) {
+                  localStorage.setItem('token', response.data.data)
+                    this.isLoad = false;
+                    this.$router.push({
+                      name: "user-management"
+                    });
+                    this.makeDefaultNotification(
+                      response.data.status,
+                      response.data.message
+                    );
+              }
+            })
+            .catch((err) => {
+              this.errors = err.response.data.errors;
+              this.isLoad = false;
+              this.makeDefaultNotification(
+                err.response.data.errors.status[0],
+                err.response.data.errors.message[0]
+              );
+            });
+        });
+      }
+    },
+    clear() {
+      this.user = {};
+      if (this.$refs.form) this.$refs.form.resetValidation();
+    },
+  },
+};
 </script>
 
 <style lang="scss">
-@import './resources/js/plugins/vuetify/default-preset/preset/pages/auth.scss';
-@import './resources/js/plugins/vuetify/default-preset/preset/variables.scss';
+@import "./resources/js/plugins/vuetify/default-preset/preset/pages/auth.scss";
+@import "./resources/js/plugins/vuetify/default-preset/preset/variables.scss";
 </style>

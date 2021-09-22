@@ -3,6 +3,7 @@
     <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
     <app-bar
       :isDrawerOpen="isDrawerOpen"
+      :currentUser="currentUser"
       @updateNavbar="isDrawerOpen = $event"
     ></app-bar>
     <v-main>
@@ -12,7 +13,7 @@
             <v-container fluid>
               <v-row align="center">
                 <v-col class="d-flex" cols="6" md="6" sm="6">
-                  <p class="text-h5 text--primary">Form Input</p>
+                  <p class="text-h5 text--primary">Manajemen Role</p>
                 </v-col>
 
                 <v-col class="d-flex" cols="6" md="6" sm="6">
@@ -112,7 +113,7 @@
                 </tbody>
                 <tbody v-else-if="web.isTableLoad == true" class="text-center">
                   <tr>
-                    <td colspan="3">
+                    <td colspan="4">
                       <v-row class="app-content-container" justify="center">
                         <v-overlay :value="true" :absolute="true">
                           <v-progress-circular
@@ -127,7 +128,7 @@
                 </tbody>
                 <tbody v-else class="text-center">
                   <tr>
-                    <td colspan="3">Data Kosong!</td>
+                    <td colspan="4">Data Kosong!</td>
                   </tr>
                 </tbody>
               </template>
@@ -135,7 +136,7 @@
           </v-card-text>
           <v-card-actions class="d-flex justify-center">
             <v-pagination
-              v-model="data.current_page"
+              v-model="filter.page"
               :length="data.last_page"
               :total-visible="7"
               @input="filterPage('')"
@@ -147,8 +148,9 @@
         :dialog="dialog"
         :currentData="currentData"
         :condition="condition"
+        :filter="filter"
         @updateDialog="dialog.state = $event"
-        @updateData="$event == true ? filterPage('') : ''"
+        @updateData="changeData($event)"
       ></form-dialog-role>
 
       <confirmation-dialog
@@ -168,14 +170,17 @@ export default {
     const isDrawerOpen = ref(null);
     return {
       _url: "",
+      _token: "",
       web: {
         isTableLoad: false,
       },
       filter: {
+        page: 1,
         searchQuery: "",
-        pageLimit: 10,
+        limit: 10,
         sortBy: "id",
         orderBy: "asc",
+        roles: [],
       },
       isDrawerOpen,
       data: {
@@ -183,6 +188,7 @@ export default {
         current_page: 1,
       },
       currentData: {},
+      currentUser: {},
       dialog: {
         state: false,
         title: null,
@@ -192,7 +198,7 @@ export default {
         message: null,
       },
       condition: "store",
-      selectItem: ["10", "25", "50", "100", "All"],
+      selectItem: ["10", "25", "50", "100"],
     };
   },
   methods: {
@@ -215,13 +221,23 @@ export default {
       this.showDialog(false);
     },
     remove() {
-      let url = this._url + this.currentData.uuid;
-      axios.delete(url).then((response) => {
-        if (response.status == 200) {
-          this.makeDefaultNotification(response.data.status, response.data.message)
-          this.filterPage("");
-        }
-      });
+      this.web.isTableLoad = true;
+      axios
+        .delete(`${this._url}${this.currentData.uuid}`, { data: this.filter })
+        .then((response) => {
+          if (response.status == 200) {
+            this.web.isTableLoad = false;
+            this.data = response.data.data;
+            this.filter.page = response.data.data.current_page;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        })
+        .catch((e) => {
+          errorState(e);
+        });
     },
     selectMethod(data, item) {
       this.currentData = data;
@@ -250,26 +266,66 @@ export default {
       let url =
         this._url +
         "?page=" +
-        this.data.current_page +
+        this.filter.page +
         "&limit=" +
-        this.filter.pageLimit +
-        "&search=" +
+        this.filter.limit +
+        "&searchQuery=" +
         this.filter.searchQuery +
-        "&sort_by=" +
+        "&sortBy=" +
         this.filter.sortBy +
-        "&order_by=" +
+        "&orderBy=" +
         this.filter.orderBy;
-      axios.get(url).then((response) => {
-        if (response.status == 200) {
-          console.log(response);
-          this.data = response.data.data;
-          this.web.isTableLoad = false;
-        }
-      });
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.data = response.data.data;
+            this.filter.page = response.data.data.current_page;
+            this.web.isTableLoad = false;
+            this.getCurrentUser();
+          }
+        })
+        .catch((e) => {
+          errorState(e);
+        });
+    },
+    changeData(newdata) {
+      this.data = newdata;
+    },
+    getCurrentUser() {
+      let url = window.location.origin + "/api/v1/user/";
+      axios
+        .post(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.currentUser = response.data.data;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    errorState(e) {
+      if (e.response.status == 401) {
+        localStorage.removeItem("token");
+        this._token = "";
+        this.$router.push({ name: "index" });
+      } else if (e.response.status == 400) {
+        this.web.isTableLoad = false;
+        this.errors = e.response.data.errors;
+        this.makeDefaultNotification(
+          e.response.data.status,
+          e.response.data.message
+        );
+      }
     },
   },
   created() {
     this._url = window.location.origin + "/api/v1/roles/";
+    this._token = localStorage.getItem("token");
+    window.axios.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${this._token}`;
     this.filterPage("");
   },
 };
