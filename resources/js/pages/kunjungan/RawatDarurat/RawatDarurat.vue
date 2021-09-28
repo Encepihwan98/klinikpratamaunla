@@ -4,6 +4,113 @@
     <app-bar></app-bar>
     <v-main>
       <div class="app-content-container boxed-container pa-6">
+        <v-card
+          class="mx-auto"
+          max-width="97%"
+          elevation="5"
+        >
+        <v-card-text>
+            <p class="text-h6 text--primary">
+                Daftar Agama
+            </p>
+            </v-card-text>
+            <v-container>
+            <v-row>
+                <v-col
+                    class="d-flex"
+                    cols="12"
+                    sm="2"
+                >
+                <v-select 
+                :items="items"
+                label="Tampilkan"
+                dense
+                outlined
+                chips
+                small-chips
+                ></v-select>
+                </v-col>
+
+                <v-col
+                class="d-flex"
+                cols="12"
+                sm="8"
+                >
+                <v-text-field
+                    outlined
+                    label="Search"
+                    append-icon="mdi-magnify"
+                    small
+                    dense
+                ></v-text-field>
+                </v-col>
+
+                <v-col
+                class="d-flex"
+                cols="12"
+                sm="2"
+                >
+                <v-dialog
+                    v-model="dialog"
+                    persistent
+                    max-width="500px"
+                >
+                    <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                        color="primary"
+                        dark
+                        v-bind="attrs"
+                        v-on="on"
+                    >
+                        Tambah Data
+                    </v-btn>
+                    </template>
+                    <v-card>
+                    <v-card-title>
+                        <span class="text-h5">Form</span>
+                        <hr>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-container>
+                        <v-row>
+                            <v-col
+                            class="d-flex"
+                            cols="12"
+                            sm="12"
+                            >
+                                <v-text-field
+                                    label="Uraian :"
+                                    placeholder="Uraian"
+                                    outlined
+                                    dense
+                                ></v-text-field>
+                            </v-col>
+                            
+                        </v-row>
+                        </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="dialog = false"
+                        >
+                        Close
+                        </v-btn>
+                        <v-btn
+                        color="blue darken-1"
+                        text
+                        @click="dialog = false"
+                        >
+                        Save
+                        </v-btn>
+                    </v-card-actions>
+                    </v-card>
+                </v-dialog>
+                </v-col>
+            </v-row>
+            </v-container>
         <v-simple-table>
             <template v-slot:default>
             <thead>
@@ -41,7 +148,7 @@
                     <td>Dahlian</td>
                     <td>
                       <v-btn icon :to="{name:'rawat-darurat-detail'}">
-                        <v-icon small>far fa-search-plus</v-icon>
+                        <v-icon small>far fa-eye</v-icon>
                       </v-btn>
                     </td>
                 </tr>
@@ -55,6 +162,8 @@
             </tbody>
             </template>
         </v-simple-table>
+       
+        </v-card>
       </div>
     </v-main>
     <footer></footer>

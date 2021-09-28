@@ -89,7 +89,7 @@
       <nav-menu-group
         small
         title="Daftar Kunjungan"
-        :icon="icons.mdiFileOutline"
+        :icon="icons.mdiAccount"
       >
         <nav-menu-link
           title="Rawat Jalan"
@@ -154,23 +154,23 @@
       <nav-menu-group title="Farmasi & Logsistik" :icon="icons.mdiFileOutline">
         <nav-menu-link
           title="Apotek"
-          :to="{ name: 'user-management' }"
+          :to="{ name: 'apotek' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Logistik"
-          :to="{ name: 'rawat-inap' }"
+          :to="{ name: 'logistik' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Stock"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'stock' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Suplier"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-suplier' }"
         ></nav-menu-link>
         <nav-menu-link
           title="Daftar Penerimaan"
-          :to="{ name: 'roles-management' }"
+          :to="{ name: 'daftar-penerimaan' }"
         ></nav-menu-link>
       </nav-menu-group>
 

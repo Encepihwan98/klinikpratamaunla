@@ -17,7 +17,7 @@ __webpack_require__(/*! ./overrides.scss */ "./resources/js/plugins/vuetify/defa
   theme: {
     themes: {
       light: {
-        primary: '#9155FD',
+        primary: '#0d8cff',
         accent: '#0d6efd',
         secondary: '#8A8D93',
         success: '#56CA00',
@@ -26,7 +26,7 @@ __webpack_require__(/*! ./overrides.scss */ "./resources/js/plugins/vuetify/defa
         error: '#FF4C51'
       },
       dark: {
-        primary: '#9155FD',
+        primary: '#0d8cff',
         accent: '#0d6efd',
         secondary: '#8A8D93',
         success: '#56CA00',
