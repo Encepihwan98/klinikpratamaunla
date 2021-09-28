@@ -177,7 +177,7 @@ export default {
       filter: {
         page: 1,
         searchQuery: "",
-        limit: 10,
+        limit: 25,
         sortBy: "id",
         orderBy: "asc",
         roles: [],

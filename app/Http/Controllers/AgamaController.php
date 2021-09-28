@@ -50,9 +50,9 @@ class AgamaController extends Controller
             return response()->json(['errors' => $validator->errors(),'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
         }
         $store = new Agama();
-        $store->uuid = Str::uuid();
+        // $store->id = Str::id();
         $store->description = $request->description;
-        $store->superuser = $request->superuser ? 1 : 0;
+        // $store->superuser = $request->superuser ? 1 : 0;
         $store->save();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan!', 'data' => $this->filter($request)]);
@@ -66,7 +66,7 @@ class AgamaController extends Controller
      */
     public function show($id)
     {
-        $data = Agama::where('uuid',$id)->first();
+        $data = Agama::where('id',$id)->first();
         return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
     }
 
@@ -97,7 +97,7 @@ class AgamaController extends Controller
             return response()->json(['errors' => $validator->errors(), 'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
         }
 
-        Agama::where('uuid', $id)->update([
+        Agama::where('id', $id)->update([
             'description' => $request->description,
         ]);
 
@@ -116,7 +116,7 @@ class AgamaController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Data gagal dihapus!', 'errors' => 'ID kosong']);
         }
 
-        Agama::where('uuid', $id)->delete();
+        Agama::where('id', $id)->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!', 'data' => $this->filter($request)]);
     }  

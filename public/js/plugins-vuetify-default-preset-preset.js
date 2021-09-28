@@ -17,7 +17,11 @@ __webpack_require__(/*! ./overrides.scss */ "./resources/js/plugins/vuetify/defa
   theme: {
     themes: {
       light: {
+<<<<<<< HEAD
         primary: '#0c87fe',
+=======
+        primary: '#0d8cff',
+>>>>>>> b022028a180e4825ee4034515c8af62978692bf7
         accent: '#0d6efd',
         secondary: '#8A8D93',
         success: '#56CA00',
@@ -26,7 +30,11 @@ __webpack_require__(/*! ./overrides.scss */ "./resources/js/plugins/vuetify/defa
         error: '#FF4C51'
       },
       dark: {
+<<<<<<< HEAD
         primary: '#0c87fe',
+=======
+        primary: '#0d8cff',
+>>>>>>> b022028a180e4825ee4034515c8af62978692bf7
         accent: '#0d6efd',
         secondary: '#8A8D93',
         success: '#56CA00',

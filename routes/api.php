@@ -42,7 +42,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('roles', RoleController::class);
             Route::apiResource('users', UserController::class);
             Route::apiResource('modules', ModuleController::class);
-            Route::apiResource('daftar-agama', AgamaController::class);
+            Route::apiResource('daftaragama', AgamaController::class);
 
             Route::post('users/active/{id}', [UserController::class, 'active']);
         });
