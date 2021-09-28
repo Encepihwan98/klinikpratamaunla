@@ -21,6 +21,10 @@ Route::get('/', function() {
     return view('layouts.base-vue');
 });
 
+Route::get('/login', function() {
+    return view('layouts.base-vue');
+})->name('login');
+
 Route::get('/{any}', function() {
     return view('layouts.base-vue');
 })->where('any', '.*');

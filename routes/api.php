@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ModuleWithRoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,7 +42,10 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('roles', RoleController::class);
             Route::apiResource('users', UserController::class);
             Route::apiResource('modules', ModuleController::class);
+            Route::apiResource('r-modules', ModuleWithRoleController::class);
+            Route::post('my-modules', [ModuleController::class, 'myModule']);
 
             Route::post('users/active/{id}', [UserController::class, 'active']);
+            Route::post('modules/active/{id}', [ModuleController::class, 'active']);
         });
 });

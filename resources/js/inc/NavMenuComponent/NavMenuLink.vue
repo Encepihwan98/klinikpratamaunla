@@ -3,16 +3,14 @@
     class="vertical-nav-menu-link"
     v-bind="$attrs"
     active-class="bg-gradient-primary white--text"
+    dense
   >
     <v-list-item-icon>
-      <v-icon
-        :class="{'alternate-icon-small': !icon}"
-        class="mx-auto"
-      >
-        {{ icon || alternateIcon }}
+      <v-icon :class="{ 'alternate-icon-small': !icon }" class="mx-auto">
+        {{ icon || "far fa-circle" }}
       </v-icon>
     </v-list-item-icon>
- 
+
     <v-list-item-title class="caption ml-n6">
       {{ title }}
     </v-list-item-title>
@@ -20,8 +18,6 @@
 </template>
 
 <script>
-import { mdiCheckboxBlankCircleOutline } from '@mdi/js'
-
 export default {
   props: {
     title: {
@@ -33,16 +29,11 @@ export default {
       default: undefined,
     },
   },
-  setup() {
-    return {
-      alternateIcon: mdiCheckboxBlankCircleOutline,
-    }
-  },
-}
+};
 </script>
 
 <style lang="scss" scoped>
-@import './resources/js/plugins/vuetify/default-preset/preset/variables.scss';
+@import "./resources/js/plugins/vuetify/default-preset/preset/variables.scss";
 // @import '~vuetify/src/styles/styles.sass';
 
 .alternate-icon-small {

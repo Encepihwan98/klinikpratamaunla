@@ -15,14 +15,18 @@ class CreateMenusTable extends Migration
     {
         Schema::create('m_menus', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid');
             $table->string('name', 150);
             $table->string('slug', 150);
             $table->string('url', 200);
-            $table->unsignedBigInteger('parrent_id')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->integer('order');
             $table->string('icon', 150)->nullable();
             $table->string('component');
-            $table->boolean('mustLogin')->default(false);
+            $table->string('api_module')->nullable();
+            $table->boolean('must_login')->default(false);
+            $table->boolean('is_active')->default(false);
+            $table->boolean('is_parent')->default(false);
             $table->timestamps();
         });
     }

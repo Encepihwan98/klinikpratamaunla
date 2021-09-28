@@ -45,11 +45,11 @@
           style="vertical-align: middle"
         >
           <span class="text--primary font-weight-semibold mb-n1">
-            {{ currentUser.name }}
+            {{ name }}
           </span>
-          <small class="text--disabled text-capitalize">{{
-            currentUser.email
-          }}</small>
+          <small class="text--disabled text-capitalize">
+            {{ email }}
+          </small>
         </div>
       </div>
 
@@ -58,89 +58,28 @@
       <!-- Profile -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
-          <v-icon size="22">
-            {{ icons.mdiAccountOutline }}
-          </v-icon>
+          <v-icon size="22"> far fa-user-circle </v-icon>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>Profile</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-
-      <!-- Email -->
-      <v-list-item link>
-        <v-list-item-icon class="me-2">
-          <v-icon size="22">
-            {{ icons.mdiEmailOutline }}
-          </v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>Inbox</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
-      <!-- Chat -->
-      <v-list-item link>
-        <v-list-item-icon class="me-2">
-          <v-icon size="22">
-            {{ icons.mdiChatOutline }}
-          </v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>Chat</v-list-item-title>
-        </v-list-item-content>
-
-        <v-list-item-action>
-          <v-badge inline color="error" content="2"> </v-badge>
-        </v-list-item-action>
-      </v-list-item>
-
       <v-divider class="my-2"></v-divider>
 
       <!-- Settings -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
-          <v-icon size="22">
-            {{ icons.mdiCogOutline }}
-          </v-icon>
+          <v-icon size="22"> far fa-cogs </v-icon>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title>Settings</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
-      <!-- Pricing -->
-      <v-list-item link>
-        <v-list-item-icon class="me-2">
-          <v-icon size="22">
-            {{ icons.mdiCurrencyUsd }}
-          </v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>Pricing</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
-      <!-- FAQ -->
-      <v-list-item link>
-        <v-list-item-icon class="me-2">
-          <v-icon size="22">
-            {{ icons.mdiHelpCircleOutline }}
-          </v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>FAQ</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-divider class="my-2"></v-divider>
-
       <!-- Logout -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
-          <v-icon size="22">
-            {{ icons.mdiLogoutVariant }}
-          </v-icon>
+          <v-icon size="22"> far fa-sign-out-alt </v-icon>
         </v-list-item-icon>
         <v-list-item-content>
           <v-list-item-title @click="logout">Logout</v-list-item-title>
@@ -151,34 +90,9 @@
 </template>
 
 <script>
-import {
-  mdiAccountOutline,
-  mdiEmailOutline,
-  mdiCheckboxMarkedOutline,
-  mdiChatOutline,
-  mdiCogOutline,
-  mdiCurrencyUsd,
-  mdiHelpCircleOutline,
-  mdiLogoutVariant,
-} from "@mdi/js";
-
 export default {
-  setup() {
-    return {
-      icons: {
-        mdiAccountOutline,
-        mdiEmailOutline,
-        mdiCheckboxMarkedOutline,
-        mdiChatOutline,
-        mdiCogOutline,
-        mdiCurrencyUsd,
-        mdiHelpCircleOutline,
-        mdiLogoutVariant,
-      },
-    };
-  },
   props: {
-    currentUser: {},
+    currentUser: null,
   },
   methods: {
     logout() {
@@ -188,10 +102,10 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-              localStorage.removeItem('token')
+            localStorage.removeItem("token");
             this.isLoad = false;
             this.$router.push({
-              name: "login"
+              name: "login",
             });
             this.makeDefaultNotification(
               response.data.status,
@@ -207,6 +121,14 @@ export default {
             err.response.data.errors.message[0]
           );
         });
+    },
+  },
+  computed: {
+    name() {
+      return this.currentUser ? this.currentUser.name : "";
+    },
+    email() {
+      return this.currentUser ? this.currentUser.email : "";
     },
   },
 };

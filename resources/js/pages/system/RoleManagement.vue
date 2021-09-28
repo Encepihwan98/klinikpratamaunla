@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu
+      :is-drawer-open.sync="isDrawerOpen"
+      :modules="modules"
+    ></vertical-nav-menu>
     <app-bar
       :isDrawerOpen="isDrawerOpen"
       :currentUser="currentUser"
@@ -18,10 +21,11 @@
 
                 <v-col class="d-flex" cols="6" md="6" sm="6">
                   <v-btn
+                    v-if="web.create"
                     color="primary ml-auto"
                     small
                     elevation="2"
-                    @click="add"
+                    @click="selectMethod(null, 'add')"
                     >Tambah Roles</v-btn
                   >
                 </v-col>
@@ -99,13 +103,21 @@
                     <td>{{ item.name }}</td>
                     <td>{{ item.description }}</td>
                     <td>
-                      <v-btn small @click="show(item)">
+                      <v-btn small @click="selectMethod(item, 'show')">
                         <v-icon small>far fa-eye</v-icon>
                       </v-btn>
-                      <v-btn small @click="edit(item)">
+                      <v-btn
+                        small
+                        @click="selectMethod(item, 'edit')"
+                        v-if="web.update"
+                      >
                         <v-icon small>far fa-edit</v-icon>
                       </v-btn>
-                      <v-btn small @click="selectMethod(item, 'delete')">
+                      <v-btn
+                        small
+                        @click="selectMethod(item, 'delete')"
+                        v-if="web.delete"
+                      >
                         <v-icon small>far fa-trash</v-icon>
                       </v-btn>
                     </td>
@@ -164,13 +176,13 @@
 </template>
 
 <script>
-import { ref } from "@vue/composition-api";
 export default {
+  props: {
+    modules: [],
+  },
   data() {
-    const isDrawerOpen = ref(null);
     return {
       _url: "",
-      _token: "",
       web: {
         isTableLoad: false,
       },
@@ -180,9 +192,8 @@ export default {
         limit: 10,
         sortBy: "id",
         orderBy: "asc",
-        roles: [],
       },
-      isDrawerOpen,
+      isDrawerOpen: true,
       data: {
         data: [],
         current_page: 1,
@@ -202,24 +213,6 @@ export default {
     };
   },
   methods: {
-    show(data) {
-      this.currentData = data;
-      this.condition = "show";
-      this.dialog.title = "Data Role";
-      this.showDialog(false);
-    },
-    edit(data) {
-      this.currentData = data;
-      this.condition = "update";
-      this.dialog.title = "Edit Role";
-      this.showDialog(false);
-    },
-    add() {
-      this.currentData = null;
-      this.condition = "store";
-      this.dialog.title = "Tambah Role";
-      this.showDialog(false);
-    },
     remove() {
       this.web.isTableLoad = true;
       axios
@@ -236,7 +229,7 @@ export default {
           }
         })
         .catch((e) => {
-          errorState(e);
+          this.errorState(e);
         });
     },
     selectMethod(data, item) {
@@ -245,6 +238,19 @@ export default {
         this.condition = item;
         this.dialogConfirmation.message = "menghapus";
         this.showDialog(true);
+      } else if (item == "add") {
+        this.currentData = null;
+        this.condition = "store";
+        this.dialog.title = "Tambah Role";
+        this.showDialog(false);
+      } else if (item == "show") {
+        this.condition = "show";
+        this.dialog.title = "Data Role";
+        this.showDialog(false);
+      } else if (item == "edit") {
+        this.condition = "update";
+        this.dialog.title = "Edit Role";
+        this.showDialog(false);
       }
     },
     showDialog(isConfirmation) {
@@ -282,51 +288,50 @@ export default {
             this.data = response.data.data;
             this.filter.page = response.data.data.current_page;
             this.web.isTableLoad = false;
-            this.getCurrentUser();
-          }
-        })
-        .catch((e) => {
-          errorState(e);
-        });
-    },
-    changeData(newdata) {
-      this.data = newdata;
-    },
-    getCurrentUser() {
-      let url = window.location.origin + "/api/v1/user/";
-      axios
-        .post(url)
-        .then((response) => {
-          if (response.status == 200) {
-            this.currentUser = response.data.data;
+            this.currentUser = this.requestCurrentUser();
           }
         })
         .catch((e) => {
           this.errorState(e);
         });
     },
+    changeData(newdata) {
+      this.data = newdata;
+    },
     errorState(e) {
+      console.log(e.response);
+      this.web.isTableLoad = false;
+      this.errors = e.response.data.errors;
       if (e.response.status == 401) {
         localStorage.removeItem("token");
         this._token = "";
         this.$router.push({ name: "index" });
-      } else if (e.response.status == 400) {
-        this.web.isTableLoad = false;
-        this.errors = e.response.data.errors;
-        this.makeDefaultNotification(
-          e.response.data.status,
-          e.response.data.message
-        );
+      } else {
+        this.errorRequestState(e);
       }
     },
   },
   created() {
+    if (this.modules.length > 0) {
+      let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    }
     this._url = window.location.origin + "/api/v1/roles/";
-    this._token = localStorage.getItem("token");
-    window.axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${this._token}`;
     this.filterPage("");
+  },
+  watch: {
+    modules: function (n, o) {
+      let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    },
   },
 };
 </script>

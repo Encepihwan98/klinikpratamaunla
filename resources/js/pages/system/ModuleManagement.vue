@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu
+      :is-drawer-open.sync="isDrawerOpen"
+      :modules="modules"
+    ></vertical-nav-menu>
     <app-bar
       :isDrawerOpen="isDrawerOpen"
       :currentUser="currentUser"
@@ -18,10 +21,11 @@
 
                 <v-col class="d-flex" cols="6" md="6" sm="6">
                   <v-btn
+                    v-if="web.create"
                     color="primary ml-auto"
                     small
                     elevation="2"
-                    @click="add"
+                    @click="selectMethod(null, 'add')"
                     >Tambah Menu</v-btn
                   >
                 </v-col>
@@ -94,15 +98,24 @@
                     </th>
                     <th class="text-left">
                       Url
-                      <v-icon @click="filterPage('username')" x-small>{{
-                        filter.sortBy == "username"
+                      <v-icon @click="filterPage('url')" x-small>{{
+                        filter.sortBy == "url"
                           ? filter.orderBy == "asc"
                             ? "fas fa-sort-amount-up"
                             : "fas fa-sort-amount-down"
                           : "fas fa-sort-alt"
                       }}</v-icon>
                     </th>
-                    <th class="text-left">Terakhir login</th>
+                    <th class="text-left">
+                      Induk Menu
+                      <v-icon @click="filterPage('parent')" x-small>{{
+                        filter.sortBy == "parent"
+                          ? filter.orderBy == "asc"
+                            ? "fas fa-sort-amount-up"
+                            : "fas fa-sort-amount-down"
+                          : "fas fa-sort-alt"
+                      }}</v-icon>
+                    </th>
                     <th class="text-left">Aksi</th>
                   </tr>
                 </thead>
@@ -110,32 +123,35 @@
                   <tr v-for="(item, index) in data.data" :key="item.name">
                     <td>{{ index + data.from }}</td>
                     <td>
-                      {{ item.name }} <br />
-                      <br />
-                      <v-chip
-                        small
-                        v-for="role in item.roles"
-                        :key="role"
-                        color="primary"
-                      >
-                        {{ role }}
-                      </v-chip>
+                      {{ item.name }}
                     </td>
-                    <td>{{ item.username }}</td>
-                    <td>{{ item.description }}</td>
+                    <td>{{ item.url }}</td>
+                    <td>{{ item.parent }}</td>
                     <td>
-                      <v-btn small @click="selectMethod(item, 'status')">
+                      <v-btn
+                        small
+                        @click="selectMethod(item, 'status')"
+                        v-if="web.update"
+                      >
                         <v-icon small>{{
-                          item.status == 1 ? "far fa-check" : "far fa-times"
+                          item.is_active == 1 ? "far fa-check" : "far fa-times"
                         }}</v-icon>
                       </v-btn>
-                      <v-btn small @click="show(item)">
+                      <v-btn small @click="selectMethod(item, 'show')">
                         <v-icon small>far fa-eye</v-icon>
                       </v-btn>
-                      <v-btn small @click="edit(item)">
+                      <v-btn
+                        small
+                        @click="selectMethod(item, 'edit')"
+                        v-if="web.update"
+                      >
                         <v-icon small>far fa-edit</v-icon>
                       </v-btn>
-                      <v-btn small @click="selectMethod(item, 'delete')">
+                      <v-btn
+                        small
+                        @click="selectMethod(item, 'delete')"
+                        v-if="web.delete"
+                      >
                         <v-icon small>far fa-trash</v-icon>
                       </v-btn>
                     </td>
@@ -191,7 +207,7 @@
             <v-container fluid>
               <v-autocomplete
                 class="ma-2"
-                v-model="filter.roles"
+                v-model="filter.role"
                 outlined
                 dense
                 small-chips
@@ -209,6 +225,8 @@
         :condition="condition"
         :roles="roles"
         :filter="filter"
+        :parentData="data.parentData"
+        :parentName="data.parentName"
         @updateDialog="dialog.state = $event"
         @updateData="changeData($event)"
       ></form-dialog-menu>
@@ -224,13 +242,13 @@
 </template>
 
 <script>
-import { ref } from "@vue/composition-api";
 export default {
+  props: {
+    modules: [],
+  },
   data() {
-    const isDrawerOpen = ref(null);
     return {
       _url: "",
-      _token: "",
       web: {
         isTableLoad: false,
         filterOpen: false,
@@ -241,13 +259,14 @@ export default {
         limit: 10,
         sortBy: "id",
         orderBy: "asc",
-        roles: [],
+        role: [],
       },
-      isDrawerOpen,
+      isDrawerOpen: true,
       data: {
         data: [],
         current_page: 1,
       },
+      errors: {},
       roles: [],
       currentData: {},
       currentUser: {},
@@ -264,24 +283,6 @@ export default {
     };
   },
   methods: {
-    show(data) {
-      this.currentData = data;
-      this.condition = "show";
-      this.dialog.title = "Data User";
-      this.showDialog(false);
-    },
-    edit(data) {
-      this.currentData = data;
-      this.condition = "update";
-      this.dialog.title = "Edit User";
-      this.showDialog(false);
-    },
-    add() {
-      this.currentData = null;
-      this.condition = "store";
-      this.dialog.title = "Tambah User";
-      this.showDialog(false);
-    },
     remove() {
       this.web.isTableLoad = true;
       axios
@@ -304,7 +305,7 @@ export default {
     active() {
       this.web.isTableLoad = true;
       let req = Object.assign(
-        { status: !this.currentData.status },
+        { status: !this.currentData.is_active },
         this.filter
       );
       axios
@@ -334,6 +335,19 @@ export default {
         this.condition = item;
         this.dialogConfirmation.message = "mengubah";
         this.showDialog(true);
+      } else if (item == "add") {
+        this.currentData = null;
+        this.condition = "store";
+        this.dialog.title = "Tambah Menu";
+        this.showDialog(false);
+      } else if (item == "show") {
+        this.condition = "show";
+        this.dialog.title = "Data Menu";
+        this.showDialog(false);
+      } else if (item == "edit") {
+        this.condition = "update";
+        this.dialog.title = "Edit Menu";
+        this.showDialog(false);
       }
     },
     showDialog(isConfirmation) {
@@ -366,7 +380,7 @@ export default {
         "&orderBy=" +
         this.filter.orderBy +
         "&role=" +
-        this.filter.roles;
+        this.filter.role;
       axios
         .get(url)
         .then((response) => {
@@ -374,23 +388,10 @@ export default {
             this.data = response.data.data;
             this.filter.page = response.data.data.current_page;
             this.web.isTableLoad = false;
-            this.getCurrentUser();
+            this.currentUser = this.requestCurrentUser();
             if (!this.roles || this.roles < 1) {
               this.getRoles();
             }
-          }
-        })
-        .catch((e) => {
-          this.errorState(e);
-        });
-    },
-    getCurrentUser() {
-      let url = window.location.origin + "/api/v1/user/";
-      axios
-        .post(url)
-        .then((response) => {
-          if (response.status == 200) {
-            this.currentUser = response.data.data;
           }
         })
         .catch((e) => {
@@ -413,17 +414,15 @@ export default {
         });
     },
     errorState(e) {
+      console.log(e.response);
+      this.web.isTableLoad = false;
+      this.errors = e.response.data.errors;
       if (e.response.status == 401) {
         localStorage.removeItem("token");
         this._token = "";
         this.$router.push({ name: "index" });
-      } else if (e.response.status == 400) {
-        this.web.isTableLoad = false;
-        this.errors = e.response.data.errors;
-        this.makeDefaultNotification(
-          e.response.data.status,
-          e.response.data.message
-        );
+      } else {
+        this.errorRequestState(e);
       }
     },
     changeData(newdata) {
@@ -431,12 +430,26 @@ export default {
     },
   },
   created() {
-    this._url = window.location.origin + "/api/v1/users/";
-    this._token = localStorage.getItem("token");
-    window.axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${this._token}`;
+    if (this.modules.length > 0) {
+      let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    }
+    this._url = window.location.origin + "/api/v1/modules/";
     this.filterPage("");
+  },
+  watch: {
+    modules: function (n, o) {
+      let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    },
   },
 };
 </script>

@@ -366,12 +366,14 @@ export default {
         localStorage.removeItem("token");
         this._token = "";
         this.$router.push({ name: "index" });
-      } else if (e.response.status == 400) {
-        this.errors = e.response.data.errors;
-        this.makeDefaultNotification(
-          e.response.data.status,
-          e.response.data.message
-        );
+      } else {
+        if (e.response.data.errors) {
+          this.errors = e.response.data.errors;
+        } else {
+          this.showDialog = false;
+        }
+
+        this.errorRequestState(e);
       }
     },
   },

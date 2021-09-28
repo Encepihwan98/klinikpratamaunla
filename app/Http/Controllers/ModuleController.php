@@ -16,9 +16,19 @@ class ModuleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if($this->cekAkses($request)->read == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
+        if(isset($request->limit)) {
+            $data = $this->filter($request);
+        } else {
+            $data = $this->getParentData(Menu::all());
+        }
+
+        return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
     }
 
     /**
@@ -29,15 +39,21 @@ class ModuleController extends Controller
      */
     public function store(Request $request)
     {
+        if($this->cekAkses($request)->create == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:m_menus',
-            'slug' => 'required|unique:m_menus',
+            'slug' => 'required_if:isParent,0|unique:m_menus',
             'icon' => 'nullable',
-            'component' => 'required',
-            'url' => 'required',
+            'component' => 'required_if:isParent,0',
+            'url' => 'required_if:isParent,0',
             'parent' => 'required',
             'mustLogin' => 'required',
-            'order' => 'nullable'
+            'order' => 'nullable',
+            'isParent' => 'boolean',
+            'isActive' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
@@ -46,13 +62,15 @@ class ModuleController extends Controller
         $store = new Menu();
         $store->uuid = Str::uuid();
         $store->name = $request->name;
-        $store->slug = $request->slug;
-        $store->url = $request->url;
+        $store->slug = empty($request->slug) ? '#' : $request->slug;
+        $store->url = empty($request->url) ? '#' : $request->url;
         $store->parent_id = $request->parent == 'Root' ? 0 : Menu::where('name', $request->parent)->first()->id;
         $store->order = $request->order;
-        $store->icon = $request->order;
-        $store->component = $request->component;
-        $store->mustLogin = $request->mustLogin == 'Ya' ? true : false;
+        $store->icon = $request->icon;
+        $store->component = empty($request->component) ? '.'  : $request->component;
+        $store->must_login = $request->mustLogin == 'Ya' ? true : false;
+        $store->is_active = $request->isActive == 'Aktif' ? true : false;
+        $store->is_parent = empty($request->isParent) ? false : true;
         $store->save();
 
         $role = Role::all();
@@ -81,7 +99,8 @@ class ModuleController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = $this->getParentData(Menu::where('uuid',$id)->first());
+        return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
     }
 
     /**
@@ -93,7 +112,42 @@ class ModuleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if($this->cekAkses($request)->update == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
+        $slug = $request->slug;
+        $count = Menu::where('slug', $slug)->where('uuid', $id)->count();
+        $validator = Validator::make($request->all(), [
+            'name' => 'nullable|unique:m_menus',
+            'icon' => 'nullable',
+            'component' => 'required_if:isParent,0',
+            'slug' => ($count == 1) ? 'exclude' : 'nullable|unique:m_menus',
+            'url' => 'nullable',
+            'parent' => 'required',
+            'mustLogin' => 'required',
+            'order' => 'nullable',
+            'isParent' => 'boolean',
+            'isActive' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors(), 'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
+        }
+
+        Menu::where('uuid', $id)->update([
+            'name' => $request->name,
+            'slug' => empty($request->slug) ? '#' : $request->slug,
+            'url' => empty($request->url) ? '#' : $request->url,
+            'parent_id' => $request->parent == 'Root' ? 0 : Menu::where('name', $request->parent)->first()->id,
+            'order' => $request->order,
+            'icon' => $request->icon,
+            'component' => empty($request->component) ? '.'  : $request->component,
+            'must_login' => $request->mustLogin == 'Ya' ? true : false,
+            'is_active' => $request->isActive == 'Aktif' ? true : false,
+            'is_parent' => empty($request->isParent) ? false : true
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil diubah!', 'data' => $this->filter($request)]);
     }
 
     /**
@@ -102,9 +156,82 @@ class ModuleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        if($this->cekAkses($request)->delete == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
+        if (empty($id)) {
+            return response()->json(['status' => 'error', 'message' => 'Data gagal dihapus!', 'errors' => 'ID kosong']);
+        }
+        $data = Menu::where('uuid', $id);
+        MenuWithRole::where('menu_id', $data->first()->id)->delete();
+        $data->delete();
+
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!', 'data' => $this->filter($request)]);
+    }
+
+    public function myModule(Request $request)
+    {
+        $module = array();
+        $compareModule = array();
+        $fixModule = array();
+        foreach ($request->user()->roles()->get() as $v) {
+            array_push($module, MenuWithRole::where('role_id', $v->role()->first()->id)->orderBy('menu_id', 'asc')->get());
+        }
+        $compareModule = $this->compareMenu($module, null, 0, 1, count($module));
+
+        foreach ($compareModule as $key => $value) {
+            if($value->read != 0) {
+                $custom = collect($value);
+                $customModule = $custom->merge(Menu::find($value->menu_id));
+                array_push($fixModule, $customModule);
+            }
+        }
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil diambil!', 'data' => $fixModule]);
+    }
+
+    public function getParentData($data)
+    {
+        $parentName = array('Root');
+        $parentData = array();
+        if(!is_countable($data)) {
+            $data->parent = ($data->parent_id == 0) ? 'Root' :  Menu::where('id', $data->parent_id)->first()->name;
+        } else {
+
+            foreach ($data as $key => $value) {
+                $data[$key]->parent = ($value->parent_id == 0) ? 'Root' : Menu::where('id',$value->parent_id)->first()->name;
+            }
+
+
+            array_push($parentData, (object)['name'=> 'Root', 'count'=> Menu::where('parent_id', 0)->count()]);
+            foreach (Menu::all() as $key => $value) {
+                if($value->url == '#') {
+                    array_push($parentName, $value->name);
+                    array_push($parentData, (object)['name'=> $value->name, 'count'=> Menu::where('parent_id', $value->id)->count()]);
+                }
+            }
+        }
+
+        $custom = collect(['parentName' => $parentName, 'parentData' => $parentData]);
+        $results = $custom->merge($data);
+
+        return $results;
+    }
+
+    public function active(Request $request, $id)
+    {
+        if($this->cekAkses($request)->update == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
+        if (empty($id)) {
+            return response()->json(['status' => 'error', 'message' => 'Menu gagal diaktifkan!', 'errors' => 'ID kosong']);
+        }
+
+        Menu::where('uuid', $id)->update(['is_active' => $request->status]);
+        return response()->json(['status' => 'success', 'message' => 'Menu berhasil di'.($request->status ? '' : 'non').'aktifkan!', 'data' => $this->filter($request)]);
     }
 
     public function filter(Request $request) {
@@ -114,6 +241,8 @@ class ModuleController extends Controller
             $query->where('name', 'LIKE', '%' . $search . '%');
         })->orderBy($request->sortBy, $request->orderBy)->paginate($request->limit != "" ? $request->limit : 10);
 
-        return $data;
+
+        return $this->getParentData($data);
     }
+
 }

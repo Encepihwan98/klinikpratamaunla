@@ -11,53 +11,34 @@
           rounded
           dense
           outlined
-          :prepend-inner-icon="icons.mdiMagnify"
+          prepend-inner-icon="far fa-search"
           class="app-bar-search flex-grow-0"
           hide-details
         ></v-text-field>
-
         <v-spacer></v-spacer>
-
-        <!-- Right Content -->
-        <a
-          href="https://github.com/themeselection/materio-vuetify-vuejs-admin-template-free"
-          target="_blank"
-          rel="nofollow"
-        >
-          <v-icon class="ms-6 me-4">
-            {{ icons.mdiGithub }}
-          </v-icon>
-        </a>
         <theme-switcher></theme-switcher>
         <v-btn icon small class="ms-3">
           <v-icon>
-            {{ icons.mdiBellOutline }}
+            far fa-bell
           </v-icon>
         </v-btn>
 
-        <app-bar-user-menu :currentUser="currentUser"></app-bar-user-menu>
+        <app-bar-user-menu :currentUser="user"></app-bar-user-menu>
       </div>
     </div>
   </v-app-bar>
 </template>
 
 <script>
-import { mdiMagnify, mdiBellOutline, mdiGithub } from "@mdi/js";
-
 export default {
   props: {
     isDrawerOpen: false,
     currentUser: {},
   },
-  setup() {
-    return {
-      // Icons
-      icons: {
-        mdiMagnify,
-        mdiBellOutline,
-        mdiGithub,
-      },
-    };
+  data() {
+      return {
+          user: null,
+      }
   },
   computed: {
     showNavBar: {
@@ -69,6 +50,11 @@ export default {
       },
     },
   },
+  watch: {
+      currentUser(v) {
+          this.user = v[0]
+      }
+  }
 };
 </script>
 

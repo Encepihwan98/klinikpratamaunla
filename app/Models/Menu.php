@@ -9,4 +9,14 @@ class Menu extends Model
 {
     use HasFactory;
     protected $table = 'm_menus';
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at'
+    ];
 }

@@ -32,51 +32,63 @@
                 </v-col>
                 <v-col cols="12" sm="12" md="6">
                   <v-autocomplete
-                    v-model="menu.parent_id"
+                    v-model="menu.parent"
                     outlined
                     dense
                     chips
                     small-chips
                     label="Induk Menu"
+                    :error-messages="errors.parent"
                     :disabled="condition == 'show' ? true : false"
                     :rules="[rules.required]"
-                    :items="roles"
+                    :items="parentName"
+                    @input="orderAvailable($event)"
                   ></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="12" md="6">
                   <v-text-field
                     dense
-                    v-model="menu.slug"
-                    label="Slug"
+                    v-model="menu.path"
+                    label="URL"
                     outlined
                     clearable
+                    :error-messages="errors.url"
                     :hint="
                       condition == 'update'
                         ? 'Kosongkan jika tidak ingin mengubah'
-                        : ''
+                        : `${this._baseUrl}/${this.menu.path}`
                     "
                     :rules="
-                      condition == 'update'
+                      menu.isParent
                         ? []
-                        : [rules.required, rules.min(6)]
+                        : condition == 'update'
+                        ? []
+                        : [rules.required]
                     "
                     :disabled="condition == 'show' ? true : false"
+                    :readonly="menu.isParent"
                     @input="replaceUrl($event)"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="12" md="6">
                   <v-text-field
                     dense
-                    v-model="menu.url"
-                    label="URL (otomatis)"
+                    v-model="menu.slug"
+                    label="Slug (otomatis)"
                     outlined
-                    :error-messages="errors.url"
                     :hint="
                       condition == 'update'
                         ? 'Kosongkan jika tidak ingin mengubah'
-                        : `${menu.url}`
+                        : ''
                     "
-                    :rules="condition == 'update' ? [] : [rules.required]"
+                    :rules="
+                      menu.isParent
+                        ? []
+                        : condition == 'update'
+                        ? []
+                        : [rules.required]
+                    "
+                    :error-messages="errors.slug"
                     :disabled="condition == 'show' ? true : false"
                     readonly
                   ></v-text-field>
@@ -93,9 +105,8 @@
                         ? 'Kosongkan jika tidak ingin mengubah'
                         : ''
                     "
-                    :rules="
-                      condition == 'update' ? [] : [rules.required, rules.match]
-                    "
+                    :rules="condition == 'update' ? [] : [rules.required]"
+                    :error-messages="errors.icon"
                     :disabled="condition == 'show' ? true : false"
                   ></v-text-field>
                 </v-col>
@@ -106,9 +117,9 @@
                     label="Urutan"
                     outlined
                     :disabled="condition == 'show' ? true : false"
-                    :error-messages="errors.status"
+                    :error-messages="errors.order"
                     :rules="[rules.required]"
-                    :items="['aktif', 'tidak aktif']"
+                    :items="orderItem"
                   ></v-select>
                 </v-col>
                 <v-col cols="12" sm="12" md="6">
@@ -118,8 +129,9 @@
                     label="Nama Komponen"
                     outlined
                     :disabled="condition == 'show' ? true : false"
-                    :error-messages="errors.status"
-                    :rules="[rules.required]"
+                    :error-messages="errors.component"
+                    :rules="menu.isParent ? [] : [rules.required]"
+                    :readonly="menu.isParent"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="12" md="6">
@@ -129,10 +141,29 @@
                     label="Perlu Login"
                     outlined
                     :disabled="condition == 'show' ? true : false"
-                    :error-messages="errors.loginNeeded"
+                    :error-messages="errors.mustLogin"
                     :rules="[rules.required]"
                     :items="['Ya', 'Tidak']"
                   ></v-select>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
+                  <v-select
+                    v-model="menu.isActive"
+                    dense
+                    label="Status Menu"
+                    outlined
+                    :disabled="condition == 'show' ? true : false"
+                    :error-messages="errors.isActive"
+                    :rules="[rules.required]"
+                    :items="['Aktif', 'Tidak Aktif']"
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
+                  <v-checkbox
+                    v-model="menu.isParent"
+                    label="Jadikan Induk Menu"
+                    :disabled="condition == 'show' ? true : false"
+                  ></v-checkbox>
                 </v-col>
               </v-row>
             </v-form>
@@ -172,6 +203,8 @@ export default {
     },
     filter: {},
     roles: {},
+    parentData: [],
+    parentName: [],
     condition: null,
     currentData: {},
     dialogItems: [
@@ -194,7 +227,10 @@ export default {
       _url: "",
       _baseUrl: "",
       user: {},
-      menu: {},
+      menu: {
+        isParent: false,
+      },
+      orderItem: [],
       valid: false,
       dialogConfirmation: {
         state: false,
@@ -235,37 +271,47 @@ export default {
     },
   },
   methods: {
+    orderAvailable(param) {
+      this.orderItem.length = 0;
+      this.parentData.forEach((v, i) => {
+        if (v.name == param) {
+          for (let index = 0; index <= v.count; index++) {
+            this.orderItem.push(index + 1);
+          }
+        }
+      });
+    },
     replaceUrl(param) {
       let value = param.split("").map((v) => {
-          v = v.replace(" ", "-")
-          v = v.replace("@", "-")
-          v = v.replace("/", "-")
-          v = v.replace("\\", "-")
-          v = v.replace("+", "-")
-          v = v.replace("?", "-")
-          v = v.replace("=", "-")
-          v = v.replace("&", "-")
-          v = v.replace("^", "-")
-          v = v.replace("%", "-")
-          v = v.replace("*", "-")
-          v = v.replace("(", "-")
-          v = v.replace(")", "-")
-          v = v.replace("[", "-")
-          v = v.replace("]", "-")
-          v = v.replace("{", "-")
-          v = v.replace("}", "-")
-          v = v.replace(".", "-")
-          v = v.replace(",", "-")
-          v = v.replace("<", "-")
-          v = v.replace(">", "-")
-          v = v.replace("`", "-")
-          v = v.replace("$", "-")
-          v = v.replace("#", "-")
-          v = v.replace("!", "-")
-          return v;
+        v = v.replace(" ", "-");
+        v = v.replace("@", "-");
+        v = v.replace("\\", "-");
+        v = v.replace("+", "-");
+        v = v.replace("?", "-");
+        v = v.replace("=", "-");
+        v = v.replace("&", "-");
+        v = v.replace("^", "-");
+        v = v.replace("%", "-");
+        v = v.replace("*", "-");
+        v = v.replace("(", "-");
+        v = v.replace(")", "-");
+        v = v.replace("[", "-");
+        v = v.replace("]", "-");
+        v = v.replace("{", "-");
+        v = v.replace("}", "-");
+        v = v.replace(".", "-");
+        v = v.replace(",", "-");
+        v = v.replace("<", "-");
+        v = v.replace(">", "-");
+        v = v.replace("`", "-");
+        v = v.replace("$", "-");
+        v = v.replace("#", "-");
+        v = v.replace("!", "-");
+        return v;
       });
-      this.menu.slug = value.join('').toLowerCase()
-      this.menu.url = `${this._baseUrl}/${this.menu.slug}`
+      let slug = value.join("").split("/");
+      this.menu.slug = slug.at(-1).toLowerCase();
+      this.menu.path = value.join("").toLowerCase();
     },
     selectMethod() {
       if (this.$refs.form.validate()) {
@@ -279,7 +325,9 @@ export default {
       }
     },
     store() {
-      let req = Object.assign(this.user, this.filter);
+      let req = Object.assign(this.menu, this.filter, {
+        url: !this.menu.path ? "" : `${this._baseUrl}/${this.menu.path}`,
+      });
       axios
         .post(this._url, req)
         .then((response) => {
@@ -297,8 +345,10 @@ export default {
         });
     },
     update() {
-      let req = Object.assign(this.user, this.filter);
-      let url = `${this._url}${this.user.uuid}`;
+      let req = Object.assign(this.menu, this.filter, {
+        url: !this.menu.path ? "" : `${this._baseUrl}/${this.menu.path}`,
+      });
+      let url = `${this._url}${this.menu.uuid}`;
       axios
         .put(url, req)
         .then((response) => {
@@ -321,14 +371,18 @@ export default {
         .get(url)
         .then((response) => {
           if (response.status == 200) {
-            this.user = response.data.data;
-            if (this.condition == "update") {
-              this.user.username = "";
-              this.user.email = "";
-              this.user.phone = "";
-            }
-            this.user.status =
-              response.data.data.status == 1 ? "aktif" : "tidak aktif";
+            let resData = response.data.data;
+            this.menu = resData;
+            let urlSplit = resData.url.split("/");
+            this.menu.path = urlSplit
+              .slice(3, urlSplit.length)
+              .join("/")
+              .toLowerCase();
+            this.orderItem.push(resData.order);
+            this.menu.isActive =
+              resData.is_active == 1 ? "Aktif" : "Tidak Aktif";
+            this.menu.mustLogin = resData.must_login == 1 ? "Ya" : "Tidak";
+            this.menu.isParent = resData.is_parent == 1 ? true : false;
           }
         })
         .catch((e) => {
@@ -339,7 +393,7 @@ export default {
       this.dialogConfirmation.state = !this.dialogConfirmation.state;
     },
     clear() {
-      this.user = {};
+      this.menu = {};
       if (this.$refs.form) this.$refs.form.resetValidation();
     },
     errorState(e) {
@@ -347,23 +401,27 @@ export default {
         localStorage.removeItem("token");
         this._token = "";
         this.$router.push({ name: "index" });
-      } else if (e.response.status == 400) {
-        this.errors = e.response.data.errors;
-        this.makeDefaultNotification(
-          e.response.data.status,
-          e.response.data.message
-        );
+      } else {
+        if (e.response.data.errors) {
+          this.errors = e.response.data.errors;
+        } else {
+          this.showDialog = false;
+        }
+
+        this.errorRequestState(e);
       }
     },
   },
   created() {
     this._baseUrl = window.location.origin;
-    this._url = this._baseUrl + "/api/v1/users/";
+    this._url = this._baseUrl + "/api/v1/modules/";
   },
   watch: {
     showDialog: function (n, o) {
-      if (n && this.currentData) this.show(this.currentData.uuid);
-      else this.clear();
+      if (n && this.currentData) {
+        this.show(this.currentData.uuid);
+        if (this.$refs.form) this.$refs.form.resetValidation();
+      } else this.clear();
     },
   },
 };

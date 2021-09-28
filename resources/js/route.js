@@ -1,4 +1,3 @@
-import axios from 'axios';
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
@@ -13,7 +12,16 @@ const pages = require.context('./', true, /\.vue$/i);
 let routes = [
     { path: '*', component: () => import(/* webpackChunkName: "[request]" */ `./pages/PageNotFound`), name: 'pagenotfound' },
     { path: '/', component: () => import(/* webpackChunkName: "[request]" */ `./pages/auth/Login`), name: 'index' },
-    { path: '/login', component: () => import(/* webpackChunkName: "[request]" */ `./pages/auth/Login`), name: 'login' }
+    { path: '/login', component: () => import(/* webpackChunkName: "[request]" */ `./pages/auth/Login`), name: 'login' },
+    {
+        path: '/dashboard', component: () => import(/* webpackChunkName: "[request]" */ `./pages/Dashboard`), name: 'dashboard', beforeEnter: (to, from, next) => {
+            if (isLoggedIn()) {
+                next()
+            } else {
+                next('/')
+            }
+        }
+    }
 ]
 
 pages.keys().forEach((element, i) => {
@@ -23,7 +31,7 @@ pages.keys().forEach((element, i) => {
         let urlPath = element.split('/').pop().split('.')[0]
         let urlPathLowerCase = urlPath.match(/[A-Z][a-z]+/g).join('-').toLowerCase()
         let fixUrl = '/' + urlSlug + '/' + urlPathLowerCase
-        if (urlSlug != 'auth') {
+        if (urlSlug != 'auth' && urlSlug != 'Dashboard' && urlSlug != 'PageNotFound') {
             routes.push({
                 path: fixUrl,
                 name: urlPathLowerCase,
