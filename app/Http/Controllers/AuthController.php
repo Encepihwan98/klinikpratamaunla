@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Menu;
+use App\Models\MenuWithRole;
+use App\Models\RoleWithUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,8 +19,6 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-
-        $credentials = $request->only('email', 'password');
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
@@ -28,9 +29,14 @@ class AuthController extends Controller
             ]);
         }
 
+        $role = RoleWithUser::where('user_id', $user->id)->first();
+        $mr = MenuWithRole::where('role_id', $role->role_id)->where('is_home', 1)->first();
+        $home = Menu::where('id', $mr->menu_id)->first();
+
         return response()->json([
             'message' => 'Login sukses!',
             'status' => 'success',
+            'home' => $home->slug,
             'data'=> $user->createToken($request->email)->plainTextToken], 200);
     }
 

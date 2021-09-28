@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Menu;
+use App\Models\MenuWithRole;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -16,11 +18,16 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
+        if($this->cekAkses($request)->read == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         if(isset($request->limit)) {
             $data = $this->filter($request);
         } else {
             $data = Role::all();
         }
+
         return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
     }
 
@@ -32,6 +39,10 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        if($this->cekAkses($request)->create == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|unique:m_roles',
             'description' => 'nullable'
@@ -45,6 +56,22 @@ class RoleController extends Controller
         $store->description = $request->description;
         $store->superuser = $request->superuser ? 1 : 0;
         $store->save();
+
+        $count = MenuWithRole::where('role_id', $store->id)->count();
+        if($count == 0) {
+            foreach (Menu::all() as $key => $value) {
+                $store_role_menu = new MenuWithRole();
+                $store_role_menu->role_id = $store->id;
+                $store_role_menu->menu_id = $value->id;
+                $store_role_menu->is_home = 0;
+                $store_role_menu->create = 0;
+                $store_role_menu->read = 0;
+                $store_role_menu->update = 0;
+                $store_role_menu->delete = 0;
+                $store_role_menu->print = 0;
+                $store_role_menu->save();
+            }
+        }
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan!', 'data' => $this->filter($request)]);
     }
@@ -70,6 +97,10 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if($this->cekAkses($request)->update == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'nullable|unique:m_roles',
             'description' => 'nullable'
@@ -94,11 +125,16 @@ class RoleController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        if($this->cekAkses($request)->delete == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         if ($id == null) {
             return response()->json(['status' => 'error', 'message' => 'Data gagal dihapus!', 'errors' => 'ID kosong']);
         }
-
-        Role::where('uuid', $id)->delete();
+        $role = Role::where('uuid', $id);
+        MenuWithRole::where('role_id', $role->first()->id)->delete();
+        $role->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!', 'data' => $this->filter($request)]);
     }

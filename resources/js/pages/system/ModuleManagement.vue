@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu
+      :is-drawer-open.sync="isDrawerOpen"
+      :modules="modules"
+    ></vertical-nav-menu>
     <app-bar
       :isDrawerOpen="isDrawerOpen"
       :currentUser="currentUser"
@@ -13,22 +16,23 @@
             <v-container fluid>
               <v-row align="center">
                 <v-col class="d-flex" cols="6" md="6" sm="6">
-                  <p class="text-h5 text--primary">Manajemen Role</p>
+                  <p class="text-h5 text--primary">Manajemen Menu</p>
                 </v-col>
 
                 <v-col class="d-flex" cols="6" md="6" sm="6">
                   <v-btn
+                    v-if="web.create"
                     color="primary ml-auto"
                     small
                     elevation="2"
-                    @click="add"
-                    >Tambah Roles</v-btn
+                    @click="selectMethod(null, 'add')"
+                    >Tambah Menu</v-btn
                   >
                 </v-col>
 
                 <v-col class="d-flex" cols="6" sm="3" md="2">
                   <v-select
-                    v-model="filter.pageLimit"
+                    v-model="filter.limit"
                     dense
                     :items="selectItem"
                     label="Tampilkan"
@@ -37,7 +41,7 @@
                   ></v-select>
                 </v-col>
 
-                <v-col class="d-flex" cols="12" sm="6">
+                <v-col class="d-flex" cols="12" sm="6" md="6">
                   <v-text-field
                     v-model="filter.searchQuery"
                     dense
@@ -49,6 +53,18 @@
                     @click:append="filterPage('')"
                     @input="filterPage('')"
                   ></v-text-field>
+                </v-col>
+
+                <v-col class="d-flex mb-auto ml-auto" cols="12" sm="1" md="1">
+                  <v-btn
+                    :loading="web.filterOpen"
+                    :disabled="web.filterOpen"
+                    color="primary"
+                    small
+                    @click="web.filterOpen = !web.filterOpen"
+                  >
+                    <v-icon small dark> far fa-filter </v-icon>
+                  </v-btn>
                 </v-col>
               </v-row>
             </v-container>
@@ -71,7 +87,7 @@
                       </v-icon>
                     </th>
                     <th class="text-left">
-                      Nama
+                      Title
                       <v-icon @click="filterPage('name')" x-small>{{
                         filter.sortBy == "name"
                           ? filter.orderBy == "asc"
@@ -81,9 +97,19 @@
                       }}</v-icon>
                     </th>
                     <th class="text-left">
-                      Keterangan
-                      <v-icon @click="filterPage('description')" x-small>{{
-                        filter.sortBy == "description"
+                      Url
+                      <v-icon @click="filterPage('url')" x-small>{{
+                        filter.sortBy == "url"
+                          ? filter.orderBy == "asc"
+                            ? "fas fa-sort-amount-up"
+                            : "fas fa-sort-amount-down"
+                          : "fas fa-sort-alt"
+                      }}</v-icon>
+                    </th>
+                    <th class="text-left">
+                      Induk Menu
+                      <v-icon @click="filterPage('parent')" x-small>{{
+                        filter.sortBy == "parent"
                           ? filter.orderBy == "asc"
                             ? "fas fa-sort-amount-up"
                             : "fas fa-sort-amount-down"
@@ -96,16 +122,36 @@
                 <tbody v-if="data.data.length > 0 && web.isTableLoad == false">
                   <tr v-for="(item, index) in data.data" :key="item.name">
                     <td>{{ index + data.from }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.description }}</td>
                     <td>
-                      <v-btn small @click="show(item)">
+                      {{ item.name }}
+                    </td>
+                    <td>{{ item.url }}</td>
+                    <td>{{ item.parent }}</td>
+                    <td>
+                      <v-btn
+                        small
+                        @click="selectMethod(item, 'status')"
+                        v-if="web.update"
+                      >
+                        <v-icon small>{{
+                          item.is_active == 1 ? "far fa-check" : "far fa-times"
+                        }}</v-icon>
+                      </v-btn>
+                      <v-btn small @click="selectMethod(item, 'show')">
                         <v-icon small>far fa-eye</v-icon>
                       </v-btn>
-                      <v-btn small @click="edit(item)">
+                      <v-btn
+                        small
+                        @click="selectMethod(item, 'edit')"
+                        v-if="web.update"
+                      >
                         <v-icon small>far fa-edit</v-icon>
                       </v-btn>
-                      <v-btn small @click="selectMethod(item, 'delete')">
+                      <v-btn
+                        small
+                        @click="selectMethod(item, 'delete')"
+                        v-if="web.delete"
+                      >
                         <v-icon small>far fa-trash</v-icon>
                       </v-btn>
                     </td>
@@ -113,7 +159,7 @@
                 </tbody>
                 <tbody v-else-if="web.isTableLoad == true" class="text-center">
                   <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                       <v-row class="app-content-container" justify="center">
                         <v-overlay :value="true" :absolute="true">
                           <v-progress-circular
@@ -128,7 +174,7 @@
                 </tbody>
                 <tbody v-else class="text-center">
                   <tr>
-                    <td colspan="4">Data Kosong!</td>
+                    <td colspan="5">Data Kosong!</td>
                   </tr>
                 </tbody>
               </template>
@@ -142,20 +188,52 @@
               @input="filterPage('')"
             ></v-pagination>
           </v-card-actions>
+          <v-navigation-drawer
+            v-model="web.filterOpen"
+            absolute
+            temporary
+            right
+          >
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="text-center text-h6">
+                  Filter
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+
+            <v-divider></v-divider>
+
+            <v-container fluid>
+              <v-autocomplete
+                class="ma-2"
+                v-model="filter.role"
+                outlined
+                dense
+                small-chips
+                label="Roles"
+                @input="filterPage('')"
+                :items="roles"
+              ></v-autocomplete>
+            </v-container>
+          </v-navigation-drawer>
         </v-card>
       </div>
-      <form-dialog-role
+      <form-dialog-menu
         :dialog="dialog"
         :currentData="currentData"
         :condition="condition"
+        :roles="roles"
         :filter="filter"
+        :parentData="data.parentData"
+        :parentName="data.parentName"
         @updateDialog="dialog.state = $event"
         @updateData="changeData($event)"
-      ></form-dialog-role>
+      ></form-dialog-menu>
 
       <confirmation-dialog
         :confirmationDialog="dialogConfirmation"
-        :method="remove"
+        :method="condition == 'delete' ? remove : active"
         @changeDialogState="dialogConfirmation.state = $event"
       ></confirmation-dialog>
     </v-main>
@@ -164,29 +242,32 @@
 </template>
 
 <script>
-import { ref } from "@vue/composition-api";
 export default {
+  props: {
+    modules: [],
+  },
   data() {
-    const isDrawerOpen = ref(null);
     return {
       _url: "",
-      _token: "",
       web: {
         isTableLoad: false,
+        filterOpen: false,
       },
       filter: {
         page: 1,
         searchQuery: "",
-        limit: 25,
+        limit: 10,
         sortBy: "id",
         orderBy: "asc",
-        roles: [],
+        role: [],
       },
-      isDrawerOpen,
+      isDrawerOpen: true,
       data: {
         data: [],
         current_page: 1,
       },
+      errors: {},
+      roles: [],
       currentData: {},
       currentUser: {},
       dialog: {
@@ -202,24 +283,6 @@ export default {
     };
   },
   methods: {
-    show(data) {
-      this.currentData = data;
-      this.condition = "show";
-      this.dialog.title = "Data Role";
-      this.showDialog(false);
-    },
-    edit(data) {
-      this.currentData = data;
-      this.condition = "update";
-      this.dialog.title = "Edit Role";
-      this.showDialog(false);
-    },
-    add() {
-      this.currentData = null;
-      this.condition = "store";
-      this.dialog.title = "Tambah Role";
-      this.showDialog(false);
-    },
     remove() {
       this.web.isTableLoad = true;
       axios
@@ -236,7 +299,30 @@ export default {
           }
         })
         .catch((e) => {
-          errorState(e);
+          this.errorState(e);
+        });
+    },
+    active() {
+      this.web.isTableLoad = true;
+      let req = Object.assign(
+        { status: !this.currentData.is_active },
+        this.filter
+      );
+      axios
+        .post(`${this._url}active/${this.currentData.uuid}`, req)
+        .then((response) => {
+          if (response.status == 200) {
+            this.web.isTableLoad = false;
+            this.data = response.data.data;
+            this.filter.page = response.data.data.current_page;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
         });
     },
     selectMethod(data, item) {
@@ -245,6 +331,23 @@ export default {
         this.condition = item;
         this.dialogConfirmation.message = "menghapus";
         this.showDialog(true);
+      } else if (item == "status") {
+        this.condition = item;
+        this.dialogConfirmation.message = "mengubah";
+        this.showDialog(true);
+      } else if (item == "add") {
+        this.currentData = null;
+        this.condition = "store";
+        this.dialog.title = "Tambah Menu";
+        this.showDialog(false);
+      } else if (item == "show") {
+        this.condition = "show";
+        this.dialog.title = "Data Menu";
+        this.showDialog(false);
+      } else if (item == "edit") {
+        this.condition = "update";
+        this.dialog.title = "Edit Menu";
+        this.showDialog(false);
       }
     },
     showDialog(isConfirmation) {
@@ -256,13 +359,14 @@ export default {
     },
     filterPage(sort_by) {
       this.web.isTableLoad = true;
-      if (sort_by != "" && sort_by != null && sort_by != "undefined") {
+      if (sort_by) {
         this.filter.sortBy == sort_by
           ? this.filter.orderBy == "asc"
             ? (this.filter.orderBy = "desc")
             : (this.filter.orderBy = "asc")
           : (this.filter.sortBy = sort_by);
       }
+
       let url =
         this._url +
         "?page=" +
@@ -274,7 +378,9 @@ export default {
         "&sortBy=" +
         this.filter.sortBy +
         "&orderBy=" +
-        this.filter.orderBy;
+        this.filter.orderBy +
+        "&role=" +
+        this.filter.role;
       axios
         .get(url)
         .then((response) => {
@@ -282,23 +388,25 @@ export default {
             this.data = response.data.data;
             this.filter.page = response.data.data.current_page;
             this.web.isTableLoad = false;
-            this.getCurrentUser();
+            this.currentUser = this.requestCurrentUser();
+            if (!this.roles || this.roles < 1) {
+              this.getRoles();
+            }
           }
         })
         .catch((e) => {
-          errorState(e);
+          this.errorState(e);
         });
     },
-    changeData(newdata) {
-      this.data = newdata;
-    },
-    getCurrentUser() {
-      let url = window.location.origin + "/api/v1/user/";
+    getRoles() {
+      let url = window.location.origin + "/api/v1/roles/";
       axios
-        .post(url)
+        .get(url)
         .then((response) => {
           if (response.status == 200) {
-            this.currentUser = response.data.data;
+            this.roles = response.data.data.map(function (data) {
+              return data["name"];
+            });
           }
         })
         .catch((e) => {
@@ -306,27 +414,42 @@ export default {
         });
     },
     errorState(e) {
+      console.log(e.response);
+      this.web.isTableLoad = false;
+      this.errors = e.response.data.errors;
       if (e.response.status == 401) {
         localStorage.removeItem("token");
         this._token = "";
         this.$router.push({ name: "index" });
-      } else if (e.response.status == 400) {
-        this.web.isTableLoad = false;
-        this.errors = e.response.data.errors;
-        this.makeDefaultNotification(
-          e.response.data.status,
-          e.response.data.message
-        );
+      } else {
+        this.errorRequestState(e);
       }
+    },
+    changeData(newdata) {
+      this.data = newdata;
     },
   },
   created() {
-    this._url = window.location.origin + "/api/v1/roles/";
-    this._token = localStorage.getItem("token");
-    window.axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${this._token}`;
+    if (this.modules.length > 0) {
+      let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    }
+    this._url = window.location.origin + "/api/v1/modules/";
     this.filterPage("");
+  },
+  watch: {
+    modules: function (n, o) {
+      let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    },
   },
 };
 </script>

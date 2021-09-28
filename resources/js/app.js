@@ -7,13 +7,15 @@ import { router } from './route'
 import Vue from 'vue';
 import vuetify from './plugins/vuetify'
 import VuetifyMask from 'vuetify-mask'
-import { SAUtils } from './utils/SweetalertUtils'
+import { AuthUtils } from './utils/AuthUtils'
+import { RRUtils } from './utils/RemoteRequest'
 
 // Component
 import Base from './layouts/Base'
 
 // Use
-Vue.use(SAUtils)
+Vue.use(RRUtils)
+Vue.use(AuthUtils)
 Vue.use(VuetifyMask)
 
 const components = require.context('./', true, /\.vue$/i);

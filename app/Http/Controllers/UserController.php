@@ -20,6 +20,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        if($this->cekAkses($request)->read == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         if(isset($request->limit)) {
             $data = $this->filter($request);
         } else {
@@ -46,6 +50,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        if($this->cekAkses($request)->create == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'username' => 'required|unique:users',
@@ -108,6 +116,10 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if($this->cekAkses($request)->update == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'username' => 'nullable|unique:users',
@@ -155,6 +167,10 @@ class UserController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        if($this->cekAkses($request)->delete == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         if (empty($id)) {
             return response()->json(['status' => 'error', 'message' => 'Data gagal dihapus!', 'errors' => 'ID kosong']);
         }
@@ -167,6 +183,10 @@ class UserController extends Controller
 
     public function active(Request $request, $id)
     {
+        if($this->cekAkses($request)->update == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         if (empty($id)) {
             return response()->json(['status' => 'error', 'message' => 'User gagal diaktifkan!', 'errors' => 'ID kosong']);
         }

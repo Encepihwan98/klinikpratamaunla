@@ -4,23 +4,14 @@
       :key="$vuetify.theme.dark"
       @click="$vuetify.theme.dark = !$vuetify.theme.dark"
     >
-      {{ $vuetify.theme.dark ? icons.mdiWeatherSunny : icons.mdiWeatherNight }}
+      {{ $vuetify.theme.dark ? 'far fa-moon' : 'far fa-sun' }}
     </v-icon>
   </v-fade-transition>
 </template>
 
 <script>
-import { mdiWeatherNight, mdiWeatherSunny } from '@mdi/js'
 
 export default {
-  setup() {
-    return {
-      icons: {
-        mdiWeatherNight,
-        mdiWeatherSunny,
-      },
-    }
-  },
 }
 </script>
 

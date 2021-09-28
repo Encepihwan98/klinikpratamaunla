@@ -127,12 +127,10 @@
 </template>
 
 <script>
-// eslint-disable-next-line object-curly-newline
-import { ref } from "@vue/composition-api";
-import LoadingOverlay from "../../components/LoadingOverlay.vue";
-
 export default {
-  components: { LoadingOverlay },
+  props: {
+    modules: [],
+  },
   data: () => ({
     rules: {
       email: (v) => /.+@.+\..+/.test(v) || "Format email tidak valid.",
@@ -141,44 +139,77 @@ export default {
     isLoad: false,
     valid: false,
     isPasswordVisible: false,
+    module: {},
     user: {},
     errors: [],
   }),
+  computed: {
+    retriveData: {
+      get() {
+        return this.module;
+      },
+      set(value) {
+        this.$emit("onUpdateModule", value);
+      },
+    },
+  },
   methods: {
     login() {
       if (this.$refs.form.validate()) {
         this.isLoad = true;
         axios.get("/sanctum/csrf-cookie").then((response) => {
-          axios
-            .post(window.location.origin + "/api/v1/login", this.user)
-            .then((response) => {
-              console.log(response);
-              if (response.status == 200) {
-                  localStorage.setItem('token', response.data.data)
-                    this.isLoad = false;
-                    this.$router.push({
-                      name: "user-management"
-                    });
-                    this.makeDefaultNotification(
-                      response.data.status,
-                      response.data.message
-                    );
-              }
-            })
-            .catch((err) => {
-              this.errors = err.response.data.errors;
-              this.isLoad = false;
-              this.makeDefaultNotification(
-                err.response.data.errors.status[0],
-                err.response.data.errors.message[0]
-              );
-            });
+          if (response.status == 204) {
+            axios
+              .post(window.location.origin + "/api/v1/login", this.user)
+              .then((response) => {
+                console.log(response);
+                if (response.status == 200) {
+                  localStorage.setItem("token", response.data.data);
+                  axios.defaults.headers.common[
+                    "Authorization"
+                  ] = `Bearer ${localStorage.getItem("token")}`;
+                  this.retriveData = this.requestModule();
+                  this.isLoad = false;
+                  this.makeDefaultNotification(
+                    response.data.status,
+                    response.data.message
+                  );
+                  this.$router.push({
+                    name: response.data.home,
+                  });
+                }
+              })
+              .catch((err) => {
+                this.errors = err.response.data.errors;
+                this.isLoad = false;
+                this.makeDefaultNotification(
+                  err.response.data.errors.status[0],
+                  err.response.data.errors.message[0]
+                );
+              });
+          }
         });
       }
     },
     clear() {
       this.user = {};
       if (this.$refs.form) this.$refs.form.resetValidation();
+    },
+  },
+  created() {
+    if (this.modules.length > 0) {
+      let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
+      if (this.isLoggedIn()) {
+        this.$router.push({ name: access.home });
+      }
+    }
+  },
+  watch: {
+    modules: function (n, o) {
+      let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);
+      if (this.isLoggedIn()) {
+        this.$router.push({ name: access.home });
+      }
     },
   },
 };
