@@ -31,6 +31,7 @@ pages.keys().forEach((element, i) => {
         let urlPath = element.split('/').pop().split('.')[0]
         let urlPathLowerCase = urlPath.match(/[A-Z][a-z]+/g).join('-').toLowerCase()
         let fixUrl = '/' + urlSlug + '/' + urlPathLowerCase
+        console.log(element);
         if (urlSlug != 'auth' && urlSlug != 'Dashboard' && urlSlug != 'PageNotFound') {
             routes.push({
                 path: fixUrl,
