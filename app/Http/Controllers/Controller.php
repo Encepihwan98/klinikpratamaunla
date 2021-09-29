@@ -17,9 +17,15 @@ class Controller extends BaseController
     {
         $module = array();
         $joinModule = array();
-        $menu = Menu::where('url', 'LIKE', '%'.$request->headers->get('referer').'%')->first();
+        $apiModule = explode('/', $request->url())[5];
+        $menu = Menu::where('url', 'LIKE', '%'.$request->headers->get('referer').'%')
+                ->where('api_module',$apiModule)->first();
+                if($menu->api_module == 'user') dd($menu);
+        if(!$menu) return (object) ['create'=>0, 'read'=>0, 'update'=>0,'delete'=>0,'print'=>0];
         foreach ($request->user()->roles()->get() as $v) {
-            array_push($joinModule, MenuWithRole::where('role_id', $v->role()->first()->id)->where('menu_id',$menu->id)->get());
+            array_push($joinModule, MenuWithRole::where('role_id', $v->role()->first()->id)
+                                    ->where('menu_id',$menu->id)
+                                    ->get());
         }
         $module = $this->compareMenu($joinModule, null, 0, 1, count($joinModule));
         return $module[0];
