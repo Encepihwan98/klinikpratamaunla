@@ -139,6 +139,17 @@ class RoleController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!', 'data' => $this->filter($request)]);
     }
 
+    public function rolePublic(Request $request)
+    {
+        if(isset($request->limit)) {
+            $data = $this->filter($request);
+        } else {
+            $data = Role::all();
+        }
+
+        return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
+    }
+
     public function filter(Request $request) {
         $searchRequest = $request->searchQuery;
         $search = !empty($searchRequest) && $searchRequest != "null" ? $searchRequest : "";

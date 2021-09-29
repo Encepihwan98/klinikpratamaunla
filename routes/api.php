@@ -38,6 +38,7 @@ Route::prefix('v1')->group(function () {
         // Below mention routes are available only for the authenticated users.
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('user', [AuthController::class, 'user']);
+            Route::post('role', [RoleController::class, 'rolePublic']);
             Route::post('logout', [AuthController::class, 'logout']);
 
             Route::apiResource('roles', RoleController::class);

@@ -390,24 +390,9 @@ export default {
             this.filter.page = response.data.data.current_page;
             this.web.isTableLoad = false;
             if (!this.roles || this.roles < 1) {
-              this.getRoles();
+              this.roles = this.requestRole()
             }
             this.currentUser = this.requestCurrentUser();
-          }
-        })
-        .catch((e) => {
-          this.errorState(e);
-        });
-    },
-    getRoles() {
-      let url = window.location.origin + "/api/v1/roles/";
-      axios
-        .get(url)
-        .then((response) => {
-          if (response.status == 200) {
-            this.roles = response.data.data.map(function (data) {
-              return data["name"];
-            });
           }
         })
         .catch((e) => {

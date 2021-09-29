@@ -135,6 +135,18 @@
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="12" md="6">
+                  <v-text-field
+                    v-model="menu.api_module"
+                    dense
+                    label="Api Module"
+                    outlined
+                    :disabled="condition == 'show' ? true : false"
+                    :error-messages="errors.api_module"
+                    :rules="menu.isParent ? [] : [rules.required]"
+                    :readonly="menu.isParent"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="12" md="6">
                   <v-select
                     v-model="menu.mustLogin"
                     dense

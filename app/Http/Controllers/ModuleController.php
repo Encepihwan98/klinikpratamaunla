@@ -52,6 +52,7 @@ class ModuleController extends Controller
             'parent' => 'required',
             'mustLogin' => 'required',
             'order' => 'nullable',
+            'api_module' => 'nullable',
             'isParent' => 'boolean',
             'isActive' => 'required'
         ]);
@@ -67,6 +68,7 @@ class ModuleController extends Controller
         $store->parent_id = $request->parent == 'Root' ? 0 : Menu::where('name', $request->parent)->first()->id;
         $store->order = $request->order;
         $store->icon = $request->icon;
+        $store->api_module = $request->api_module;
         $store->component = empty($request->component) ? '.'  : $request->component;
         $store->must_login = $request->mustLogin == 'Ya' ? true : false;
         $store->is_active = $request->isActive == 'Aktif' ? true : false;
@@ -127,6 +129,7 @@ class ModuleController extends Controller
             'parent' => 'required',
             'mustLogin' => 'required',
             'order' => 'nullable',
+            'api_module' => 'nullable',
             'isParent' => 'boolean',
             'isActive' => 'required'
         ]);
@@ -141,6 +144,7 @@ class ModuleController extends Controller
             'parent_id' => $request->parent == 'Root' ? 0 : Menu::where('name', $request->parent)->first()->id,
             'order' => $request->order,
             'icon' => $request->icon,
+            'api_module' => $request->api_module,
             'component' => empty($request->component) ? '.'  : $request->component,
             'must_login' => $request->mustLogin == 'Ya' ? true : false,
             'is_active' => $request->isActive == 'Aktif' ? true : false,
