@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
     <app-bar
       :isDrawerOpen="isDrawerOpen"
       :currentUser="currentUser"
@@ -40,7 +40,7 @@
               </v-col>
 
               <v-col class="d-flex" cols="12" sm="2">
-                <v-btn color="primary" dark @click="add"> Tambah Data </v-btn>
+                <v-btn v-if="web.create" color="primary" dark @click="selectMethod(null, 'add')"> Tambah Data </v-btn>
               </v-col>
             </v-row>
           </v-container>
@@ -76,14 +76,14 @@
                   <td>{{ index + data.from }}</td>
                   <td>{{ item.description }}</td>
                   <td>
-                    <v-btn color="primary" icon  @click="edit"> 
+                    <v-btn color="primary" icon   @click="selectMethod(item, 'edit')"> 
                       <v-icon small>far fa-edit</v-icon>
                     </v-btn>
 
                     <v-btn
                       color="primary"
                       icon
-                      small @click="selectDelete(item, 'delete')"
+                      small @click="selectMethod(item, 'delete')"
                     >
                       <v-icon small>far fa-trash</v-icon>
                     </v-btn>
@@ -193,6 +193,9 @@ import { ref } from "@vue/composition-api";
 import { mdiMagnify, mdiBellOutline, mdiGithub } from "@mdi/js";
 
 export default {
+  props: {
+    modules: [],
+  },
   data() {
     const isDrawerOpen = ref(null);
     return {
@@ -234,23 +237,25 @@ export default {
     };
   },
   methods: {
-    selectMethod() {
-      if (this.$refs.form.validate()) {
-        if (this.condition == "store") {
-          this.dialogConfirmation.message = "menyimpan";
-          this.popDialog();
-        } else {
-          this.dialogConfirmation.message = "mengubah";
-          this.popDialog();
-        }
-      }
-    },
-    selectDelete(data, item) {
+   selectMethod(data, item) {
       this.currentData = data;
       if (item == "delete") {
         this.condition = item;
         this.dialogConfirmation.message = "menghapus";
         this.showDialog(true);
+      } else if (item == "add") {
+        this.currentData = null;
+        this.condition = "store";
+        this.dialog.title = "Tambah Role";
+        this.showDialog(false);
+      } else if (item == "show") {
+        this.condition = "show";
+        this.dialog.title = "Data Role";
+        this.showDialog(false);
+      } else if (item == "edit") {
+        this.condition = "update";
+        this.dialog.title = "Edit Role";
+        this.showDialog(false);
       }
     },
     show(data) {
@@ -323,12 +328,14 @@ export default {
         localStorage.removeItem("token");
         this._token = "";
         this.$router.push({ name: "index" });
-      } else if (e.response.status == 400) {
-        this.errors = e.response.data.errors;
-        this.makeDefaultNotification(
-          e.response.data.status,
-          e.response.data.message
-        );
+      } else {
+        if (e.response.data.errors) {
+          this.errors = e.response.data.errors;
+        } else {
+          this.showDialog = false;
+        }
+
+        this.errorRequestState(e);
       }
     },
     remove() {
@@ -347,7 +354,7 @@ export default {
           }
         })
         .catch((e) => {
-          errorState(e);
+          this.errorState(e);
         });
     },
     edit(data) {
@@ -401,17 +408,31 @@ export default {
           }
         })
         .catch((e) => {
-          errorState(e);
+          this.errorState(e);
         });
     },
   },
-  created() {
-    this._url = window.location.origin + "/api/v1/daftaragama/";
-    this._token = localStorage.getItem("token");
-    window.axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${this._token}`;
+   created() {
+    if (this.modules.length > 0) {
+      let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    }
+    this._url = window.location.origin + "/api/v1/daftar-agama/";
     this.filterPage("");
+  },
+  watch: {
+    modules: function (n, o) {
+      let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    },
   },
 };
 </script>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agama;
+use App\Models\MenuWithRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -17,11 +18,16 @@ class AgamaController extends Controller
      */
     public function index(Request $request)
     {
-        if(isset($request->limit)) {
+        if($this->cekAkses($request)->read == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
+         if(isset($request->limit)) {
             $data = $this->filter($request);
         } else {
             $data = Agama::all();
         }
+
         return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
     }
 
@@ -43,6 +49,10 @@ class AgamaController extends Controller
      */
     public function store(Request $request)
     {
+        if($this->cekAkses($request)->create == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'description' => 'required|unique:m_roles',
         ]);

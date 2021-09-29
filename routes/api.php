@@ -43,7 +43,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('roles', RoleController::class);
             Route::apiResource('users', UserController::class);
             Route::apiResource('modules', ModuleController::class);
-            Route::apiResource('daftaragama', AgamaController::class);
+            Route::apiResource('daftar-agama', AgamaController::class);
             Route::apiResource('r-modules', ModuleWithRoleController::class);
             Route::post('my-modules', [ModuleController::class, 'myModule']);
 

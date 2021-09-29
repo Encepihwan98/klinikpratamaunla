@@ -72,6 +72,9 @@
 } from "@mdi/js";
 
 export default {
+  props: {
+    modules: [],
+  },
   setup() {
     const isDrawerOpen = ref(null);
 

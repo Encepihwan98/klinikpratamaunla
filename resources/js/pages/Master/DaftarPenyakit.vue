@@ -77,11 +77,11 @@
 import Diagnosa from '../../components/kunjungan/Diagnosa.vue';
 import Tindakan from '../../components/kunjungan/Tindakan.vue';
 import Resep from '../../components/kunjungan/Resep.vue';
-import TarifTindakan from '../../components/Tarif/TarifTindakan.vue';
-import TarifOksigen from '../../components/Tarif/TarifOksigen.vue';
-import TarifInsenerator from '../../components/Tarif/TarifInsenerator.vue';
-import TarifUtdrs from '../../components/Tarif/TarifUtdrs.vue';
-import TarifKamarJenazah from '../../components/Tarif/TarifKamarJenazah.vue';
+import TarifTindakan from '../../components/tarif/TarifTindakan.vue';
+import TarifOksigen from '../../components/tarif/TarifOksigen.vue';
+import TarifInsenerator from '../../components/tarif/TarifInsenerator.vue';
+import TarifUtdrs from '../../components/tarif/TarifUtdrs.vue';
+import TarifKamarJenazah from '../../components/tarif/TarifKamarJenazah.vue';
 
 export default {
   components: { Diagnosa, Tindakan, Resep, TarifTindakan, TarifOksigen, TarifInsenerator, TarifUtdrs, TarifKamarJenazah },
