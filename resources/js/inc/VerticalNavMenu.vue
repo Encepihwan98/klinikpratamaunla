@@ -12,16 +12,16 @@
     <div class="vertical-nav-header d-flex items-center ps-6 pe-5 pt-5 pb-2">
       <router-link to="/" class="d-flex align-center text-decoration-none">
         <v-img
-          src="/assets/images/logos/logo.svg"
-          max-height="30px"
-          max-width="30px"
+          src="/assets/images/logos/simrs.png"
+          max-height="50px"
+          max-width="200px"
           alt="logo"
           contain
           eager
           class="app-logo me-3"
         ></v-img>
         <v-slide-x-transition>
-          <h2 class="app-title text--primary">MATERIO</h2>
+          <!-- <h2 class="app-title text--primary">SIMRS</h2> -->
         </v-slide-x-transition>
       </router-link>
     </div>
@@ -35,7 +35,7 @@
       class="vertical-nav-menu-items pr-5"
     >
       <nav-menu-link
-        v-if="!module.is_parent && module.parent_id == 0"
+        v-if="!module.is_parent && module.parent_id == 0 && module.icon != '.'"
         :title="module.name"
         :to="{ path: module.path }"
         :icon="module.icon"

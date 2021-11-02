@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agama;
-use App\Models\MenuWithRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\MenuWithRole;
 use Illuminate\Support\Str;
 
 
@@ -16,6 +16,7 @@ class AgamaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function index(Request $request)
     {
         if($this->cekAkses($request)->read == 0) {
@@ -86,11 +87,6 @@ class AgamaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -100,6 +96,10 @@ class AgamaController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if($this->cekAkses($request)->update == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'description' => 'nullable|unique:m_roles',
         ]);
@@ -122,6 +122,10 @@ class AgamaController extends Controller
      */
     public function destroy(Request $request, $id)
     {
+        if($this->cekAkses($request)->delete == 0) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        }
+        
         if ($id == null) {
             return response()->json(['status' => 'error', 'message' => 'Data gagal dihapus!', 'errors' => 'ID kosong']);
         }
@@ -129,7 +133,8 @@ class AgamaController extends Controller
         Agama::where('id', $id)->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!', 'data' => $this->filter($request)]);
-    }  
+    }
+    
     
     public function filter(Request $request) {
         $searchRequest = $request->searchQuery;
@@ -139,6 +144,14 @@ class AgamaController extends Controller
         })->orderBy($request->sortBy, $request->orderBy)->paginate($request->limit != "" ? $request->limit : 10);
 
         return $data;
+    }
+    public function global_function(Request $request){
+        if (isset($request->limit)) {
+            $data = $this->filter($request);
+        } else {
+            $data = Agama::all();
+        }
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
     }
 
 }

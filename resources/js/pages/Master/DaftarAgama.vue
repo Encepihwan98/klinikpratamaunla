@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
+    <vertical-nav-menu
+      :is-drawer-open.sync="isDrawerOpen"
+      :modules="modules"
+    ></vertical-nav-menu>
     <app-bar
       :isDrawerOpen="isDrawerOpen"
       :currentUser="currentUser"
@@ -16,7 +19,7 @@
             <v-row>
               <v-col class="d-flex" cols="12" sm="2">
                 <v-select
-                  v-model="filter.pageLimit"
+                  v-model="filter.limit"
                   dense
                   :items="selectItem"
                   label="Tampilkan"
@@ -40,7 +43,14 @@
               </v-col>
 
               <v-col class="d-flex" cols="12" sm="2">
-                <v-btn v-if="web.create" color="primary" dark @click="selectMethod(null, 'add')"> Tambah Data </v-btn>
+                <v-btn
+                  v-if="web.create"
+                  color="primary"
+                  dark
+                  @click="selectMethod(null, 'add')"
+                >
+                  Tambah Data
+                </v-btn>
               </v-col>
             </v-row>
           </v-container>
@@ -48,7 +58,8 @@
             <template v-slot:default>
               <thead>
                 <tr>
-                  <th class="text-left">No
+                  <th class="text-left">
+                    No
                     <v-icon @click="filterPage('id')" x-small>
                       {{
                         filter.sortBy == "id"
@@ -59,31 +70,39 @@
                       }}
                     </v-icon>
                   </th>
-                  <th class="text-left">Uraian
+                  <th class="text-left">
+                    Uraian
                     <v-icon @click="filterPage('description')" x-small>{{
-                        filter.sortBy == "description"
-                          ? filter.orderBy == "asc"
-                            ? "fas fa-sort-amount-up"
-                            : "fas fa-sort-amount-down"
-                          : "fas fa-sort-alt"
+                      filter.sortBy == "description"
+                        ? filter.orderBy == "asc"
+                          ? "fas fa-sort-amount-up"
+                          : "fas fa-sort-amount-down"
+                        : "fas fa-sort-alt"
                     }}</v-icon>
                   </th>
                   <th class="text-left">Aksi</th>
                 </tr>
               </thead>
-              <tbody  v-if="data.data.length > 0 && web.isTableLoad == false">
+              <tbody v-if="data.data.length > 0 && web.isTableLoad == false">
                 <tr v-for="(item, index) in data.data" :key="item.description">
                   <td>{{ index + data.from }}</td>
                   <td>{{ item.description }}</td>
                   <td>
-                    <v-btn color="primary" icon   @click="selectMethod(item, 'edit')"> 
+                    <v-btn
+                      color="primary"
+                      icon
+                      @click="selectMethod(item, 'edit')"
+                      v-if="web.update"
+                    >
                       <v-icon small>far fa-edit</v-icon>
                     </v-btn>
 
                     <v-btn
                       color="primary"
                       icon
-                      small @click="selectMethod(item, 'delete')"
+                      small
+                      @click="selectMethod(item, 'delete')"
+                      v-if="web.delete"
                     >
                       <v-icon small>far fa-trash</v-icon>
                     </v-btn>
@@ -112,11 +131,11 @@
                   </td>
                 </tr>
               </tbody>
-            <tbody v-else class="text-center">
-              <tr>
-                <td colspan="4">Data Kosong!</td>
-              </tr>
-            </tbody>
+              <tbody v-else class="text-center">
+                <tr>
+                  <td colspan="4">Data Kosong!</td>
+                </tr>
+              </tbody>
             </template>
           </v-simple-table>
           <v-card-actions class="d-flex justify-center">
@@ -130,11 +149,7 @@
         </v-card>
       </div>
       <div>
-        <v-dialog 
-          v-model="dialog.state" 
-          persistent 
-          max-width="500px"
-        >
+        <v-dialog v-model="dialog.state" persistent max-width="500px">
           <v-card>
             <v-card-title>
               <span class="text-h5">Form</span>
@@ -156,6 +171,10 @@
                         placeholder="Uraian"
                         outlined
                         dense
+                        clearable
+                        :error-messages="errors.name"
+                        :rules="[rules.required]"
+                        :disabled="condition == 'show' ? true : false"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -171,7 +190,7 @@
                 v-if="condition != 'show'"
                 color="blue darken-1"
                 textx
-                @click="selectMethod"
+                @click="selectStore"
               >
                 Simpan
               </v-btn>
@@ -180,7 +199,13 @@
         </v-dialog>
         <confirmation-dialog
           :confirmationDialog="dialogConfirmation"
-          :method="condition == 'store' ? store : condition == 'update' ? update : remove"
+          :method="
+            condition == 'store'
+              ? store
+              : condition == 'update'
+              ? update
+              : remove
+          "
           @changeDialogState="dialogConfirmation.state = $event"
         ></confirmation-dialog>
       </div>
@@ -201,15 +226,16 @@ export default {
     return {
       _url: "",
       agama: {},
+      
       valid: false,
       data: {},
-       web: {
+      web: {
         isTableLoad: false,
       },
       filter: {
         page: 1,
         searchQuery: "",
-        limit: 20,
+        limit: 10,
         sortBy: "id",
         orderBy: "asc",
       },
@@ -237,7 +263,18 @@ export default {
     };
   },
   methods: {
-   selectMethod(data, item) {
+    selectStore() {
+      if (this.$refs.form.validate()) {
+        if (this.condition == "store") {
+          this.dialogConfirmation.message = "menyimpan";
+          this.popDialog();
+        } else {
+          this.dialogConfirmation.message = "mengubah";
+          this.popDialog();
+        }
+      }
+    },
+    selectMethod(data, item) {
       this.currentData = data;
       if (item == "delete") {
         this.condition = item;
@@ -257,12 +294,6 @@ export default {
         this.dialog.title = "Edit Role";
         this.showDialog(false);
       }
-    },
-    show(data) {
-      this.currentData = data;
-      this.condition = "show";
-      this.dialog.title = "Data Role";
-      this.showDialog(false);
     },
     store() {
       let req = Object.assign(this.agama, this.filter);
@@ -303,7 +334,6 @@ export default {
     },
     show(id) {
       let url = `${this._url}${id}`;
-      this.currentData = data;
       axios
         .get(url)
         .then((response) => {
@@ -412,7 +442,7 @@ export default {
         });
     },
   },
-   created() {
+  created() {
     if (this.modules.length > 0) {
       let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
       if (Object.keys(access).length === 1 && access.constructor === Object) {
@@ -424,7 +454,17 @@ export default {
     this._url = window.location.origin + "/api/v1/daftar-agama/";
     this.filterPage("");
   },
+  computed: {
+    dialogState() {
+      return this.dialog.state;
+    },
+  },
   watch: {
+    dialogState: function (n, o) {
+      console.log(n);
+      if (n && this.currentData) this.show(this.currentData.id);
+      else this.clear();
+    },
     modules: function (n, o) {
       let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);
       if (Object.keys(access).length === 1 && access.constructor === Object) {

@@ -10,7 +10,7 @@ function isLoggedIn() {
 const pages = require.context('./', true, /\.vue$/i);
 
 let routes = [
-    { path: '*', component: () => import(/* webpackChunkName: "[request]" */ `./pages/PageNotFound`), name: 'pagenotfound' },
+    // { path: '*', component: () => import(/* webpackChunkName: "[request]" */ `./pages/PageNotFound`), name: 'pagenotfound' },
     { path: '/', component: () => import(/* webpackChunkName: "[request]" */ `./pages/auth/Login`), name: 'index' },
     { path: '/login', component: () => import(/* webpackChunkName: "[request]" */ `./pages/auth/Login`), name: 'login' },
     {

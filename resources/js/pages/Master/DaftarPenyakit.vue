@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
         <v-card 
@@ -84,6 +84,9 @@ import TarifUtdrs from '../../components/tarif/TarifUtdrs.vue';
 import TarifKamarJenazah from '../../components/tarif/TarifKamarJenazah.vue';
 
 export default {
+  props: {
+    modules: [],
+  },
   components: { Diagnosa, Tindakan, Resep, TarifTindakan, TarifOksigen, TarifInsenerator, TarifUtdrs, TarifKamarJenazah },
   setup() {
     const isDrawerOpen = ref(null);

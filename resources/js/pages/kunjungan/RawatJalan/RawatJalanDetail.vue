@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
         <v-card
@@ -159,6 +159,9 @@ import Tindakan from '../../../components/kunjungan/Tindakan.vue';
 import Resep from '../../../components/kunjungan/Resep.vue';
 
 export default {
+  props: {
+    modules: [],
+  },
   components: { Diagnosa, Tindakan, Resep },
   setup() {
     const isDrawerOpen = ref(null);

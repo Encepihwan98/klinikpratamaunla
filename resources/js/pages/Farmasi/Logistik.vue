@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
         <div class="app-content-container boxed-container pa-6">
@@ -32,7 +32,9 @@
             >
                 <v-card flat>
                 <v-card-text>
-                    <jenis-logistik></jenis-logistik>
+                    <jenis-logistik 
+                      :baseData="baseDataLogisticType"
+                    ></jenis-logistik>
                 </v-card-text>
                 </v-card>
             </v-tab-item>
@@ -74,6 +76,9 @@ import TarifUtdrs from '../../components/tarif/TarifUtdrs.vue';
 import TarifKamarJenazah from '../../components/tarif/TarifKamarJenazah.vue';
 
 export default {
+  props: {
+    modules: [],
+  },
   components: { Diagnosa, Tindakan, Resep, TarifTindakan, TarifOksigen, TarifInsenerator, TarifUtdrs, TarifKamarJenazah },
   setup() {
     const isDrawerOpen = ref(null);
@@ -90,13 +95,93 @@ export default {
       },
     };
   },
-
+  methods: {
+    filterPageLogisticType(sort_by) {
+      if (sort_by != "" && sort_by != null && sort_by != "undefined") {
+        this.filter.sortBy == sort_by
+          ? this.filter.orderBy == "asc"
+            ? (this.filter.orderBy = "desc")
+            : (this.filter.orderBy = "asc")
+          : (this.filter.sortBy = sort_by);
+      }
+      let url =
+        window.location.origin + "/api/v1/logistik/" +
+        "?page=" +
+        this.filter.page +
+        "&limit=" +
+        this.filter.limit +
+        "&searchQuery=" +
+        this.filter.searchQuery +
+        "&sortBy=" +
+        this.filter.sortBy +
+        "&orderBy=" +
+        this.filter.orderBy;
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.baseDataLogisticType = response.data.data;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    filterPageKategori(sort_by) {
+      if (sort_by != "" && sort_by != null && sort_by != "undefined") {
+        this.filter.sortBy == sort_by
+          ? this.filter.orderBy == "asc"
+            ? (this.filter.orderBy = "desc")
+            : (this.filter.orderBy = "asc")
+          : (this.filter.sortBy = sort_by);
+      }
+      let url =
+        window.location.origin + "/api/v1/kategori-kegiatan/" +
+        "?page=" +
+        this.filter.page +
+        "&limit=" +
+        this.filter.limit +
+        "&searchQuery=" +
+        this.filter.searchQuery +
+        "&sortBy=" +
+        this.filter.sortBy +
+        "&orderBy=" +
+        this.filter.orderBy +
+        "&module=" +
+        'daftar-kegiatan';
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.baseDataKategori = response.data.data;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+  },
   data () {
       return {
+        isOpen: '',
+        baseDataLogistic:{},
+        baseDataKategori:{},
         tab: null,
+        filter: {
+        page: 1,
+        searchQuery: "",
+        limit: 10,
+        sortBy: "id",
+        orderBy: "asc",
+      },
         text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
       }
     },
+  created() {
+    console.log('component created');
+    this.filterPageLogisticType('')
+    this.filterPageKategori('')
+  }
 };
 
 </script>

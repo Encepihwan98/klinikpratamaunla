@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class CaseType extends Model
 {
     use HasFactory;
+    protected $fillable = ['description'];
     protected $table = 'm_case_types';
 }

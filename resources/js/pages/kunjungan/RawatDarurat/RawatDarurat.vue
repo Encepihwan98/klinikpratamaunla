@@ -1,156 +1,74 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu
+      :is-drawer-open.sync="isDrawerOpen"
+      :modules="modules"
+    ></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
       <div class="app-content-container boxed-container pa-6">
-        <v-card
-          class="mx-auto"
-          max-width="97%"
-          elevation="5"
-        >
-        <v-card-text>
-            <p class="text-h6 text--primary">
-                Daftar Agama
-            </p>
-            </v-card-text>
-            <v-container>
+        <v-card class="mx-auto" max-width="97%" elevation="5">
+          <v-card-text>
+            <p class="text-h6 text--primary">Managemnt Rawat Darurat</p>
+          </v-card-text>
+          <v-container>
             <v-row>
-                <v-col
-                    class="d-flex"
-                    cols="12"
-                    sm="2"
-                >
-                <v-select 
-                :items="items"
-                label="Tampilkan"
-                dense
-                outlined
-                chips
-                small-chips
+              <v-col class="d-flex" cols="12" sm="2">
+                <v-select
+                  :items="items"
+                  label="Tampilkan"
+                  dense
+                  outlined
+                  chips
+                  small-chips
                 ></v-select>
-                </v-col>
-
-                <v-col
-                class="d-flex"
-                cols="12"
-                sm="8"
-                >
+              </v-col>
+              <v-col class="d-flex" cols="12" sm="8">
                 <v-text-field
-                    outlined
-                    label="Search"
-                    append-icon="mdi-magnify"
-                    small
-                    dense
+                  outlined
+                  label="Search"
+                  append-icon="mdi-magnify"
+                  small
+                  dense
                 ></v-text-field>
-                </v-col>
-
-                <v-col
-                class="d-flex"
-                cols="12"
-                sm="2"
+              </v-col>
+              <v-col class="d-flex" cols="12" sm="2">
+                <v-btn
+                  depressed
+                  color="primary"
+                  :to="{ name: 'reg-rawat-jalan' }"
                 >
-                <v-dialog
-                    v-model="dialog"
-                    persistent
-                    max-width="500px"
-                >
-                    <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                        color="primary"
-                        dark
-                        v-bind="attrs"
-                        v-on="on"
-                    >
-                        Tambah Data
-                    </v-btn>
-                    </template>
-                    <v-card>
-                    <v-card-title>
-                        <span class="text-h5">Form</span>
-                        <hr>
-                    </v-card-title>
-                    <v-card-text>
-                        <v-container>
-                        <v-row>
-                            <v-col
-                            class="d-flex"
-                            cols="12"
-                            sm="12"
-                            >
-                                <v-text-field
-                                    label="Uraian :"
-                                    placeholder="Uraian"
-                                    outlined
-                                    dense
-                                ></v-text-field>
-                            </v-col>
-                            
-                        </v-row>
-                        </v-container>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="dialog = false"
-                        >
-                        Close
-                        </v-btn>
-                        <v-btn
-                        color="blue darken-1"
-                        text
-                        @click="dialog = false"
-                        >
-                        Save
-                        </v-btn>
-                    </v-card-actions>
-                    </v-card>
-                </v-dialog>
-                </v-col>
+                  Tambah Data
+                </v-btn>
+              </v-col>
             </v-row>
-            </v-container>
-        <v-simple-table>
+          </v-container>
+          <v-simple-table>
             <template v-slot:default>
-            <thead>
+              <thead>
                 <tr>
-                <th class="text-left">
-                    No
-                </th>
-                <th class="text-left">
-                    Nomor Kunjungan
-                </th>
-                <th class="text-left">
-                    Pasien
-                </th>
-                <th class="text-left">
-                    Waktu Masuk
-                </th>
-                <th class="text-left">
-                    Waktu Keluar
-                </th>
-                <th class="text-left">
-                    Diagnosa Awal
-                </th>
-                <th class="text-left">
-                    View 
-                </th>
+                  <th class="text-left">No</th>
+                  <th class="text-left">Nomor Kunjungan</th>
+                  <th class="text-left">Pasien</th>
+                  <th class="text-left">Waktu Masuk</th>
+                  <th class="text-left">Waktu Keluar</th>
+                  <th class="text-left">Diagnosa Awal</th>
+                  <th class="text-left">View</th>
                 </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
                 <tr>
-                    <td>1</td>
-                    <td>08786</td>
-                    <td>Maman</td>
-                    <td>10/10/2010</td>
-                    <td>11/10/2010</td>
-                    <td>Dahlian</td>
-                    <td>
-                      <v-btn icon :to="{name:'rawat-darurat-detail'}">
-                        <v-icon small>far fa-eye</v-icon>
-                      </v-btn>
-                    </td>
+                  <td>1</td>
+                  <td>08786</td>
+                  <td>Maman</td>
+                  <td>10/10/2010</td>
+                  <td>11/10/2010</td>
+                  <td>Dahlian</td>
+                  <td>
+                    <v-btn icon :to="{ name: 'rawat-jalan-detail' }">
+                      <v-icon small>far fa-eye</v-icon>
+                    </v-btn>
+                  </td>
                 </tr>
                 <!-- <tr
                 v-for="item in desserts"
@@ -159,10 +77,9 @@
                 <td>{{ item.name }}</td>
                 <td>{{ item.calories }}</td>
                 </tr> -->
-            </tbody>
+              </tbody>
             </template>
-        </v-simple-table>
-       
+          </v-simple-table>
         </v-card>
       </div>
     </v-main>
@@ -173,14 +90,13 @@
 
 
 <script>
-  import { ref } from "@vue/composition-api";
-  import {
-  mdiMagnify,
-  mdiBellOutline,
-  mdiGithub
-} from "@mdi/js";
+import { ref } from "@vue/composition-api";
+import { mdiMagnify, mdiBellOutline, mdiGithub } from "@mdi/js";
 
 export default {
+  props: {
+    modules: [],
+  },
   setup() {
     const isDrawerOpen = ref(null);
 
@@ -191,18 +107,17 @@ export default {
       icons: {
         mdiMagnify,
         mdiBellOutline,
-        mdiGithub
+        mdiGithub,
       },
     };
   },
 };
-
 </script>
 
 
 
 <style lang="scss" scoped>
-@import './resources/js/plugins/vuetify/default-preset/preset/variables.scss';
+@import "./resources/js/plugins/vuetify/default-preset/preset/variables.scss";
 
 .v-app-bar ::v-deep {
   .v-toolbar__content {

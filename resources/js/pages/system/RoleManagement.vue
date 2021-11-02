@@ -26,13 +26,12 @@
                     small
                     elevation="2"
                     @click="selectMethod(null, 'add')"
-                    >Tambah Roles</v-btn
-                  >
+                    >Tambah Roles</v-btn>
                 </v-col>
 
                 <v-col class="d-flex" cols="6" sm="3" md="2">
                   <v-select
-                    v-model="filter.pageLimit"
+                    v-model="filter.limit"
                     dense
                     :items="selectItem"
                     label="Tampilkan"

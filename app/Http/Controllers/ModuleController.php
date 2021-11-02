@@ -182,8 +182,10 @@ class ModuleController extends Controller
         $compareModule = array();
         $fixModule = array();
         foreach ($request->user()->roles()->get() as $v) {
+            // array_push($module, MenuWithRole::where('role_id', $v->role()->first()->id)->join('m_menus as mm', 'mm.id', '=', 'menu_with_roles.menu_id')->orderBy('mm.order', 'asc')->orderBy('mm.name', 'asc')->select('menu_with_roles.*')->get());
             array_push($module, MenuWithRole::where('role_id', $v->role()->first()->id)->orderBy('menu_id', 'asc')->get());
         }
+        // dd($module);
         $compareModule = $this->compareMenu($module, null, 0, 1, count($module));
 
         foreach ($compareModule as $key => $value) {
@@ -207,7 +209,6 @@ class ModuleController extends Controller
             foreach ($data as $key => $value) {
                 $data[$key]->parent = ($value->parent_id == 0) ? 'Root' : Menu::where('id',$value->parent_id)->first()->name;
             }
-
 
             array_push($parentData, (object)['name'=> 'Root', 'count'=> Menu::where('parent_id', 0)->count()]);
             foreach (Menu::all() as $key => $value) {

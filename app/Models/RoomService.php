@@ -9,3 +9,4 @@ class RoomService extends Model
 {
     use HasFactory;
 }
+

@@ -242,6 +242,7 @@ export default {
       menu: {
         isParent: false,
       },
+      
       orderItem: [],
       valid: false,
       dialogConfirmation: {

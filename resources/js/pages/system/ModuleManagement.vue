@@ -230,7 +230,7 @@
         @updateDialog="dialog.state = $event"
         @updateData="changeData($event)"
       ></form-dialog-menu>
-
+      
       <confirmation-dialog
         :confirmationDialog="dialogConfirmation"
         :method="condition == 'delete' ? remove : active"

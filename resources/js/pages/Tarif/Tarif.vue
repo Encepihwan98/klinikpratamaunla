@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
         <v-card 
@@ -16,11 +16,11 @@
             >
             <v-tabs-slider></v-tabs-slider>
 
-            <v-tab class="caption font-weight-bold" href="#tab-1">
+            <v-tab class="caption font-weight-bold" href="#tab-1" @click="isOpen='roomRate'">
                 Ruangan
             </v-tab>
 
-            <v-tab class="caption font-weight-bold" href="#tab-2">
+            <v-tab class="caption font-weight-bold" href="#tab-2" @click="isOpen='activityRate'">
                 Kegiatan
             </v-tab>
 
@@ -59,7 +59,8 @@
             >
                 <v-card flat>
                 <v-card-text>
-                    <tarif-ruangan></tarif-ruangan>
+                    <tarif-ruangan :baseData="baseDataRoom" :isOpen="isOpen">
+                    </tarif-ruangan>
                 </v-card-text>
                 </v-card>
             </v-tab-item>
@@ -69,7 +70,8 @@
             >
                 <v-card flat>
                 <v-card-text>
-                    <tarif-kegiatan></tarif-kegiatan>
+                    <tarif-kegiatan :baseData="baseDataActivity" :isOpen="isOpen">
+                    </tarif-kegiatan>
                 </v-card-text>
                 </v-card>
             </v-tab-item>
@@ -183,6 +185,9 @@ import TarifUtdrs from '../../components/tarif/TarifUtdrs.vue';
 import TarifKamarJenazah from '../../components/tarif/TarifKamarJenazah.vue';
 
 export default {
+  props: {
+    modules: [],
+  },
   components: { Diagnosa, Tindakan, Resep, TarifTindakan, TarifOksigen, TarifInsenerator, TarifUtdrs, TarifKamarJenazah },
   setup() {
     const isDrawerOpen = ref(null);
@@ -199,13 +204,96 @@ export default {
       },
     };
   },
-
+  methods: {
+    filterPageRoom(sort_by) {
+      if (sort_by != "" && sort_by != null && sort_by != "undefined") {
+        this.filter.sortBy == sort_by
+          ? this.filter.orderBy == "asc"
+            ? (this.filter.orderBy = "desc")
+            : (this.filter.orderBy = "asc")
+          : (this.filter.sortBy = sort_by);
+      }
+      let url =
+        window.location.origin + "/api/v1/tarif/" +
+        "?page=" +
+        this.filter.page +
+        "&limit=" +
+        this.filter.limit +
+        "&searchQuery=" +
+        this.filter.searchQuery +
+        "&sortBy=" +
+        this.filter.sortBy +
+        "&orderBy=" +
+        this.filter.orderBy;
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.baseDataRoom = response.data.data;
+            this.baseDataRoom.test =response.data.test;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    
+    filterPageActivity(sort_by) {
+      if (sort_by != "" && sort_by != null && sort_by != "undefined") {
+        this.filter.sortBy == sort_by
+          ? this.filter.orderBy == "asc"
+            ? (this.filter.orderBy = "desc")
+            : (this.filter.orderBy = "asc")
+          : (this.filter.sortBy = sort_by);
+      }
+      let url =
+        window.location.origin + "/api/v1/tarif/" +
+        "?page=" +
+        this.filter.page +
+        "&limit=" +
+        this.filter.limit +
+        "&searchQuery=" +
+        this.filter.searchQuery +
+        "&sortBy=" +
+        this.filter.sortBy +
+        "&orderBy=" +
+        this.filter.orderBy +
+        "&module=" +
+        'tarif';
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.baseDataActivity = response.data.data;
+            this.baseDataActivity.test = response.data.test;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+  },
   data () {
       return {
+        isOpen: '',
+        baseDataRoom:{},
+        baseDataActivity:{},
         tab: null,
+        filter: {
+        page: 1,
+        searchQuery: "",
+        limit: 10,
+        sortBy: "id",
+        orderBy: "asc",
+      },
         text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
       }
     },
+  created() {
+    console.log('component created');
+    this.filterPageRoom('')
+    this.filterPageActivity('')
+  }
 };
 
 </script>

@@ -1,9 +1,50 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu 
+      :is-drawer-open.sync="isDrawerOpen"
+      :modules="modules"  
+    ></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
       <div class="app-content-container boxed-container pa-6">
+        <v-card class="mx-auto" max-width="97%" elevation="5">
+          <v-card-text>
+            <p class="text-h6 text--primary">Management Rawat Inap</p>
+          </v-card-text>
+          <v-container>
+            <v-row>
+              <v-col class="d-flex" cols="12" sm="2">
+                <v-select
+                  :items="items"
+                  label="Tampilkan"
+                  dense
+                  outlined
+                  chips
+                  small-chips
+                ></v-select>
+              </v-col>
+
+              <v-col class="d-flex" cols="12" sm="8">
+                <v-text-field
+                  outlined
+                  label="Search"
+                  append-icon="mdi-magnify"
+                  small
+                  dense
+                ></v-text-field>
+              </v-col>
+
+              <v-col class="d-flex" cols="12" sm="2">
+                <v-btn 
+                  depressed 
+                  color="primary"
+                  :to="{ name: 'reg-rawat-jalan' }"
+                > 
+                  Tambah Data 
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
         <v-simple-table>
             <template v-slot:default>
             <thead>
@@ -41,7 +82,7 @@
                     <td>Dahlian</td>
                     <td>  
                       <v-btn icon :to="{name:'rawat-inap-detail'}">
-                        <v-icon small>far fa-search-plus</v-icon>
+                        <v-icon small>far fa-eye</v-icon>
                       </v-btn>
                     </td>
                 </tr>
@@ -55,6 +96,7 @@
             </tbody>
             </template>
         </v-simple-table>
+        </v-card>
       </div>
     </v-main>
     <footer></footer>
@@ -72,6 +114,9 @@
 } from "@mdi/js";
 
 export default {
+  props: {
+    modules: [],
+  },
   setup() {
     const isDrawerOpen = ref(null);
 

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
+    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
       <div class="app-content-container boxed-container pa-6">
@@ -166,6 +166,9 @@
 } from "@mdi/js";
 
 export default {
+    props: {
+    modules: [],
+  },
   setup() {
     const isDrawerOpen = ref(null);
 
