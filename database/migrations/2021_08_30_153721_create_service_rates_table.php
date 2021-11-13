@@ -17,6 +17,7 @@ class CreateServiceRatesTable extends Migration
             $table->id();
             $table->string('service_uuid');
             $table->string('service_type');
+            $table->unsignedBigInteger('tarifable_id');
             $table->text('service_rate')->nullable();
             $table->timestamps();
         });

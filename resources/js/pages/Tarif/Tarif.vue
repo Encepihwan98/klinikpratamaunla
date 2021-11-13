@@ -1,166 +1,144 @@
 <template>
   <v-app>
-    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
+    <vertical-nav-menu
+      :is-drawer-open.sync="isDrawerOpen"
+      :modules="modules"
+    ></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
-        <v-card 
-            class="my-4 mx-4"
-            elevation="4"
-        >
-
+      <v-card class="my-4 mx-4" elevation="4">
         <v-card elevation="4" class="mt-9">
-            <v-tabs
-            v-model="tab"
-            background-color="grey lighten-3"
-            lefted
-            >
+          <v-tabs v-model="tab" background-color="grey lighten-3" lefted>
             <v-tabs-slider></v-tabs-slider>
 
-            <v-tab class="caption font-weight-bold" href="#tab-1" @click="isOpen='roomRate'">
-                Ruangan
+            <v-tab
+              class="caption font-weight-bold"
+              href="#tab-1"
+              @click="isOpen = 'roomRate'"
+            >
+              Ruangan
             </v-tab>
 
-            <v-tab class="caption font-weight-bold" href="#tab-2" @click="isOpen='activityRate'">
-                Kegiatan
+            <v-tab
+              class="caption font-weight-bold"
+              href="#tab-2"
+              @click="isOpen = 'activityRate'"
+            >
+              Kegiatan
             </v-tab>
 
-            <v-tab class="caption font-weight-bold" href="#tab-3">
-                Tindakan/Pemeriksaan
+            <v-tab class="caption font-weight-bold" href="#tab-3" @click="isOpen = 'actionRate'">
+              Tindakan/Pemeriksaan
             </v-tab>
-            <v-tab class="caption font-weight-bold" href="#tab-4">
-                Visite
+            <!-- <v-tab class="caption font-weight-bold" href="#tab-4">
+              Visite
             </v-tab>
             <v-tab class="caption font-weight-bold" href="#tab-5">
-                Perawatan Khusu
+              Perawatan Khusu
             </v-tab>
             <v-tab class="caption font-weight-bold" href="#tab-6">
-                Oksigen
+              Oksigen
             </v-tab>
-            <v-tab class="caption font-weight-bold" href="#tab-7">
-                Gizi
-            </v-tab>
+            <v-tab class="caption font-weight-bold" href="#tab-7"> Gizi </v-tab>
             <v-tab class="caption font-weight-bold" href="#tab-8">
-                Insenerator
+              Insenerator
             </v-tab>
             <v-tab class="caption font-weight-bold" href="#tab-9">
-                UTDRS
+              UTDRS
             </v-tab>
             <v-tab class="caption font-weight-bold" href="#tab-10">
-                Kamar Jenazah
+              Kamar Jenazah
             </v-tab>
             <v-tab class="caption font-weight-bold" href="#tab-11">
-                Registrasi
-            </v-tab>
-            </v-tabs>
+              Registrasi
+            </v-tab> -->
+          </v-tabs>
 
-            <v-tabs-items v-model="tab">
-            <v-tab-item
-                value="tab-1"
-            >
-                <v-card flat>
+          <v-tabs-items v-model="tab">
+            <v-tab-item value="tab-1">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-ruangan :baseData="baseDataRoom" :isOpen="isOpen">
-                    </tarif-ruangan>
+                  <tarif-ruangan :baseData="data.PolyclinicRoom">
+                  </tarif-ruangan>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
 
-            <v-tab-item
-                value="tab-2"
-            >
-                <v-card flat>
+            <v-tab-item value="tab-2">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-kegiatan :baseData="baseDataActivity" :isOpen="isOpen">
-                    </tarif-kegiatan>
+                  <tarif-kegiatan :baseData="data.MedicalActivity">
+                  </tarif-kegiatan>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
 
-            <v-tab-item
-                value="tab-3"
-                
-            >
-                <v-card flat>
+            <v-tab-item value="tab-3">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-tindakan></tarif-tindakan>
+                  <tarif-tindakan :baseData="data.Tindakan"></tarif-tindakan>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
-            <v-tab-item
-                value="tab-4"
-            >
-                <v-card flat>
+            <!-- <v-tab-item value="tab-4">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-visite></tarif-visite>
+                  <tarif-visite></tarif-visite>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
-            <v-tab-item
-                value="tab-5"
-            >
-                <v-card flat>
+            <v-tab-item value="tab-5">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-perawatan-khusus></tarif-perawatan-khusus>
+                  <tarif-perawatan-khusus></tarif-perawatan-khusus>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
-            <v-tab-item
-                value="tab-6"
-            >
-                <v-card flat>
+            <v-tab-item value="tab-6">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-oksigen></tarif-oksigen>
+                  <tarif-oksigen></tarif-oksigen>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
-            <v-tab-item
-                value="tab-7"
-            >
-                <v-card flat>
+            <v-tab-item value="tab-7">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-oksigen></tarif-oksigen>
+                  <tarif-oksigen></tarif-oksigen>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
-            <v-tab-item
-                value="tab-8"
-            >
-                <v-card flat>
+            <v-tab-item value="tab-8">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-insenerator></tarif-insenerator>
+                  <tarif-insenerator></tarif-insenerator>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
-            <v-tab-item
-                value="tab-9"
-            >
-                <v-card flat>
+            <v-tab-item value="tab-9">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-utdrs></tarif-utdrs>
+                  <tarif-utdrs></tarif-utdrs>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
-            <v-tab-item
-                value="tab-10"
-            >
-                <v-card flat>
+            <v-tab-item value="tab-10">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-kamar-jenazah></tarif-kamar-jenazah>
+                  <tarif-kamar-jenazah></tarif-kamar-jenazah>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-tab-item>
-             <v-tab-item
-                value="tab-11"
-            >
-                <v-card flat>
+            <v-tab-item value="tab-11">
+              <v-card flat>
                 <v-card-text>
-                    <tarif-registrasi></tarif-registrasi>
+                  <tarif-registrasi></tarif-registrasi>
                 </v-card-text>
-                </v-card>
-            </v-tab-item>
-            </v-tabs-items>
+              </v-card>
+            </v-tab-item> -->
+          </v-tabs-items>
         </v-card>
-        </v-card>
+      </v-card>
     </v-main>
     <footer></footer>
   </v-app>
@@ -169,26 +147,30 @@
 
 
 <script>
-  import { ref } from "@vue/composition-api";
-  import {
-  mdiMagnify,
-  mdiBellOutline,
-  mdiGithub
-} from "@mdi/js";
-import Diagnosa from '../../components/kunjungan/Diagnosa.vue';
-import Tindakan from '../../components/kunjungan/Tindakan.vue';
-import Resep from '../../components/kunjungan/Resep.vue';
-import TarifTindakan from '../../components/tarif/TarifTindakan.vue';
-import TarifOksigen from '../../components/tarif/TarifOksigen.vue';
-import TarifInsenerator from '../../components/tarif/TarifInsenerator.vue';
-import TarifUtdrs from '../../components/tarif/TarifUtdrs.vue';
-import TarifKamarJenazah from '../../components/tarif/TarifKamarJenazah.vue';
+import { ref } from "@vue/composition-api";
+import { mdiMagnify, mdiBellOutline, mdiGithub } from "@mdi/js";
 
 export default {
   props: {
     modules: [],
   },
-  components: { Diagnosa, Tindakan, Resep, TarifTindakan, TarifOksigen, TarifInsenerator, TarifUtdrs, TarifKamarJenazah },
+  data() {
+    return {
+      isOpen: "",
+      // baseDataRoom: {},
+      // baseDataActivity: {},
+      tab: null,
+      data: {},
+      filter: {
+        page: 1,
+        searchQuery: "",
+        limit: 10,
+        sortBy: "id",
+        orderBy: "asc",
+      },
+      text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    };
+  },
   setup() {
     const isDrawerOpen = ref(null);
 
@@ -200,12 +182,12 @@ export default {
       icons: {
         mdiMagnify,
         mdiBellOutline,
-        mdiGithub
+        mdiGithub,
       },
     };
   },
   methods: {
-    filterPageRoom(sort_by) {
+    filterPage(sort_by) {
       if (sort_by != "" && sort_by != null && sort_by != "undefined") {
         this.filter.sortBy == sort_by
           ? this.filter.orderBy == "asc"
@@ -214,40 +196,8 @@ export default {
           : (this.filter.sortBy = sort_by);
       }
       let url =
-        window.location.origin + "/api/v1/tarif/" +
-        "?page=" +
-        this.filter.page +
-        "&limit=" +
-        this.filter.limit +
-        "&searchQuery=" +
-        this.filter.searchQuery +
-        "&sortBy=" +
-        this.filter.sortBy +
-        "&orderBy=" +
-        this.filter.orderBy;
-      axios
-        .get(url)
-        .then((response) => {
-          if (response.status == 200) {
-            this.baseDataRoom = response.data.data;
-            this.baseDataRoom.test =response.data.test;
-          }
-        })
-        .catch((e) => {
-          this.errorState(e);
-        });
-    },
-    
-    filterPageActivity(sort_by) {
-      if (sort_by != "" && sort_by != null && sort_by != "undefined") {
-        this.filter.sortBy == sort_by
-          ? this.filter.orderBy == "asc"
-            ? (this.filter.orderBy = "desc")
-            : (this.filter.orderBy = "asc")
-          : (this.filter.sortBy = sort_by);
-      }
-      let url =
-        window.location.origin + "/api/v1/tarif/" +
+        window.location.origin +
+        "/api/v1/tarif/" +
         "?page=" +
         this.filter.page +
         "&limit=" +
@@ -258,14 +208,13 @@ export default {
         this.filter.sortBy +
         "&orderBy=" +
         this.filter.orderBy +
-        "&module=" +
-        'tarif';
+        "&select=all";
       axios
         .get(url)
         .then((response) => {
           if (response.status == 200) {
-            this.baseDataActivity = response.data.data;
-            this.baseDataActivity.test = response.data.test;
+            this.data = response.data.data;
+            // console.log(this.data);
           }
         })
         .catch((e) => {
@@ -273,35 +222,17 @@ export default {
         });
     },
   },
-  data () {
-      return {
-        isOpen: '',
-        baseDataRoom:{},
-        baseDataActivity:{},
-        tab: null,
-        filter: {
-        page: 1,
-        searchQuery: "",
-        limit: 10,
-        sortBy: "id",
-        orderBy: "asc",
-      },
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-      }
-    },
   created() {
-    console.log('component created');
-    this.filterPageRoom('')
-    this.filterPageActivity('')
-  }
+    console.log("component created");
+    this.filterPage("");
+  },
 };
-
 </script>
 
 
 
 <style lang="scss" scoped>
-@import './resources/js/plugins/vuetify/default-preset/preset/variables.scss';
+@import "./resources/js/plugins/vuetify/default-preset/preset/variables.scss";
 
 .v-app-bar ::v-deep {
   .v-toolbar__content {

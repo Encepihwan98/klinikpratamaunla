@@ -3,8 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Room;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use App\Models\ServiceRate;
+
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class RoomController extends Controller
 {
@@ -57,7 +62,6 @@ class RoomController extends Controller
         $store->polyclinic_room_id = $request->polyclinic_room_id;
         // $store->superuser = $request->superuser ? 1 : 0;
         $store->save();
-
         return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan!', 'data' => $this->filter($request)]);
     }
 

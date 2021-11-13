@@ -11,7 +11,7 @@
     ></app-bar>
     <v-main>
       <div class="app-content-container boxed-container pa-6">
-        <v-card class="mx-auto" max-width="97%" elevation="5">
+        <v-card class="mx-auto" max-width="97%" elevation="5ta">
           <v-card-text>
             <p class="text-h6 text--primary">Daftar Agama</p>
           </v-card-text>
@@ -226,7 +226,6 @@ export default {
     return {
       _url: "",
       agama: {},
-      
       valid: false,
       data: {},
       web: {
@@ -430,6 +429,7 @@ export default {
       axios
         .get(url)
         .then((response) => {
+          console.log(response);
           if (response.status == 200) {
             this.data = response.data.data;
             this.filter.page = response.data.data.current_page;

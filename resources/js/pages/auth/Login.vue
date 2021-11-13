@@ -63,7 +63,7 @@
               </a>
             </div>
 
-            <v-btn block color="accent" class="mt-6" @click="login">
+            <v-btn block color="blue darken-1" class="mt-6" @click="login">
               Login
             </v-btn>
           </v-form>

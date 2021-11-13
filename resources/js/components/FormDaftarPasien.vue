@@ -249,8 +249,7 @@
                     rows="1"
                     label="Alamat Keluarga"
                     placeholder="Alamat Keluarga"
-                    v-model="patien.family_address"
-                    :disabled="condition == 'show' ? true : false"
+                    v-model="f"
                   ></v-textarea>
                 </v-col>
                 <v-col class="d-flex" cols="12" sm="6">

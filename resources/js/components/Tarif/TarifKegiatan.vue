@@ -57,11 +57,11 @@
               <th class="text-left">Ubah Tarif</th>
             </tr>
           </thead>
-          <tbody v-if="data.data.length > 0 && web.isTableLoad == false">
-            <tr v-for="(item, index) in data.data" :key="item.service_rate">
-              <td>{{ index + data.from }}</td>
+          <tbody v-if="baseData.data.length > 0 && web.isTableLoad == false">
+            <tr v-for="(item, index) in baseData.data" :key="item.id">
+              <td>{{ index + 1 }}</td>
               <td>
-                08786
+                {{item.service_name}}
                 <v-chip color="primary" small> 1:2 Perinatologi </v-chip>
               </td>
               <td>
@@ -109,13 +109,13 @@
                 ></v-row>
                 <hr class="mt-n6" />
                 <!-- <v-baner>Kelas VIP</v-baner> -->
-                <div v-for="(value, name) in data.test" :key="name">
-                  <span class="font-weight-bold mt-n4 mb-2">{{ name }}</span>
+                <div v-for="(value, key, index) in activityRate[currentData]" :key="index">
+                  <span class="font-weight-bold mt-n4 mb-2">{{ key }}</span>
                   <v-row>
                     <v-col class="d-flex" cols="12" sm="4">
                       <v-text-field
                         label="Tarif Sarana"
-                        v-model="rateRoom.sarana"
+                        v-model="value.SARANA"
                         :placeholder="value.SARANA"
                         outlined
                         dense
@@ -124,7 +124,7 @@
                     <v-col class="d-flex" cols="12" sm="4">
                       <v-text-field
                         label="Tarif Pelayanan"
-                        v-model="rateRoom.pelayanan"
+                        v-model="value.PELAYANAN"
                         :placeholder="value.PELAYANAN"
                         outlined
                         dense
@@ -134,7 +134,7 @@
                       <v-text-field
                         label="Tarif BPH"
                         :placeholder="value.BHP"
-                        v-model="rateRoom.bhp"
+                        v-model="value.BHP"
                         outlined
                         dense
                       ></v-text-field>
@@ -163,7 +163,7 @@
       <confirmation-dialog
         :confirmationDialog="dialogConfirmation"
         :method="
-          condition == 'store' ? store : condition == 'update' ? update : remove
+          condition == 'update'
         "
         @changeDialogState="dialogConfirmation.state = $event"
       ></confirmation-dialog>
@@ -185,7 +185,7 @@ export default {
     const isDrawerOpen = ref(null);
     return {
       _url: "",
-      rateRoom: {},
+      activityRate: [],
 
       valid: false,
       data: {},
@@ -258,7 +258,7 @@ export default {
     },
     store() {
       let url = window.location.origin + "/api/v1/tarif/";
-      let req = Object.assign(this.rateRoom, this.filter, {
+      let req = Object.assign(this.activityRate, this.filter, {
         module: "tarif",
       });
       this.currentData = null;
@@ -279,9 +279,9 @@ export default {
         });
     },
     update() {
-      let req = Object.assign(this.rateRoom, this.filter);
+      let req = Object.assign(this.activityRate, this.filter);
       axios
-        .put(`${this._url}${this.rateRoom.id}`, req)
+        .put(`${this._url}${this.activityRate.id}`, req)
         .then((response) => {
           if (response.status == 200) {
             this.dialog.state = false;
@@ -303,7 +303,7 @@ export default {
         .get(url)
         .then((response) => {
           if (response.status == 200) {
-            this.rateRoom = response.data.test;
+            this.activityRate = response.data.data;
             console.log(response.data.test);
           }
         })
@@ -315,7 +315,7 @@ export default {
       this.dialogConfirmation.state = !this.dialogConfirmation.state;
     },
     clear() {
-      this.rateRoom = {};
+      // this.activityRate = {};
       this.errors = {};
       if (this.$refs.form) this.$refs.form.resetValidation();
     },
@@ -401,8 +401,7 @@ export default {
         .then((response) => {
           if (response.status == 200) {
             this.data = response.data.data;
-            this.data = response.data.test;
-            console.log(response.data.test);
+
             this.filter.page = response.data.data.current_page;
             this.web.isTableLoad = false;
             this.getCurrentUser();
@@ -431,14 +430,19 @@ export default {
   watch: {
     dialogState: function (n, o) {
       console.log(n);
-      if (n && this.currentData) this.show(this.currentData.id);
-      else this.clear();
+      // if (n && this.currentData) this.show(this.currentData.id);
+      // else
+      this.clear();
     },
     baseData(v) {
       this.data = v;
+      console.log(v);
+      v.data.forEach((val) => {
+        this.activityRate.push(val.service_rate);
+      });
     },
     isOpen(v) {
-      if (v == "roomRate") this.filterPage("");
+      if (v == "activityRate") this.filterPage("");
     },
     modules: function (n, o) {
       let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);

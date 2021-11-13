@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\PolyclinicRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use App\Models\ServiceRate;
 
 class PolyclinicRoomController extends Controller
 {
@@ -59,6 +61,18 @@ class PolyclinicRoomController extends Controller
         $store->grade_id = $request->grade_id;
         // $store->superuser = $request->superuser ? 1 : 0;
         $store->save();
+        $store->id;
+
+        $store1 = new ServiceRate();
+        
+        $models   = collect(get_declared_classes())->filter(function ($item) {
+            return (substr($item, 0, 11) === 'App\Models\\');
+        });
+        $store1->service_type = $models;
+        $store1->tarifable_id = $store;
+        $store1->service_uuid = Str::uuid();
+        $store1->service_rate = '{"KELAS_I":{"SARANA":"0","PELAYANAN":"0","BHP":"0"},"KELAS_II":{"SARANA":"0","PELAYANAN":"0","BHP":"0"},"KELAS_III":{"SARANA":"0","PELAYANAN":"0","BHP":"0"},"KELAS_KS":{"SARANA":"0","PELAYANAN":"0","BHP":"0"},"KELAS_VIP":{"SARANA":"0","PELAYANAN":"0","BHP":"0"}}';
+        $store1->save();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan!', 'data' => $this->filter($request)]);
     }

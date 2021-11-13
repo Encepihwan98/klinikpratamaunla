@@ -42,7 +42,7 @@
                       : "fas fa-sort-alt"
                   }}
                 </v-icon>
-                No
+                Kelas
               </th>
               <th class="text-left">
                 Poli Klinik
@@ -65,22 +65,19 @@
                     : "fas fa-sort-alt"
                 }}</v-icon>
               </th>
-              <th class="text-left">Kelas</th>
               <th class="text-left">Jenis</th>
               <th class="text-left">Ubah Tarif</th>
-              <th>Aksi</th>
+              
             </tr>
           </thead>
-          <tbody v-if="data.data.length > 0 && web.isTableLoad == false">
-            <tr v-for="(item, index) in data.data" :key="item.description">
-              <td>{{ index + data.from }}</td>
-              <td>{{ item.service_rate }}</td>
-              <td>Maman</td>
-              <td>Dahlian</td>
-              <td>Dahlian</td>
-              <td>Dahlian</td>
+          <tbody v-if="baseData.data.length > 0 && web.isTableLoad == false">
+            <tr v-for="(item, index) in data.data" :key="item.id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ item.service_name['polyclinics'] }}</td>
+              <td>{{ item.service_name['room'] }}</td>
+              <td>{{ item.service_name['type'] }}</td>
               <td>
-                <v-btn color="primary" @click="selectMethod(null, 'edit')">
+                <v-btn color="primary" @click="selectMethod(index, 'edit')">
                   <v-icon small>far fa-edit</v-icon>
                 </v-btn>
               </td>
@@ -124,13 +121,13 @@
                 ></v-row>
                 <hr class="mt-n6" />
                 <!-- <v-baner>Kelas VIP</v-baner> -->
-                <div v-for="(value, name) in data.test" :key="name">
-                  <span class="font-weight-bold mt-n4 mb-2">{{ name }}</span>
+                <div v-for="(value, key, index) in rateRoom[currentData]" :key="index">
+                  <span class="font-weight-bold mt-n4 mb-2">{{ key }}</span>
                   <v-row>
                     <v-col class="d-flex" cols="12" sm="4">
                       <v-text-field
                         label="Tarif Sarana"
-                        v-model="rateRoom.sarana"
+                        v-model="value.SARANA"
                         :placeholder="value.SARANA"
                         outlined
                         dense
@@ -139,7 +136,7 @@
                     <v-col class="d-flex" cols="12" sm="4">
                       <v-text-field
                         label="Tarif Pelayanan"
-                        v-model="rateRoom.pelayanan"
+                        v-model="value.PELAYANAN"
                         :placeholder="value.PELAYANAN"
                         outlined
                         dense
@@ -147,9 +144,9 @@
                     </v-col>
                     <v-col class="d-flex" cols="12" sm="4">
                       <v-text-field
-                        label="Tarif BPH"
+                        label="Tarif BHP"
                         :placeholder="value.BHP"
-                        v-model="rateRoom.bhp"
+                        v-model="value.BHP"
                         outlined
                         dense
                       ></v-text-field>
@@ -178,7 +175,7 @@
       <confirmation-dialog
         :confirmationDialog="dialogConfirmation"
         :method="
-          condition == 'store' ? store : condition == 'update' ? update : remove
+          condition == 'update'
         "
         @changeDialogState="dialogConfirmation.state = $event"
       ></confirmation-dialog>
@@ -200,10 +197,10 @@ export default {
     const isDrawerOpen = ref(null);
     return {
       _url: "",
-      rateRoom: {},
-
+      rateRoom: [],
       valid: false,
       data: {},
+      test: {},
       web: {
         isTableLoad: false,
       },
@@ -219,8 +216,8 @@ export default {
         data: [],
         current_page: 1,
       },
-      test: [],
-      currentData: {},
+      
+      currentData: 0,
       currentUser: {},
       dialog: {
         state: false,
@@ -294,14 +291,14 @@ export default {
         });
     },
     update() {
-      let req = Object.assign(this.rateRoom, this.filter);
+      let req = Object.assign(this.data, this.filter);
       axios
+
         .put(`${this._url}${this.rateRoom.id}`, req)
         .then((response) => {
           if (response.status == 200) {
             this.dialog.state = false;
-            this.retriveData = response.data.test;
-            console.log(response.data.test);
+            this.retriveData = response.data.data;
             this.makeDefaultNotification(
               response.data.status,
               response.data.message
@@ -318,8 +315,8 @@ export default {
         .get(url)
         .then((response) => {
           if (response.status == 200) {
-            this.rateRoom = response.data.test;
-            console.log(response.data.test);
+            this.rateRoom = response.data.data;
+            // console.log(this.rateRoom);
           }
         })
         .catch((e) => {
@@ -330,7 +327,7 @@ export default {
       this.dialogConfirmation.state = !this.dialogConfirmation.state;
     },
     clear() {
-      this.rateRoom = {};
+      // this.rateRoom = [];
       this.errors = {};
       if (this.$refs.form) this.$refs.form.resetValidation();
     },
@@ -387,7 +384,7 @@ export default {
         this.dialog.state = !this.dialog.state;
       }
     },
-    filterPage(sort_by) {
+    filterPage (sort_by) {
       this.web.isTableLoad = true;
       if (sort_by != "" && sort_by != null && sort_by != "undefined") {
         this.filter.sortBy == sort_by
@@ -408,16 +405,15 @@ export default {
         "&sortBy=" +
         this.filter.sortBy +
         "&orderBy=" +
-        this.filter.orderBy +
-        "&module=" +
-        "daftar-kegiatan";
+        this.filter.orderBy;
       axios
         .get(url)
         .then((response) => {
           if (response.status == 200) {
+            this.test = response.data.data;
+            console.log(this.test);
             this.data = response.data.data;
-            this.data = response.data.test;
-            console.log(response.data.test);
+
             this.filter.page = response.data.data.current_page;
             this.web.isTableLoad = false;
             this.getCurrentUser();
@@ -445,12 +441,17 @@ export default {
   },
   watch: {
     dialogState: function (n, o) {
-      console.log(n);
-      if (n && this.currentData) this.show(this.currentData.id);
-      else this.clear();
+      // console.log(n && this.currentData);
+      // if (n && this.currentData) this.show(this.currentData.id);
+      // else 
+      this.clear();
     },
     baseData(v) {
       this.data = v;
+      // console.log(v);
+      v.data.forEach((val) => {
+        this.rateRoom.push(val.service_rate);
+      })
     },
     isOpen(v) {
       if (v == "roomRate") this.filterPage("");
