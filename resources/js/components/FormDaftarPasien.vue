@@ -249,7 +249,7 @@
                     rows="1"
                     label="Alamat Keluarga"
                     placeholder="Alamat Keluarga"
-                    v-model="f"
+                    v-model="patien.family_address"
                   ></v-textarea>
                 </v-col>
                 <v-col class="d-flex" cols="12" sm="6">

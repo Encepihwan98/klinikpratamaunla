@@ -20,6 +20,7 @@ class CreateActionServicesTable extends Migration
             $table->string('treatment_type');
             $table->unsignedBigInteger('examination_action_id');
             $table->integer('amount');
+            $table->string('rate');
             $table->dateTime('treatment_time');
             $table->unsignedBigInteger('officer_id');
             $table->timestamps();

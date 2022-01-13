@@ -71,6 +71,7 @@ class DaftarKasusController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    
     public function show($id)
     {
         $data = CaseType::where('id',$id)->first();

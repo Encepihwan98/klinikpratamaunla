@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ServiceRate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class RateController extends Controller
 {
@@ -17,8 +17,10 @@ class RateController extends Controller
 
         if (isset($request->limit)) {
             $data = $this->filter($request);
+            // dd($data);
         } else {
             $data = ServiceRate::all();
+            // dd($data);
         }
 
         return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
@@ -127,6 +129,23 @@ class RateController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!', 'data' => $this->filter($request)]);
     }
 
+    public function tarifKeungan(Request $request){
+        $data = ServiceRate::all();
+        dd($data);
+        if (isset($request->select) && $request->select == 'all'){
+            foreach ($data as $value) {
+                if(isset ($value['service_type'])) {
+                    $type = explode("\\", $value['service_type']);
+                    $model = $value['service_type'];
+                        if($type[2] == 'dd'){
+                            
+                        }
+                    // dd($type);
+                }
+            }
+        }
+    }
+
 
     public function filter(Request $request)
     {
@@ -150,7 +169,7 @@ class RateController extends Controller
                             ->select('polyclinics.name as polyclinics','polyclinic_rooms.name as room','polyclinic_rooms.type')
                             ->first();
                             $value['service_name'] = $post;
-                            // dd($post);
+                            // dd($post);   
                             
                         }else{
                             $show = $model::where('id', $value['tarifable_id'])->first();
@@ -185,6 +204,7 @@ class RateController extends Controller
                             $results[$type[2]]['total'] += 1;
                             $results[$type[2]]['lastPage'] = $results[$type[2]]['total'] > $result->perPage() ? $results[$type[2]]['total'] / $result->perPage() : 1;
                             array_push($results[$type[2]]['data'], $object);
+                            // dd($object);
                         } else {
                             $results[$type[2]]['total'] = 1;
                             $results[$type[2]]['lastPage'] = $result->lastPage();

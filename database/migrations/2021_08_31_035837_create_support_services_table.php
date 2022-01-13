@@ -20,6 +20,7 @@ class CreateSupportServicesTable extends Migration
             $table->string('treatment_type');
             $table->unsignedBigInteger('polyclinic_id');
             $table->dateTime('treatment_time');
+            $table->string('type');
             $table->text('note')->nullable();
             $table->timestamps();
 

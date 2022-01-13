@@ -20,12 +20,19 @@ class CreateOutPatientsTable extends Migration
             $table->unsignedBigInteger('final_condition')->nullable();
             $table->unsignedBigInteger('medical_activity_id');
             $table->unsignedBigInteger('polyclinic_id');
+            $table->unsignedBigInteger('visit_id');
             $table->boolean('is_emergency');
             $table->timestamps();
 
             $table->foreign('medical_activity_id')
                 ->references('id')
                 ->on('m_medical_activities')
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+
+            $table->foreign('visit_id')
+                ->references('id')
+                ->on('visits')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
 

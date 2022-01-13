@@ -32,18 +32,6 @@
         <template v-slot:default>
           <thead>
             <tr>
-              <th>
-                No
-                <v-icon @click="filterPage('id')" x-small>
-                  {{
-                    filter.sortBy == "id"
-                      ? filter.orderBy == "asc"
-                        ? "fas fa-sort-amount-up"
-                        : "fas fa-sort-amount-down"
-                      : "fas fa-sort-alt"
-                  }}
-                </v-icon>
-              </th>
               <th class="text-left">
                 <v-icon @click="filterPage('id')" x-small>
                   {{
@@ -54,20 +42,28 @@
                       : "fas fa-sort-alt"
                   }}
                 </v-icon>
-                Uraian
+                Nomor
               </th>
-              <th>Aksi</th>
+              <th class="text-left">
+                Uraian
+                <v-icon @click="filterPage('service_rate')" x-small>{{
+                  filter.sortBy == "service_rate"
+                    ? filter.orderBy == "asc"
+                      ? "fas fa-sort-amount-up"
+                      : "fas fa-sort-amount-down"
+                    : "fas fa-sort-alt"
+                }}</v-icon>
+              </th>
+              <!-- <th class="text-left">Kode</th> -->
+              <th class="text-left">Ubah Tarif</th>
             </tr>
           </thead>
           <tbody v-if="baseData.data.length > 0 && web.isTableLoad == false">
-            <tr v-for="(item, index) in baseData.data" :key="item">
-              <td>{{ index + baseData.from }}</td>
+            <tr v-for="(item, index) in baseData.data" :key="item.id">
+              <td>{{ index + 1 }}</td>
+              <td>{{ item.service_name }}</td>
               <td>
-                Perawatan Anak
-                <v-chip color="primary" small> Poliklinik Anak </v-chip>
-              </td>
-              <td>
-                <v-btn color="primary" @click="selectMethod(null, 'edit')">
+                <v-btn color="primary" @click="selectMethod(index, 'edit')">
                   <v-icon small>far fa-edit</v-icon>
                 </v-btn>
               </td>
@@ -111,13 +107,16 @@
                 ></v-row>
                 <hr class="mt-n6" />
                 <!-- <v-baner>Kelas VIP</v-baner> -->
-                <div v-for="(value, name) in baseData.data" :key="name">
-                  <span class="font-weight-bold mt-n4 mb-2">{{ name }}</span>
+                <div
+                  v-for="(value, key, index) in GeneralExamination[currentData]"
+                  :key="index"
+                >
+                  <span class="font-weight-bold mt-n4 mb-2">{{ key }}</span>
                   <v-row>
                     <v-col class="d-flex" cols="12" sm="4">
                       <v-text-field
                         label="Tarif Sarana"
-                        v-model="actionRate.sarana"
+                        v-model="value.SARANA"
                         :placeholder="value.SARANA"
                         outlined
                         dense
@@ -126,7 +125,7 @@
                     <v-col class="d-flex" cols="12" sm="4">
                       <v-text-field
                         label="Tarif Pelayanan"
-                        v-model="actionRate.pelayanan"
+                        v-model="value.PELAYANAN"
                         :placeholder="value.PELAYANAN"
                         outlined
                         dense
@@ -134,9 +133,9 @@
                     </v-col>
                     <v-col class="d-flex" cols="12" sm="4">
                       <v-text-field
-                        label="Tarif BPH"
+                        label="Tarif BHP"
                         :placeholder="value.BHP"
-                        v-model="actionRate.bhp"
+                        v-model="value.BHP"
                         outlined
                         dense
                       ></v-text-field>
@@ -164,9 +163,7 @@
       </v-dialog>
       <confirmation-dialog
         :confirmationDialog="dialogConfirmation"
-        :method="
-          condition == 'store' ? store : condition == 'update' ? update : remove
-        "
+        :method="condition == 'update'"
         @changeDialogState="dialogConfirmation.state = $event"
       ></confirmation-dialog>
     </div>
@@ -187,8 +184,7 @@ export default {
     const isDrawerOpen = ref(null);
     return {
       _url: "",
-      actionRate: {},
-
+      GeneralExamination: [],
       valid: false,
       data: {},
       web: {
@@ -206,8 +202,8 @@ export default {
         data: [],
         current_page: 1,
       },
-      test: [],
-      currentData: {},
+
+      currentData: 0,
       currentUser: {},
       dialog: {
         state: false,
@@ -260,7 +256,7 @@ export default {
     },
     store() {
       let url = window.location.origin + "/api/v1/tarif/";
-      let req = Object.assign(this.actionRate, this.filter, {
+      let req = Object.assign(this.GeneralExamination, this.filter, {
         module: "tarif",
       });
       this.currentData = null;
@@ -270,6 +266,7 @@ export default {
           if (response.status == 200) {
             this.dialog.state = false;
             this.data = response.data.data;
+
             this.makeDefaultNotification(
               response.data.status,
               response.data.message
@@ -281,14 +278,14 @@ export default {
         });
     },
     update() {
-      let req = Object.assign(this.actionRate, this.filter);
+      let req = Object.assign(this.data, this.filter);
       axios
-        .put(`${this._url}${this.actionRate.id}`, req)
+
+        .put(`${this._url}${this.GeneralExamination.id}`, req)
         .then((response) => {
           if (response.status == 200) {
             this.dialog.state = false;
-            this.retriveData = response.data.test;
-            console.log(response.data.test);
+            this.retriveData = response.data.data;
             this.makeDefaultNotification(
               response.data.status,
               response.data.message
@@ -305,8 +302,9 @@ export default {
         .get(url)
         .then((response) => {
           if (response.status == 200) {
-            this.actionRate = response.data.test;
-            console.log(response.data.test);
+            this.GeneralExamination = response.data.data;
+            // console.log(this.rateRoom);
+            
           }
         })
         .catch((e) => {
@@ -317,7 +315,7 @@ export default {
       this.dialogConfirmation.state = !this.dialogConfirmation.state;
     },
     clear() {
-      this.actionRate = {};
+      // this.rateRoom = [];
       this.errors = {};
       if (this.$refs.form) this.$refs.form.resetValidation();
     },
@@ -399,10 +397,10 @@ export default {
       axios
         .get(url)
         .then((response) => {
+          console.log(response);
           if (response.status == 200) {
             this.data = response.data.data;
-            this.data = response.data.test;
-            console.log(response.data.test);
+            
             this.filter.page = response.data.data.current_page;
             this.web.isTableLoad = false;
             this.getCurrentUser();
@@ -414,13 +412,12 @@ export default {
     },
   },
   created() {
-    if (this.modules.length > 0) {
-      let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
-      if (Object.keys(access).length === 1 && access.constructor === Object) {
-        this.$router.push({ name: access.home });
-      } else {
-        this.web = access;
-      }
+    if (this.baseData && this.baseData.data.length > 0) {
+      // this.filterPage("")
+      this.data = this.baseData;
+      this.baseData.data.forEach((val) => {
+        this.GeneralExamination.push(val.service_rate);
+      });
     }
   },
   computed: {
@@ -430,15 +427,20 @@ export default {
   },
   watch: {
     dialogState: function (n, o) {
-      console.log(n);
-      if (n && this.currentData) this.show(this.currentData.id);
-      else this.clear();
+      // console.log(n && this.currentData);
+      // if (n && this.currentData) this.show(this.currentData.id);
+      // else
+      this.clear();
     },
     baseData(v) {
       this.data = v;
+      
+      v.data.forEach((val) => {
+        this.GeneralExamination.push(val.service_rate);
+      });
     },
     isOpen(v) {
-      if (v == "roomRate") this.filterPage("");
+      if (v == "GeneralExamination") this.filterPage("");
     },
     modules: function (n, o) {
       let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);

@@ -189,7 +189,7 @@
               <v-btn
                 v-if="condition != 'show'"
                 color="blue darken-1"
-                textx
+                text
                 @click="selectStore"
               >
                 Simpan
@@ -227,7 +227,7 @@ export default {
       _url: "",
       agama: {},
       valid: false,
-      data: {},
+     
       web: {
         isTableLoad: false,
       },
@@ -261,6 +261,7 @@ export default {
       },
     };
   },
+  
   methods: {
     selectStore() {
       if (this.$refs.form.validate()) {

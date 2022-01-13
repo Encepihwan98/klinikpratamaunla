@@ -13,7 +13,7 @@
           </v-card-text>
           <v-container>
             <v-row>
-               <v-col class="d-flex" cols="12" sm="2">
+              <v-col class="d-flex" cols="12" sm="2">
                 <v-select
                   v-model="filter.limit"
                   dense
@@ -39,19 +39,19 @@
               </v-col>
 
               <v-col class="d-flex" cols="12" sm="2">
-                <v-btn 
-                  depressed 
+                <v-btn
+                  depressed
                   color="primary"
                   :to="{ name: 'reg-rawat-jalan' }"
-                > 
-                  Tambah Data 
+                >
+                  Tambah Data
                 </v-btn>
               </v-col>
             </v-row>
           </v-container>
           <v-simple-table>
             <template v-slot:default>
-              <thead >
+              <thead>
                 <tr>
                   <th class="text-left">
                     No
@@ -69,7 +69,7 @@
                   <th class="text-left">Pasien</th>
                   <th class="text-left">
                     Waktu Masuk
-                  <v-icon @click="filterPage('id')" x-small>
+                    <v-icon @click="filterPage('id')" x-small>
                       {{
                         filter.sortBy == "id"
                           ? filter.orderBy == "asc"
@@ -77,7 +77,7 @@
                             : "fas fa-sort-amount-down"
                           : "fas fa-sort-alt"
                       }}
-                    </v-icon>  
+                    </v-icon>
                   </th>
                   <th class="text-left">Waktu Keluar</th>
                   <th class="text-left">Diagnosa Awal</th>
@@ -85,15 +85,15 @@
                 </tr>
               </thead>
               <tbody v-if="data.data.length > 0 && web.isTableLoad == false">
-                <tr v-for="(item, index) in data.data" :key="item.description">
-                  <td>{{ index + data.from }}</td>
+                <tr v-for="(item, index) in data.data" :key="item.name">
+                  <td>{{ index }}</td>
                   <td>{{ item.medical_activity_id }}</td>
-                  <td>{{ item.medical_activity_id }}</td>
+                  <td>{{ item.name }}</td>
                   <td>{{ item.entry_time }}</td>
                   <td>{{ item.exit_time }}</td>
                   <td>{{ item.final_condition }}</td>
                   <td>
-                    <v-btn icon :to="{ name: 'rawat-jalan-detail' }">
+                    <v-btn icon :to="{ name: 'rawat-jalan-detail', params: { id: item.id } }" >
                       <v-icon small>far fa-eye</v-icon>
                     </v-btn>
                   </td>
@@ -128,6 +128,14 @@
               </tbody>
             </template>
           </v-simple-table>
+          <v-card-actions class="d-flex justify-center">
+            <v-pagination
+              v-model="filter.page"
+              :length="data.last_page"
+              :total-visible="7"
+              @input="filterPage('')"
+            ></v-pagination>
+          </v-card-actions>
         </v-card>
       </div>
     </v-main>
@@ -144,58 +152,14 @@ import { mdiMagnify, mdiBellOutline, mdiGithub } from "@mdi/js";
 export default {
   props: {
     modules: [],
+    
   },
+
   data() {
     const isDrawerOpen = ref(null);
     return {
       _url: "",
-      pasien: {
-        items: [],
-        data: {},
-      },
-      clinic: {
-        items: [],
-        data: {},
-      },
-      reference: {
-        items: [],
-        data: {},
-      },
-      payment: {
-        items: [],
-        data: {},
-      },
-      caseType: {
-        items: [],
-        data: {},
-      },
-      registrationType: {
-        items: [],
-        data: {},
-      },
-      activity: {
-        items: [],
-        data: {},
-      },
-      dokter: {
-        items: [],
-        data: {},
-      },
-      registration: {
-        entry_time: new Date(
-          Date.now() - new Date().getTimezoneOffset() * 60000
-        )
-          .toISOString()
-          .substr(0, 10),
-        date_reference: new Date(
-          Date.now() - new Date().getTimezoneOffset() * 60000
-        )
-          .toISOString()
-          .substr(0, 10),
-        date_SJP: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-          .toISOString()
-          .substr(0, 10),
-      },
+      agama: {},
       valid: false,
       data: {},
       web: {
@@ -223,11 +187,7 @@ export default {
         state: false,
         message: null,
       },
-
       condition: "store",
-      menu2: false,
-      menu3: false,
-      menu4: false,
       selectItem: ["10", "25", "50", "100"],
       errors: [],
       rules: {
@@ -236,57 +196,6 @@ export default {
     };
   },
   methods: {
-    changeID(event) {
-      if (event == "patien") {
-        let currentID = this.pasien.data.id;
-        this.registration.patien_id = currentID;
-      } else if (event == "payment") {
-        let currentID = this.registration.cara_bayar;
-        this.payment.data.forEach((v) => {
-          if (v.description == currentID) {
-            this.registration.payment_id = v.id;
-          }
-        });
-      }else if (event == "caseType") {
-        let currentID = this.registration.kasus;
-        this.caseType.data.forEach((v) => {
-          if (v.description == currentID) {
-            this.registration.case_id = v.id;
-          }
-        });
-      }else if (event == "dokter") {
-        let currentID = this.dokter.data.id;
-        this.registration.dokter_id = currentID;
-      } else if (event == "registrationType") {
-        let currentID = this.registration.registrasi;
-        this.registrationType.data.forEach((v) => {
-          if (v.description == currentID) {
-            this.registration.registrasi_id = v.id;
-          }
-        });
-      } else if (event == "clinic") {
-        let currentID = this.registration.poliklinik;
-        this.clinic.data.forEach((v) => {
-          if (v.name == currentID) {
-            this.registration.polyclinic_id = v.id;
-          }
-        });
-      } else if (event == "activity") {
-        let currentID = this.registration.kegiatan;
-        this.activity.data.forEach((v) => {
-          if (v.description == currentID) {
-            this.registration.medical_activity_id = v.id;
-          }
-        });
-      }else if (event == "reference") {
-        let currentID = this.registration.rujukan;
-        this.reference.data.forEach((v) => {
-          if (v.description == currentID) {
-            this.registration.reference_id = v.id;
-          }
-        });
-      }
-    },
     selectStore() {
       if (this.$refs.form.validate()) {
         if (this.condition == "store") {
@@ -320,14 +229,14 @@ export default {
       }
     },
     store() {
-      let req = Object.assign(this.registration, this.filter);
+      let req = Object.assign(this.agama, this.filter);
       this.currentData = null;
       axios
         .post(this._url, req)
         .then((response) => {
           if (response.status == 200) {
             this.dialog.state = false;
-            this.data = response.data.data;
+            this.data = response.data;
             this.makeDefaultNotification(
               response.data.status,
               response.data.message
@@ -339,9 +248,9 @@ export default {
         });
     },
     update() {
-      let req = Object.assign(this.registration, this.filter);
+      let req = Object.assign(this.agama, this.filter);
       axios
-        .put(`${this._url}${this.registration.id}`, req)
+        .put(`${this._url}${this.agama.id}`, req)
         .then((response) => {
           if (response.status == 200) {
             this.dialog.state = false;
@@ -362,7 +271,7 @@ export default {
         .get(url)
         .then((response) => {
           if (response.status == 200) {
-            this.registration = response.data.data;
+            this.agama = response.data.data;
           }
         })
         .catch((e) => {
@@ -373,7 +282,7 @@ export default {
       this.dialogConfirmation.state = !this.dialogConfirmation.state;
     },
     clear() {
-      this.registration = {};
+      this.agama = {};
       this.errors = {};
       if (this.$refs.form) this.$refs.form.resetValidation();
     },
@@ -454,9 +363,10 @@ export default {
       axios
         .get(url)
         .then((response) => {
+          console.log(response);
           if (response.status == 200) {
-            this.data = response.data.data;
-            this.filter.page = response.data.data.current_page;
+            this.data = response.data;
+            this.filter.page = response.data.current_page;
             this.web.isTableLoad = false;
             this.getCurrentUser();
           }
@@ -465,51 +375,6 @@ export default {
           this.errorState(e);
         });
     },
-    setSelectedName() {
-      axios.get(`/api/v1/list-pasien/`).then((res) => {
-        // console.log(res);
-        if (res.status === 200) {
-          this.pasien.items = res.data.data;
-        } else {
-          7;
-          this.makeDefaultNotification(
-            response.data.status,
-            response.data.message
-          );
-        }
-      });
-    },
-    setSelectedDokter() {
-      axios.get(`/api/v1/list-pegawai/`).then((res) => {
-        if (res.status === 200) {
-          this.dokter.items = res.data.data;
-        } else {
-          7;
-          this.makeDefaultNotification(
-            response.data.status,
-            response.data.message
-          );
-        }
-      });
-    },
-
-    setSelectedClinic() {
-      axios.get(`/api/v1/list-poliklinik/`).then((res) => {
-        if (res.status === 200) {
-          res.data.data.forEach((v) => {
-            this.clinic.items.push(v.name);
-          });
-          this.clinic.data = res.data.data;
-        } else {
-          7;
-          this.makeDefaultNotification(
-            response.data.status,
-            response.data.message
-          );
-        }
-      });
-    },
-
   },
   created() {
     if (this.modules.length > 0) {
@@ -521,31 +386,20 @@ export default {
       }
     }
     this._url = window.location.origin + "/api/v1/rawat-jalan/";
+    
     this.filterPage("");
-    this.setSelectedName();
-    this.setSelectedReference();
-    this.setSelectedPayment();
-    this.setSelectedCasetype();
-    this.setSelectedregistrationType();
-    this.setSelectedClinic();
-    this.setSelectedActivity();
-    this.setSelectedDokter();
   },
   computed: {
-    searchPasien() {
-      return this.pasien.search;
-    },
-    pasienSelected() {
-      return this.pasien.data;
-    },
-    searchDokter() {
-      return this.dokter.search;
-    },
-    dokterSelected() {
-      return this.dokter.data;
+    dialogState() {
+      return this.dialog.state;
     },
   },
   watch: {
+    dialogState: function (n, o) {
+      console.log(n);
+      if (n && this.currentData) this.show(this.currentData.id);
+      else this.clear();
+    },
     modules: function (n, o) {
       let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);
       if (Object.keys(access).length === 1 && access.constructor === Object) {
@@ -553,26 +407,6 @@ export default {
       } else {
         this.web = access;
       }
-    },
-    searchPasien(val) {
-      setTimeout(() => {
-        this.registration = this.pasien.data.forEach((e) => {
-          console.log(registration);
-          return e.name == val ? e : null;
-          // return (e.name || '').toLowerCase().indexOf((val.name || '').toLowerCase()) > -1
-        });
-        this.loading = false;
-      }, 500);
-    },
-    searchDokter(val) {
-      setTimeout(() => {
-        this.registration = this.dokter.data.forEach((e) => {
-          console.log(e);
-          return e.name == val ? e : null;
-          // return (e.name || '').toLowerCase().indexOf((val.name || '').toLowerCase()) > -1
-        });
-        this.loading = false;
-      }, 500);
     },
   },
 };

@@ -140,4 +140,14 @@ class ExaminationActionController extends Controller
 
         return $data;
     }
+
+    public function global_function(Request $request)
+    {
+        if (isset($request->limit)) {
+            $data = $this->filter($request);
+        } else {
+            $data = ExaminationAction::all();
+        }
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
 }

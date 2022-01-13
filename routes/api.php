@@ -11,8 +11,12 @@ use App\Http\Controllers\GeneralExaminationController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DaftarKasusController;
+use App\Http\Controllers\ActionServiceController;
+
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\CorpseExaminationController;
 use App\Http\Controllers\DaftarRegistrasiController;
+use App\Http\Controllers\DiagnosisTypeController;
 use App\Http\Controllers\EmergancyController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\IdentityTypeController;
@@ -29,6 +33,9 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ModuleWithRoleController;
 use App\Http\Controllers\OutPatienController;
+use App\Http\Controllers\DiagnosticServicesController;
+use App\Http\Controllers\DiseaseController;
+use App\Http\Controllers\ExaminationServiceController;
 use App\Http\Controllers\PatientsController;
 use App\Http\Controllers\PoliclinicTypeController;
 use App\Http\Controllers\PolyclinicController;
@@ -37,14 +44,19 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProcedureController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\RateController;
+use App\Http\Controllers\RecipeDetailServiceController;
 use App\Http\Controllers\RoombedController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomgradeController;
 use App\Http\Controllers\RoomserviceController;
 use App\Http\Controllers\RujukanController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupportServiceController;
 use App\Http\Controllers\TribeController;
-use App\Http\Controllers\UtdrsController;;
+use App\Http\Controllers\UtdrsController;
+use App\Http\Controllers\VisitController;
+
+;
 use App\Models\Incinerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -94,8 +106,11 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('daftar-oksigen', OxygenController::class);
             Route::apiResource('daftar-pekerjaan', ProfessionController::class);
             Route::get('list-pekerjaan', [ProfessionController::class, 'global_function']);
-            Route::apiResource('daftar-pemeriksaan-jenazah', ExaminationActionController::class);
+            Route::apiResource('daftar-pemeriksaan-jenazah', CorpseExaminationController::class);
             Route::apiResource('daftar-pemeriksaan-umum', GeneralExaminationController::class);
+            Route::get('list-pemeriksaan-umum', [GeneralExaminationController::class,'global_function']);
+            Route::apiResource('daftar-tindakan', ExaminationActionController::class);
+            Route::get('list-tindakan', [ExaminationActionController::class, 'global_function']);
             Route::apiResource('daftar-pendidikan', EducationController::class);
             Route::get('list-pendidikan', [EducationController::class, 'global_fun']);
             Route::apiResource('daftar-prosedure', ProcedureController::class);
@@ -109,6 +124,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('daftar-logistik', LogisticTypeController::class);
             Route::apiResource('daftar-poliklinik-type', PoliclinicTypeController::class);
             Route::apiResource('logistik', LogisticController::class);
+            Route::get('list-logistik', [LogisticController::class,'global_function']);
             Route::get('list-poliklinik-type', [PoliclinicTypeController::class,'global_function']);
             Route::apiResource('daftar-pasien', PatientsController::class);
             Route::get('list-pasien', [PatientsController::class,'global_function']);
@@ -122,8 +138,19 @@ Route::prefix('v1')->group(function () {
             Route::get('list-pegawai', [EmployeeController::class,'global_function']);
             Route::apiResource('reg-rawat-inap', InPatientController::class);
             Route::apiResource('rawat-inap', InPatientController::class);
+
+            Route::get('list-diagnosa', [DiagnosisTypeController::class,'global_function']);
+            
+            Route::apiResource('layanan-penunjang',SupportServiceController::class);
+            Route::apiResource('layanan-diagnosa',DiagnosticServicesController::class);
+            Route::apiResource('layanan-tindakan',ActionServiceController::class);
+            Route::get('layanan-tindakan-rate',[ActionServiceController::class,'getRate']);
+            Route::apiResource('layanan-pemeriksaan',ExaminationServiceController::class);
+            Route::apiResource('layanan-resep',RecipeDetailServiceController::class);
+
             Route::apiResource('reg-rawat-jalan', OutPatienController::class);
             Route::apiResource('rawat-jalan', OutPatienController::class);
+            Route::apiResource('rawat-jalan-detail', OutPatienController::class);
             Route::apiResource('reg-rawat-darurat', EmergancyController::class);
             Route::apiResource('kategori-kualifikasi', KategoriKualifikasiController::class);
             Route::get('list-kategori-kualifikasi', [KategoriKualifikasiController::class, 'global_function']);
@@ -145,6 +172,10 @@ Route::prefix('v1')->group(function () {
             Route::get('list-room', [RoomController::class, 'global_function']);
             Route::apiResource('kamar', RoomController::class);
             Route::apiResource('tarif', RateController::class);
+            Route::get('tarif-keuangan', [RateController::class, 'tarifKeungan']);
+            Route::apiResource('visit', VisitController::class);
+
+            Route::get('list-penyakit', [DiseaseController::class, 'global_function']);
             
             Route::post('my-modules', [ModuleController::class, 'myModule']);
 

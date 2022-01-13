@@ -61,7 +61,7 @@
             <tr v-for="(item, index) in baseData.data" :key="item.id">
               <td>{{ index + 1 }}</td>
               <td>
-                {{item.service_name}}
+                {{ item.service_name }}
                 <v-chip color="primary" small> 1:2 Perinatologi </v-chip>
               </td>
               <td>
@@ -78,8 +78,36 @@
                 <td>{{ item.calories }}</td>
                 </tr> -->
           </tbody>
+          <tbody v-else-if="web.isTableLoad == true" class="text-center">
+            <tr>
+              <td colspan="4">
+                <v-row class="app-content-container" justify="center">
+                  <v-overlay :value="true" :absolute="true">
+                    <v-progress-circular
+                      indeterminate
+                      size="50"
+                      color="primary"
+                    ></v-progress-circular>
+                  </v-overlay>
+                </v-row>
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-else class="text-center">
+            <tr>
+              <td colspan="4">Data Kosong!</td>
+            </tr>
+          </tbody>
         </template>
       </v-simple-table>
+      <v-card-actions class="d-flex justify-center">
+        <v-pagination
+          v-model="filter.page"
+          :length="data.last_page"
+          :total-visible="7"
+          @input="filterPage('')"
+        ></v-pagination>
+      </v-card-actions>
     </div>
     <div>
       <v-dialog v-model="dialog.state" persistent max-width="700px">
@@ -109,7 +137,10 @@
                 ></v-row>
                 <hr class="mt-n6" />
                 <!-- <v-baner>Kelas VIP</v-baner> -->
-                <div v-for="(value, key, index) in activityRate[currentData]" :key="index">
+                <div
+                  v-for="(value, key, index) in activityRate[currentData]"
+                  :key="index"
+                >
                   <span class="font-weight-bold mt-n4 mb-2">{{ key }}</span>
                   <v-row>
                     <v-col class="d-flex" cols="12" sm="4">
@@ -162,9 +193,7 @@
       </v-dialog>
       <confirmation-dialog
         :confirmationDialog="dialogConfirmation"
-        :method="
-          condition == 'update'
-        "
+        :method="condition == 'update'"
         @changeDialogState="dialogConfirmation.state = $event"
       ></confirmation-dialog>
     </div>
@@ -413,13 +442,12 @@ export default {
     },
   },
   created() {
-    if (this.modules.length > 0) {
-      let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
-      if (Object.keys(access).length === 1 && access.constructor === Object) {
-        this.$router.push({ name: access.home });
-      } else {
-        this.web = access;
-      }
+    if (this.baseData && this.baseData.data.length > 0) {
+      // this.filterPage("")
+      this.data = this.baseData;
+      this.baseData.data.forEach((val) => {
+        this.activityRate.push(val.service_rate);
+      });
     }
   },
   computed: {

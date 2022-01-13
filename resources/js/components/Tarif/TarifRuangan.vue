@@ -67,15 +67,14 @@
               </th>
               <th class="text-left">Jenis</th>
               <th class="text-left">Ubah Tarif</th>
-              
             </tr>
           </thead>
           <tbody v-if="baseData.data.length > 0 && web.isTableLoad == false">
             <tr v-for="(item, index) in data.data" :key="item.id">
               <td>{{ index + 1 }}</td>
-              <td>{{ item.service_name['polyclinics'] }}</td>
-              <td>{{ item.service_name['room'] }}</td>
-              <td>{{ item.service_name['type'] }}</td>
+              <td>{{ item.service_name["polyclinics"] }}</td>
+              <td>{{ item.service_name["room"] }}</td>
+              <td>{{ item.service_name["type"] }}</td>
               <td>
                 <v-btn color="primary" @click="selectMethod(index, 'edit')">
                   <v-icon small>far fa-edit</v-icon>
@@ -92,19 +91,27 @@
           </tbody>
         </template>
       </v-simple-table>
+      <v-card-actions class="d-flex justify-center">
+        <v-pagination
+          v-model="filter.page"
+          :length="data.last_page"
+          :total-visible="7"
+          @input="filterPage('')"
+        ></v-pagination>
+      </v-card-actions>
     </div>
     <div>
       <v-dialog v-model="dialog.state" persistent max-width="700px">
         <v-card>
           <v-card-title>
             <span class="text-h5">Form</span>
-             <v-icon class="ml-auto" @click="dialog.state = false" color="red"
-            >fas fa-times-circle</v-icon>
-            
+            <v-icon class="ml-auto" @click="dialog.state = false" color="red"
+              >fas fa-times-circle</v-icon
+            >
           </v-card-title>
           <v-card-text>
             <v-form
-              ref="form"              
+              ref="form"
               v-model="valid"
               lazy-validation
               :currentData="currentData"
@@ -121,7 +128,10 @@
                 ></v-row>
                 <hr class="mt-n6" />
                 <!-- <v-baner>Kelas VIP</v-baner> -->
-                <div v-for="(value, key, index) in rateRoom[currentData]" :key="index">
+                <div
+                  v-for="(value, key, index) in rateRoom[currentData]"
+                  :key="index"
+                >
                   <span class="font-weight-bold mt-n4 mb-2">{{ key }}</span>
                   <v-row>
                     <v-col class="d-flex" cols="12" sm="4">
@@ -174,9 +184,7 @@
       </v-dialog>
       <confirmation-dialog
         :confirmationDialog="dialogConfirmation"
-        :method="
-          condition == 'update'
-        "
+        :method="condition == 'update'"
         @changeDialogState="dialogConfirmation.state = $event"
       ></confirmation-dialog>
     </div>
@@ -200,6 +208,7 @@ export default {
       rateRoom: [],
       valid: false,
       data: {},
+      data1: {},
       test: {},
       web: {
         isTableLoad: false,
@@ -216,7 +225,7 @@ export default {
         data: [],
         current_page: 1,
       },
-      
+
       currentData: 0,
       currentUser: {},
       dialog: {
@@ -384,7 +393,7 @@ export default {
         this.dialog.state = !this.dialog.state;
       }
     },
-    filterPage (sort_by) {
+    filterPage(sort_by) {
       this.web.isTableLoad = true;
       if (sort_by != "" && sort_by != null && sort_by != "undefined") {
         this.filter.sortBy == sort_by
@@ -411,7 +420,7 @@ export default {
         .then((response) => {
           if (response.status == 200) {
             this.test = response.data.data;
-            console.log(this.test);
+            // console.log(this.test);
             this.data = response.data.data;
 
             this.filter.page = response.data.data.current_page;
@@ -443,7 +452,7 @@ export default {
     dialogState: function (n, o) {
       // console.log(n && this.currentData);
       // if (n && this.currentData) this.show(this.currentData.id);
-      // else 
+      // else
       this.clear();
     },
     baseData(v) {
@@ -451,7 +460,7 @@ export default {
       // console.log(v);
       v.data.forEach((val) => {
         this.rateRoom.push(val.service_rate);
-      })
+      });
     },
     isOpen(v) {
       if (v == "roomRate") this.filterPage("");

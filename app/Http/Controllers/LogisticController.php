@@ -136,6 +136,7 @@ class LogisticController extends Controller
 
         return $data;
     }
+    
     public function global_function(Request $request){
         if (isset($request->limit)) {
             $data = $this->filter($request);

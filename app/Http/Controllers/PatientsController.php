@@ -64,7 +64,6 @@ class PatientsController extends Controller
             'phone_number' => 'required',
             'father_name' => 'required',
             'mother_name' => 'required',
-            'partner_name' => 'required',
             'family_phone_number' => 'required',
             'family_address' => 'required',
             'agama_id' => 'required',

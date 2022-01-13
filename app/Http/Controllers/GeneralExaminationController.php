@@ -149,4 +149,13 @@ class GeneralExaminationController extends Controller
 
         return $data;
     }
+
+    public function global_function(Request $request){
+        if (isset($request->limit)) {
+            $data = $this->filter($request);
+        } else {
+            $data = GeneralExamination::all();
+        }
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
 }
