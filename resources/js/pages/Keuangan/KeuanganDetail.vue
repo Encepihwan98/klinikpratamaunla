@@ -130,25 +130,255 @@
                   </td>
                 </tr>
 
+                <tr v-for="(value, key, index) in post" :key="index">
+                  <td>{{ value.description }}</td>
+                  <td>1</td>
+                  <td>
+                    {{ Intl.NumberFormat("en-US").format(value.rate.SARANA) }}
+                  </td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(value.rate.PELAYANAN)
+                    }}
+                  </td>
+                  <td>
+                    {{ Intl.NumberFormat("en-US").format(value.rate.BHP) }}
+                  </td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(value.rate.SARANA) +
+                          parseInt(value.rate.PELAYANAN) +
+                          parseInt(value.rate.BHP)
+                      )
+                    }}
+                  </td>
+                  <td>0</td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(value.rate.BHP) +
+                          parseInt(value.rate.PELAYANAN) +
+                          parseInt(value.rate.SARANA)
+                      )
+                    }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-bold text-center" colspan="8">
+                    Layanan Laboratorium
+                  </td>
+                </tr>
                 <tr
-                  v-for="(value, key, index) in action[currentData]"
+                  v-for="(nilai, key, index) in layananLaboratorium"
                   :key="index"
                 >
-                  <td>Kumbah Lambung{{ index }}</td>
+                  <td>Laboratorium</td>
                   <td>1</td>
-                  <td>{{ value.SARANA}}</td>
-                  <td>{{ value.PELAYANAN}}</td>
-                  <td>{{ value.BHP}}</td>
-                  <td>{{ parseInt(value.BHP + value.PELAYANAN)}}</td>
-                  <td>0</td>
-                  <td>{{ parseInt(value.BHP + value.PELAYANAN)}}</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.SARANA) }}</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.BHP) }}</td>
+                  <td>
+                    {{ Intl.NumberFormat("en-US").format(nilai.PELAYANAN) }}
+                  </td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                  <td></td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
                 </tr>
-
+                <tr v-if="layananInsenerator != null">
+                  <td class="font-weight-bold text-center" colspan="8">
+                    Layanan Insenerator
+                  </td>
+                </tr>
+                <tr
+                  v-for="(nilai, key, index) in layananInsenerator"
+                  :key="index"
+                >
+                  <td>insenerator</td>
+                  <td>1</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.SARANA) }}</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.BHP) }}</td>
+                  <td>
+                    {{ Intl.NumberFormat("en-US").format(nilai.PELAYANAN) }}
+                  </td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                  <td></td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                </tr>
+                <tr v-if="layananOperasi != null">
+                  <td class="font-weight-bold text-center" colspan="8">
+                    Layanan Operasi
+                  </td>
+                </tr>
+                <tr v-for="(nilai, key, index) in layananOperasi" :key="index">
+                  <td>Operasi</td>
+                  <td>1</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.SARANA) }}</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.BHP) }}</td>
+                  <td>
+                    {{ Intl.NumberFormat("en-US").format(nilai.PELAYANAN) }}
+                  </td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                  <td></td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-bold text-center" colspan="8">
+                    Layanan Radiologi
+                  </td>
+                </tr>
+                <tr
+                  v-for="(nilai, key, index) in layananRadiologi"
+                  :key="index"
+                >
+                  <td>Radiologi</td>
+                  <td>1</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.SARANA) }}</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.BHP) }}</td>
+                  <td>
+                    {{ Intl.NumberFormat("en-US").format(nilai.PELAYANAN) }}
+                  </td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                  <td></td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-bold text-center" colspan="8">
+                    Layanan UTDRS
+                  </td>
+                </tr>
+                <tr v-for="(nilai, key, index) in layananUtdrs" :key="index">
+                  <td>UTDRS</td>
+                  <td>1</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.SARANA) }}</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.BHP) }}</td>
+                  <td>
+                    {{ Intl.NumberFormat("en-US").format(nilai.PELAYANAN) }}
+                  </td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                  <td></td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-weight-bold text-center" colspan="8">
+                    Layanan Kamar Jenazah
+                  </td>
+                </tr>
+                <tr
+                  v-for="(nilai, key, index) in layananKamarJenazah"
+                  :key="index"
+                >
+                  <td>Kamar Jenazah</td>
+                  <td>1</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.SARANA) }}</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(nilai.BHP) }}</td>
+                  <td>
+                    {{ Intl.NumberFormat("en-US").format(nilai.PELAYANAN) }}
+                  </td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                  <td></td>
+                  <td>
+                    {{
+                      Intl.NumberFormat("en-US").format(
+                        parseInt(nilai.SARANA) +
+                          parseInt(nilai.BHP) +
+                          parseInt(nilai.PELAYANAN)
+                      )
+                    }}
+                  </td>
+                </tr>
                 <tr>
                   <td class="font-weight-bold text-center" colspan="7">
                     Total
                   </td>
-                  <td>12000</td>
+                  <td>{{ Intl.NumberFormat("en-US").format(total) }}</td>
                 </tr>
               </tbody>
             </template>
@@ -182,6 +412,14 @@ export default {
         data: {},
         items: [],
       },
+      rate: [],
+      layananLaboratorium: [],
+      layananOperasi: [],
+      layananRadiologi: [],
+      layananInsenerator: [],
+      layananUtdrs: [],
+      layananKamarJenazah: [],
+      layanan: {},
       support: {
         data: {},
         items: [],
@@ -195,7 +433,16 @@ export default {
         data: {},
         items: [],
       },
+      totalLaboratorium: 0,
+      totalOperasi: 0,
+      totalRadiologi: 0,
+      totalInsenerator: 0,
+      totalUtdrs: 0,
+      totalKamarJenazah: 0,
+      totalTindakan: 0,
+      total: 0,
       action: [],
+      post: [],
       data: {},
       filter: {
         page: 1,
@@ -251,11 +498,130 @@ export default {
         }
       });
     },
+    setSelectedLayanan() {
+      axios
+        .get(`/api/v1/penunjang-tindakan?param=` + this.param)
+        .then((res) => {
+          // console.log(res.data.data[1]['rate']);
+          this.action.push(res.data.data);
+          this.layanan = res.data.data;
+          // console.log(this.layanan);
+          res.data.data.forEach((v) => {
+            if (v.polyclinic == "laboratorium") {
+              this.layananLaboratorium.push(
+                res.data.data[this.currentData]["rate"]
+              );
+            } else if (v.polyclinic == "operasi") {
+              this.layananOperasi.push(res.data.data[this.currentData]["rate"]);
+            } else if (v.polyclinic == "radiologi") {
+              this.layananRadiologi.push(
+                res.data.data[this.currentData]["rate"]
+              );
+              // for(int i = 0; i < this.layananRadiologi.length; i++);
+            } else if (v.polyclinic == "insenerator") {
+              this.layananInsenerator.push(
+                res.data.data[this.currentData]["rate"]
+              );
+            } else if (v.polyclinic == "UTDRS") {
+              this.layananUtdrs.push(res.data.data[this.currentData]["rate"]);
+            } else if (v.polyclinic == "Kamar Jenazah") {
+              this.layananKamarJenazah.push(
+                res.data.data[this.currentData]["rate"]
+              );
+            }
+          });
+          this.totalLaboratorium = this.layananLaboratorium.reduce(function (
+            accumulator,
+            item
+          ) {
+            return (
+              accumulator +
+              parseInt(item.PELAYANAN) +
+              parseInt(item.SARANA) +
+              parseInt(item.BHP)
+            );
+          },
+          0);
+          this.totalOperasi = this.layananOperasi.reduce(function (
+            accumulator,
+            item
+          ) {
+            return (
+              accumulator +
+              parseInt(item.PELAYANAN) +
+              parseInt(item.SARANA) +
+              parseInt(item.BHP)
+            );
+          },
+          0);
+          this.totalRadiologi = this.layananRadiologi.reduce(function (
+            accumulator,
+            item
+          ) {
+            return (
+              accumulator +
+              parseInt(item.PELAYANAN) +
+              parseInt(item.SARANA) +
+              parseInt(item.BHP)
+            );
+          },
+          0);
+          this.totalInsenerator = this.layananInsenerator.reduce(function (
+            accumulator,
+            item
+          ) {
+            return (
+              accumulator +
+              parseInt(item.PELAYANAN) +
+              parseInt(item.SARANA) +
+              parseInt(item.BHP)
+            );
+          },
+          0);
+          this.totalUtdrs = this.layananUtdrs.reduce(function (
+            accumulator,
+            item
+          ) {
+            return (
+              accumulator +
+              parseInt(item.PELAYANAN) +
+              parseInt(item.SARANA) +
+              parseInt(item.BHP)
+            );
+          },
+          0);
+          this.totalKamarJenazah = this.layananKamarJenazah.reduce(function (
+            accumulator,
+            item
+          ) {
+            return ( accumulator + parseInt(item.PELAYANAN) + parseInt(item.SARANA) + parseInt(item.BHP)
+            );
+          },
+          0);
+          this.total =
+            this.totalLaboratorium + this.totalOperasi + this.totalTindakan + this.totalRadiologi 
+            + this.totalInsenerator + this.totalUtdrs + this.totalKamarJenazah;
+        });
+    },
+
     setSelectedAction() {
       axios
         .get(`/api/v1/layanan-tindakan-rate?param=` + this.param)
         .then((res) => {
-           this.action.push(res.data.data.rate)
+          // console.log(res.data.data[1]['rate']);
+          this.action.push(res.data.data);
+          this.post = res.data.data;
+          this.post.forEach((v) => {
+            this.rate.push(res.data.data[this.currentData]["rate"]);
+          });
+          this.totalTindakan = this.rate.reduce(function (accumulator, item) {
+            return (
+              accumulator +
+              parseInt(item.PELAYANAN) +
+              parseInt(item.SARANA) +
+              parseInt(item.BHP)
+            );
+          }, 0);
         });
     },
 
@@ -369,6 +735,7 @@ export default {
     this.setSelectedPenujang;
     this.setSelectedAction();
     this.setSelectedTarifKeungan();
+    this.setSelectedLayanan();
   },
   // computed: {
   //   dialogState() {

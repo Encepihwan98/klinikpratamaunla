@@ -333,10 +333,10 @@ export default {
       }
     },
     store() {
-      let req = Object.assign(this.support, this.filter, this.params);
+      let req = Object.assign(this.support, this.filter);
       this.currentData = null;
       axios
-        .post(window.location.origin + "/api/v1/layanan-penunjang/", req)
+        .post(window.location.origin + "/api/v1/layanan-penunjang?param=" + this.params, req)
         .then((response) => {
           if (response.status == 200) {
             this.dialog.state = false;
@@ -511,8 +511,8 @@ export default {
   watch: {
     dialogState: function (n, o) {
       this.setSeletPoliklinik();
-       this.inspection.param = this.params;
-       console.log(params);
+      //  this.inspection.param = this.params;
+       console.log(this.params);
       if (n && this.currentData) this.show(this.currentData.id);
       else this.clear();
     },

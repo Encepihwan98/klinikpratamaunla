@@ -131,7 +131,7 @@ class RateController extends Controller
 
     public function tarifKeungan(Request $request){
         $data = ServiceRate::all();
-        dd($data);
+        // dd($data);
         if (isset($request->select) && $request->select == 'all'){
             foreach ($data as $value) {
                 if(isset ($value['service_type'])) {

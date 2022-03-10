@@ -50,6 +50,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\RoomgradeController;
 use App\Http\Controllers\RoomserviceController;
 use App\Http\Controllers\RujukanController;
+use App\Http\Controllers\SupportActionServiceCOntroller;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupportServiceController;
 use App\Http\Controllers\TribeController;
@@ -145,10 +146,19 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('layanan-diagnosa',DiagnosticServicesController::class);
             Route::apiResource('layanan-tindakan',ActionServiceController::class);
             Route::get('layanan-tindakan-rate',[ActionServiceController::class,'getRate']);
+            Route::get('layanan-penunjang-rate',[SupportServiceController::class,'getRate']);
+            Route::get('layanan-penunjang-radiologi',[SupportServiceController::class,'getRadiologi']);
+            Route::get('layanan-penunjang-operasi',[SupportServiceController::class,'getOperasi']);
+            Route::get('layanan-penunjang-insenerator',[SupportServiceController::class,'getInsenerator']);
+            Route::get('layanan-penunjang-utdrs',[SupportServiceController::class,'getUtdrs']);
+            Route::get('layanan-penunjang-kamarjenazah',[SupportServiceController::class,'getKamarJenazah']);
             Route::apiResource('layanan-pemeriksaan',ExaminationServiceController::class);
             Route::apiResource('layanan-resep',RecipeDetailServiceController::class);
 
             Route::apiResource('reg-rawat-jalan', OutPatienController::class);
+            Route::apiResource('penunjang-tindakan', SupportActionServiceCOntroller::class);
+            Route::get('getGlobal',[ SupportActionServiceCOntroller::class,'getGlobal']);
+            Route::get('rate-laboratorium',[ SupportActionServiceCOntroller::class,'rateLaboratorium']);
             Route::apiResource('rawat-jalan', OutPatienController::class);
             Route::apiResource('rawat-jalan-detail', OutPatienController::class);
             Route::apiResource('reg-rawat-darurat', EmergancyController::class);

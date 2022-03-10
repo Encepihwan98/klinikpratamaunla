@@ -53,7 +53,7 @@ class OutPatienController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(), 'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
         }
-        $store = new OutPatient();
+        
         // $store->id = Str::id();
 
 
@@ -73,10 +73,11 @@ class OutPatienController extends Controller
         $v_store->sjp_date = $request->date_SJP;
         $v_store->save();
 
+        $store = new OutPatient();
         $store->entry_time = $request->entry_time;
         $store->medical_activity_id = $request->medical_activity_id;
         $store->polyclinic_id = $request->polyclinic_id;
-        $store->visit_id = $request->visit_id;
+        $store->visit_id = $v_store->id;
         // $store->is_emergency = 1;
         // $store->superuser = $request->superuser ? 1 : 0;
         $store->save();

@@ -23,6 +23,7 @@ class CreateSupportActionServicesTable extends Migration
             $table->integer('amount')->default(1);
             $table->string('note')->nullable();
             $table->unsignedBigInteger('officer_id');
+            $table->string('rate');
             $table->timestamps();
 
             $table->foreign('officer_id')

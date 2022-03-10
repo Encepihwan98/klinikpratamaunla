@@ -7,6 +7,7 @@ use App\Models\ServiceRate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Models\Visit;
 use DB;
 
 class ActionServiceController extends Controller
@@ -36,6 +37,13 @@ class ActionServiceController extends Controller
         //     return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status' => 'error'], 403);
         // }
 
+       $getData =  Visit::join('m_payment_methods','visits.payment_method_id','=','m_payment_methods.id')
+       ->select('m_payment_methods.description as description')
+       ->get();
+    //    dd($getData);
+
+
+
         if (isset($request->limit)) {
             $data = $this->filter($request);
         } else {
@@ -43,30 +51,17 @@ class ActionServiceController extends Controller
                 ->join('employees', 'action_services.officer_id', '=', 'employees.id')
                 ->where('action_services.treatment_id', $request->param)
                 ->select('m_examination_actions.description as description', 'employees.name as name', 'action_services.treatment_time as treatment_time', 'action_services.amount as amount', 'action_services.rate as rate')
-                ->first();
-
-            // dd($data);
-
-
-            // foreach ($data as $value) {
-                $model = $data['rate'];
-                // dd($model);
-                if (isset($data['rate'])) {
-                    $post['rate'] = json_decode($model);
-                    // dd($post);
-                } else {
-                    // $show = $model::where('id', $value['id'])->first();
-                    // $value['rate'] = $show['rate']; 
-                    // $data['rate'] = json_decode($model);
-                    // $post['rate'] = json_decode($model);
-                    
-                    $post['rate'] = json_decode($model);
-                    // dd($post);
+                ->get();
+                $post = [];
+                foreach ($data as $item) {
+                  $item['rate'] = json_decode($item['rate'], true);
+                //   dd($item['rate']);
+                  array_push($post, $item);
                 }
-            // }
+            // dd($post);
         }
 
-        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+        return response()->json(['data' => $post, 'message' => 'Successfully.', 'status' => 'success']);
     }
 
     /**
@@ -119,12 +114,6 @@ class ActionServiceController extends Controller
             ->where('tarifable_id', '=', $request->examination_action_id)
             ->first();
         // dd($data);
-
-
-
-
-
-
 
         $store = new ActionService();
         // $store->id = Str::id();

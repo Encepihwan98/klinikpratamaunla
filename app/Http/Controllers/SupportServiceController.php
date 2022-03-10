@@ -6,6 +6,7 @@ use App\Models\SupportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Models\Visit;
 
 class SupportServiceController extends Controller
 {
@@ -19,9 +20,9 @@ class SupportServiceController extends Controller
             $data = $this->filter($request);
         } else {
             $data = SupportService::join('polyclinics', 'support_services.polyclinic_id', '=', 'polyclinics.id')
-            ->where('support_services.treatment_id', $request->param)
-            ->select('support_services.treatment_id as treatment_id','support_services.note as note','polyclinics.name as name','support_services.treatment_time as treatment_time')
-            ->paginate(10);
+                ->where('support_services.treatment_id', $request->param)
+                ->select('support_services.treatment_id as treatment_id', 'support_services.note as note', 'polyclinics.name as name', 'support_services.treatment_time as treatment_time')
+                ->paginate(10);
             // dd($data);
         }
 
@@ -33,6 +34,92 @@ class SupportServiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function getRate(Request $request)
+    {
+        $data = SupportService::join('polyclinics', 'support_services.polyclinic_id', '=', 'polyclinics.id')
+            ->where('polyclinics.name', 'laboratorium')
+            ->join('visits', 'support_services.treatment_id', '=', 'visits.id')
+            ->join('patients','visits.patient_id', '=','patients.id')
+            ->join('m_case_types','visits.case_id','=','m_case_types.id')
+            ->select('polyclinics.name as polyclinics', 'visits.visit_number as visit_number',
+            'polyclinics.created_at as waktu','patients.name as name','m_case_types.description as poli_awal', 'support_services.id as id')
+            ->paginate(10);
+            // dd($data);
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+    public function getRadiologi(Request $request)
+    {
+        $data = SupportService::join('polyclinics', 'support_services.polyclinic_id', '=', 'polyclinics.id')
+            ->where('polyclinics.name', 'radiologi')
+            ->join('visits', 'support_services.treatment_id', '=', 'visits.id')
+            ->join('patients','visits.patient_id', '=','patients.id')
+            ->join('m_case_types','visits.case_id','=','m_case_types.id')
+            ->select('polyclinics.name as polyclinics', 'visits.visit_number as visit_number',
+            'polyclinics.created_at as waktu','patients.name as name','m_case_types.description as poli_awal', 'support_services.id as id')
+            ->paginate(10);
+            // dd($data);
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+    public function getOperasi(Request $request)
+    {
+        $data = SupportService::join('polyclinics', 'support_services.polyclinic_id', '=', 'polyclinics.id')
+            ->where('polyclinics.name', 'operasi')
+            ->join('visits', 'support_services.treatment_id', '=', 'visits.id')
+            ->join('patients','visits.patient_id', '=','patients.id')
+            ->join('m_case_types','visits.case_id','=','m_case_types.id')
+            ->select('polyclinics.name as polyclinics', 'visits.visit_number as visit_number',
+            'polyclinics.created_at as waktu','patients.name as name','m_case_types.description as poli_awal', 'support_services.id as id')
+            ->paginate(10);
+            // dd($data);
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+    public function getInsenerator(Request $request)
+    {
+        $data = SupportService::join('polyclinics', 'support_services.polyclinic_id', '=', 'polyclinics.id')
+            ->where('polyclinics.name', 'insenerator')
+            ->join('visits', 'support_services.treatment_id', '=', 'visits.id')
+            ->join('patients','visits.patient_id', '=','patients.id')
+            ->join('m_case_types','visits.case_id','=','m_case_types.id')
+            ->select('polyclinics.name as polyclinics', 'visits.visit_number as visit_number',
+            'polyclinics.created_at as waktu','patients.name as name','m_case_types.description as poli_awal', 'support_services.id as id')
+            ->paginate(10);
+            // dd($data);
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+    public function getUtdrs(Request $request)
+    {
+        $data = SupportService::join('polyclinics', 'support_services.polyclinic_id', '=', 'polyclinics.id')
+            ->where('polyclinics.name', 'utdrs')
+            ->join('visits', 'support_services.treatment_id', '=', 'visits.id')
+            ->join('patients','visits.patient_id', '=','patients.id')
+            ->join('m_case_types','visits.case_id','=','m_case_types.id')
+            ->select('polyclinics.name as polyclinics', 'visits.visit_number as visit_number',
+            'polyclinics.created_at as waktu','patients.name as name','m_case_types.description as poli_awal', 'support_services.id as id')
+            ->paginate(10);
+            // dd($data);
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+    public function getKamarJenazah(Request $request)
+    {
+        $data = SupportService::join('polyclinics', 'support_services.polyclinic_id', '=', 'polyclinics.id')
+            ->where('polyclinics.name', 'kamar jenazah')
+            ->join('visits', 'support_services.treatment_id', '=', 'visits.id')
+            ->join('patients','visits.patient_id', '=','patients.id')
+            ->join('m_case_types','visits.case_id','=','m_case_types.id')
+            ->select('polyclinics.name as polyclinics', 'visits.visit_number as visit_number',
+            'polyclinics.created_at as waktu','patients.name as name','m_case_types.description as poli_awal', 'support_services.id as id')
+            ->paginate(10);
+            // dd($data);
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+
     public function create()
     {
         //
@@ -51,7 +138,7 @@ class SupportServiceController extends Controller
         // }
 
         $validator = Validator::make($request->all(), [
-            'note' => 'required',            
+            'note' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(), 'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
@@ -64,11 +151,11 @@ class SupportServiceController extends Controller
             $jenisPerawatan = "App\Models\OutPatient";
         } else if ($jenis[4] == 'rawat-inap-detail') {
             $jenisPerawatan = "App\Models\InPatient";
-        }else {
+        } else {
             $jenisPerawatan = "App\Models\Emergency";
         }
 
-
+        // dd($request->param);
         $store = new SupportService();
         $store->service_uuid = Str::uuid();
         $store->polyclinic_id = $request->polyclinic_id;

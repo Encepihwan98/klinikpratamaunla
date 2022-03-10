@@ -112,6 +112,7 @@
                     placeholder="Nomor Kunjungan dibuat secara otomatis"
                     outlined
                     dense
+                    disabled
                     small
                     v-model="registration.visit_number"
                   ></v-text-field>
@@ -872,12 +873,14 @@ export default {
     },
   },
   watch: {
+    
     modules: function (n, o) {
       let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);
       if (Object.keys(access).length === 1 && access.constructor === Object) {
         this.$router.push({ name: access.home });
       } else {
         this.web = access;
+        this.clear();
       }
     },
     searchPasien(val) {

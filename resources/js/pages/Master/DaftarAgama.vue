@@ -478,8 +478,6 @@ export default {
 };
 </script>
 
-
-
 <style lang="scss" scoped>
 @import "./resources/js/plugins/vuetify/default-preset/preset/variables.scss";
 
