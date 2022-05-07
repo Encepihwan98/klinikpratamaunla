@@ -121,6 +121,7 @@
             <template v-slot:default>
               <thead>
                 <tr>
+                  <th>No</th>
                   <th class="text-left">
                     No Rekam Medis
                     <v-icon @click="filterPage('id')" x-small>
@@ -161,6 +162,7 @@
               <tbody v-if="data.data.length > 0 && web.isTableLoad == false">
                 <tr v-for="(item, index) in data.data" :key="item.name">
                   <td>{{ index + data.from }}</td>
+                  <td>{{ item.medical_record_number }}</td>
                   <td>{{ item.name }}</td>
                   <td>{{ item.identity_number }}</td>
                   <td>{{ item.birth_date }}</td>

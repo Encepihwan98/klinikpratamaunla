@@ -43,6 +43,16 @@
                         small
                       ></v-text-field>
                     </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-btn 
+                        v-if="exit_time == null"
+                        depressed 
+                        color="primary" 
+                        small
+                        @click="selectPasienpulang()"
+                      > Pasien Pulang / Selesai </v-btn>
+                      <div v-else></div>
+                    </v-col>
                   </v-row>
                 </v-container>
               </v-from>
@@ -102,11 +112,13 @@
             <v-tab-item value="tab-1">
               <v-card flat>
                 <v-card-text>
-                  <penunjang 
-                    :baseData="support" 
+                  <penunjang
+                    :baseData="support"
+                    :exit_time="exit_time"
                     :isOpen="isOpen"
                     :params="param"
-                  > </penunjang>
+                  >
+                  </penunjang>
                 </v-card-text>
               </v-card>
             </v-tab-item>
@@ -114,8 +126,9 @@
             <v-tab-item value="tab-2">
               <v-card flat>
                 <v-card-text>
-                  <diagnosa 
-                    :baseData="diagnosis" 
+                  <diagnosa
+                    :baseData="diagnosis"
+                    :exit_time="exit_time"
                     :isOpen="isOpen"
                     :params="param"
                   ></diagnosa>
@@ -126,8 +139,9 @@
             <v-tab-item value="tab-3">
               <v-card flat>
                 <v-card-text>
-                  <tindakan 
-                    :baseData="action" 
+                  <tindakan
+                    :baseData="action"
+                    :exit_time="exit_time"
                     :isOpen="isOpen"
                     :params="param"
                   ></tindakan>
@@ -139,6 +153,7 @@
                 <v-card-text>
                   <pemeriksaan-umum
                     :baseData="general_inspection"
+                    :exit_time="exit_time"
                     :isOpen="isOpen"
                     :params="param"
                   >
@@ -149,8 +164,9 @@
             <v-tab-item value="tab-5">
               <v-card flat>
                 <v-card-text>
-                  <resep 
-                    :baseData="recipe" 
+                  <resep
+                    :baseData="recipe"
+                    :exit_time="exit_time"
                     :isOpen="isOpen"
                     :params="param"
                   ></resep>
@@ -179,16 +195,18 @@ export default {
       isOpen: "",
       // baseDataRoom: {},
       // baseDataActivity: {},
-      param: '',
+      param: "",
       tab: null,
       diagnosis: {
         data: {},
         items: [],
       },
+      exit_time: "",
       support: {
         data: {},
         items: [],
       },
+      pulang : {},
       general_inspection: {
         data: {},
         items: [],
@@ -231,7 +249,7 @@ export default {
 
   methods: {
     setSelectedPenujang() {
-      axios.get(`/api/v1/layanan-penunjang?param=`+this.param).then((res) => {
+      axios.get(`/api/v1/layanan-penunjang?param=` + this.param).then((res) => {
         if (res.status === 200) {
           this.support = res.data.data;
         } else {
@@ -244,7 +262,7 @@ export default {
     },
 
     setSelectedDiagnosa() {
-      axios.get(`/api/v1/layanan-diagnosa?param=`+this.param).then((res) => {
+      axios.get(`/api/v1/layanan-diagnosa?param=` + this.param).then((res) => {
         if (res.status === 200) {
           this.diagnosis = res.data.data;
         } else {
@@ -257,7 +275,7 @@ export default {
     },
 
     setSelectedAction() {
-      axios.get(`/api/v1/layanan-tindakan?param=`+this.param).then((res) => {
+      axios.get(`/api/v1/layanan-tindakan?param=` + this.param).then((res) => {
         if (res.status === 200) {
           this.action = res.data.data;
         } else {
@@ -270,7 +288,7 @@ export default {
     },
 
     setSelectedResep() {
-      axios.get(`/api/v1/layanan-resep?param=`+this.param).then((res) => {
+      axios.get(`/api/v1/layanan-resep?param=` + this.param).then((res) => {
         if (res.status === 200) {
           this.recipe = res.data.data;
         } else {
@@ -283,17 +301,27 @@ export default {
     },
 
     setSelectedPemeriksaanUmum() {
-      axios.get(`/api/v1/layanan-pemeriksaan?param=`+this.param).then((res) => {
-        if (res.status === 200) {
-          this.general_inspection = res.data.data;
-        } else {
-          this.makeDefaultNotification(
-            response.data.status,
-            response.data.message
-          );
-        }
-      });
+      axios
+        .get(`/api/v1/layanan-pemeriksaan?param=` + this.param)
+        .then((res) => {
+          if (res.status === 200) {
+            this.general_inspection = res.data.data;
+          } else {
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        });
     },
+    selectPasienpulang(){
+      this.pulang.id = Object.assign(this.param);
+      this.url = window.location.origin + "/api/v1/update-pasien-pulang/";
+      axios.put(`${this.url}${this.pulang.id}`).then((respon) => {
+        this.filterPage();
+      })
+    },
+
     filterPage(sort_by) {
       if (sort_by != "" && sort_by != null && sort_by != "undefined") {
         this.filter.sortBy == sort_by
@@ -314,13 +342,16 @@ export default {
         this.filter.sortBy +
         "&orderBy=" +
         this.filter.orderBy +
-        "&select=all";
+        "&select=all" +
+        "&param=" + this.param;
       axios
         .get(url)
         .then((response) => {
           // console.log(response);
           if (response.status == 200) {
             this.data = response.data.data;
+            
+            this.exit_time = this.data[0]['exit_time'];
             this.filter.page = response.data.data.current_page;
             this.getCurrentUser();
           }
@@ -336,7 +367,10 @@ export default {
       localStorage.getItem("current_param") != null &&
       localStorage.getItem("current_param")
     ) {
-      if(this.$route.params.id != null && this.$route.params.id != localStorage.getItem("current_param")) {
+      if (
+        this.$route.params.id != null &&
+        this.$route.params.id != localStorage.getItem("current_param")
+      ) {
         localStorage.setItem("current_param", this.$route.params.id);
       }
       this.param = localStorage.getItem("current_param");
@@ -348,12 +382,13 @@ export default {
         this.$router.push({ name: "rawat-jalan-detail" });
       }
     }
-    this.filterPage("");
+    this.filterPage();
     this.setSelectedPenujang();
     this.setSelectedDiagnosa();
     this.setSelectedAction();
     this.setSelectedPemeriksaanUmum();
-    this.setSelectedResep();
+    // this.setSelectedResep();
+    // 
   },
   // computed: {
   //   dialogState() {

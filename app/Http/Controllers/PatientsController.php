@@ -44,6 +44,14 @@ class PatientsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function generateUniqCode()
+    {
+        do {
+            $code = 'RWS' . random_int(1000000, 9999999);
+        } while (Patient::where("medical_record_number", "=", $code)->first());
+
+        return $code;
+    }
     public function store(Request $request)
     {
         if($this->cekAkses($request)->create == 0) {
@@ -75,6 +83,7 @@ class PatientsController extends Controller
         }
         $store = new Patient();
         // $store->id = Str::id();
+        $store->medical_record_number = $this->generateUniqCode();
         $store->education_id = $request->pendidikan_id;
         $store->identity_number_id = $request->identity_id;
         $store->identity_number = $request->identity_number;
@@ -96,6 +105,7 @@ class PatientsController extends Controller
         $store->tribe_id = $request->tribe_id;
         $store->proffesion_id = $request->profession_id;
         // $store->superuser = $request->superuser ? 1 : 0;
+        // dd($store);
         $store->save();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan!', 'data' => $this->filter($request)]);

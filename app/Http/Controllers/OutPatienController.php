@@ -18,6 +18,7 @@ class OutPatienController extends Controller
 
         if (isset($request->limit)) {
             $data = $this->filter($request);
+            // dd($data);
         } else {
             $data = OutPatient::all();
         }
@@ -41,6 +42,15 @@ class OutPatienController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function generateUniqCode()
+    {
+        do {
+            $code = 'RJL' . random_int(1000000, 9999999);
+        } while (Visit::where("visit_number", "=", $code)->first());
+
+        return $code;
+    }
+
     public function store(Request $request)
     {
         // if ($this->cekAkses($request)->create == 0) {
@@ -53,13 +63,13 @@ class OutPatienController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(), 'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
         }
-        
+
         // $store->id = Str::id();
 
 
         $v_store = new Visit();
         $v_store->visit_in = $request->entry_time;
-        $v_store->visit_number = $request->visit_number;
+        $v_store->visit_number = $this->generateUniqCode();
         $v_store->patient_id  = $request->patien_id;
         $v_store->case_id = $request->case_id;
         $v_store->reference_type_id = $request->reference_id;
@@ -159,21 +169,17 @@ class OutPatienController extends Controller
         $data = OutPatient::when(!empty($search), function ($query) use ($search) {
             $query->where('	final_condition', 'LIKE', '%' . $search . '%');
         })->orderBy($request->sortBy, $request->orderBy)->paginate($request->limit != "" ? $request->limit : 10);
-        // dd($data[1]['visit_id']);
+        // dd($data);
 
-        foreach ($data as $value) {
-            $post = DB::table('out_patients')
-                ->where('out_patients.id', '=', $value['visit_id'])
-                ->join('visits', 'out_patients.visit_id', '=', 'visits.id')
-                ->join('patients', 'visits.patient_id', '=', 'patients.id')
-                ->first();
-                // dd($post);
-                if (isset($post->name)) {
-                    array_push($results, (object)['name' => $post->name, 'id' => $post->id, 'visit_number' => $post->visit_number, 'entry_time' => $post->entry_time, 'exit_time' => $post->exit_time]);
-                }
-        }    
-        // dd($results);
-        return $results;
+        $post = DB::table('out_patients')
+            ->join('visits', 'out_patients.visit_id', '=', 'visits.id')
+            ->join('patients', 'visits.patient_id', '=', 'patients.id')
+            ->select('visits.visit_number as visit_number', 'out_patients.entry_time as entry_time', 'out_patients.exit_time as exit_time', 'patients.name as name','out_patients.id')
+            ->paginate(10);
+        // dd($post);
+        // return response()->json(['data' => $post, 'message' => 'Successfully.', 'status' => 'success']);
+
+        return $post;
     }
 
     public function filterPosition(Request $request)
@@ -194,6 +200,22 @@ class OutPatienController extends Controller
         } else {
             $data = OutPatient::all();
         }
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+    public function updatePasienPulang(Request $request, $id)
+    {
+
+        OutPatient::where('id', $id)->update([
+            'exit_time' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    public function getDetail(Request $request)
+    {
+        // $data = DB::table('out_patients')
+        //         ->where('votes', '=', 100)
+        //         ->get();
+        $data = OutPatient::where('id', $request->param)->get();
         return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
     }
 }

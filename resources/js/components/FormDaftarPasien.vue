@@ -9,17 +9,30 @@
           <v-container>
             <v-form ref="form" v-model="valid" lazy-validation>
               <v-row>
-                <v-col class="d-flex" cols="12" sm="12" md="6">
-                  <v-select
-                    :items="['324', '5777', '346', '123']"
+                <v-col
+                  v-if="condition == 'show' || condition == 'update'"
+                  class="d-flex"
+                  cols="12"
+                  sm="12"
+                  md="6"
+                >
+                  <v-text-field
                     label="Nomor Rekam Medis:"
                     outlined
                     dense
                     v-model="patien.medical_record_number"
                     :error-messages="errors.name"
                     :rules="[rules.required]"
-                    :disabled="condition == 'show' ? true : false"
-                  ></v-select>
+                    :disabled="condition == 'show' ? true : (condition == 'update' ? true : false)"
+                  ></v-text-field>
+                </v-col>
+                <v-col v-else>
+                  <v-text-field
+                    label="Nomor Rekam Medis:"
+                    outlined
+                    dense
+                    disabled
+                  ></v-text-field>
                 </v-col>
                 <v-col class="d-flex" cols="12" sm="12" md="6">
                   <v-select
@@ -624,7 +637,7 @@ export default {
                 this.patien.pendidikan = v.description;
                 this.patien.pendidikan_id = v.id;
               }
-            }); 
+            });
             this.identity.data.forEach((v) => {
               if (v.id == response.data.data.identity_number_id) {
                 this.patien.identitas = v.description;
@@ -632,25 +645,25 @@ export default {
               }
             });
             this.profession.data.forEach((v) => {
-              if (v.id == response.data.data.proffesion_id ) {
+              if (v.id == response.data.data.proffesion_id) {
                 this.patien.profesi = v.description;
                 this.patien.profession_id = v.id;
               }
             });
             this.province.data.forEach((v) => {
-              if (v.id == response.data.data.province_id ) {
+              if (v.id == response.data.data.province_id) {
                 this.patien.provinsi = v.name;
                 this.patien.province_id = v.id;
               }
             });
             this.tribe.data.forEach((v) => {
-              if (v.id == response.data.data.tribe_id ) {
+              if (v.id == response.data.data.tribe_id) {
                 this.patien.suku = v.description;
                 this.patien.tribe_id = v.id;
               }
             });
             this.agama.data.forEach((v) => {
-              if (v.id == response.data.data.agama_id ) {
+              if (v.id == response.data.data.agama_id) {
                 this.patien.agama = v.description;
                 this.patien.agama_id = v.id;
               }

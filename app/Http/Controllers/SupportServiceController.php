@@ -21,7 +21,7 @@ class SupportServiceController extends Controller
         } else {
             $data = SupportService::join('polyclinics', 'support_services.polyclinic_id', '=', 'polyclinics.id')
                 ->where('support_services.treatment_id', $request->param)
-                ->select('support_services.treatment_id as treatment_id', 'support_services.note as note', 'polyclinics.name as name', 'support_services.treatment_time as treatment_time')
+                ->select('support_services.treatment_id as treatment_id', 'support_services.note as note', 'polyclinics.name as name', 'support_services.treatment_time as treatment_time','support_services.id')
                 ->paginate(10);
             // dd($data);
         }

@@ -26,9 +26,10 @@
         ></v-text-field>
       </v-col>
       <v-col class="d-flex" cols="12" sm="2">
-        <v-btn color="primary" dark @click="selectMethod(null, 'add')">
+        <v-btn v-if="exit_time == null" color="primary" dark @click="selectMethod(null, 'add')">
           Tambah Data
         </v-btn>
+        <div v-else></div>
       </v-col>
     </v-row>
 
@@ -186,6 +187,7 @@ export default {
   props: {
     modules: [],
     isOpen: "",
+    exit_time: "",
     baseData: {},
     params: {},
   },

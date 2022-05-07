@@ -26,9 +26,10 @@
         ></v-text-field>
       </v-col>
       <v-col class="d-flex" cols="12" sm="2">
-        <v-btn color="primary" dark @click="selectMethod(null, 'add')">
+        <v-btn v-if="exit_time == null" color="primary" dark @click="selectMethod(null, 'add')">
           Tambah Data
         </v-btn>
+        <div v-else></div>
       </v-col>
     </v-row>
 
@@ -64,11 +65,8 @@
           </tr>
         </thead>
         <tbody
-          v-if="
-            (baseData.data.length > 0 && web.isTableLoad == false) ||
-            (data.data.length > 0 && web.isTableLoad == false)
-          "
-        >
+          v-if="(baseData.data.length > 0 && web.isTableLoad == false) ||
+            (data.data.length > 0 && web.isTableLoad == false)">
           <tr v-for="(item, index) in usedData" :key="item.index">
             <td>{{ index + (!data.from ? baseData.from : data.from) }}</td>
             <td>{{ item.treatment_time }}</td>
@@ -108,7 +106,7 @@
               lazy-validation
               :currentData="currentData"
             >
-              <v-contaFiner>
+              <v-container>
                 <v-row>
                   <v-col class="d-flex" cols="12" sm="12" md="12">
                     <v-select
@@ -179,7 +177,7 @@
                     ></v-text-field>
                   </v-col>
                 </v-row>
-              </v-contaFiner>
+              </v-container>
             </v-form>
           </v-card-text>
           <v-card-actions>
@@ -215,6 +213,7 @@ export default {
   props: {
     modules: [],
     isOpen: "",
+    exit_time: "",
     baseData: {},
     params: {},
   },
@@ -241,6 +240,7 @@ export default {
           .toISOString()
           .substr(0, 10),
       },
+      penunjang: {},
       filter: {
         page: 1,
         searchQuery: "",
@@ -273,6 +273,7 @@ export default {
   },
 
   methods: {
+    
     changeID(event) {
       if (event == "polyclinic") {
         let currentID = this.support.poliklinik;
@@ -341,6 +342,10 @@ export default {
           if (response.status == 200) {
             this.dialog.state = false;
             this.support.param = this.params;
+            baseData.data.pop();
+            // this.baseData.data.push(response.data.data);
+            console.log(response.data.data);
+            this.penunjang = response.data.data;
             this.data = response.data.data;
             this.makeDefaultNotification(
               response.data.status,
@@ -419,6 +424,7 @@ export default {
           if (response.status == 200) {
             this.web.isTableLoad = false;
             this.data = response.data.data;
+            this.usedData = response.data.data;
             this.filter.page = response.data.data.current_page;
             this.makeDefaultNotification(
               response.data.status,
@@ -474,6 +480,7 @@ export default {
       axios
         .get(url)
         .then((response) => {
+          // console.log(response);
           if (response.status == 200) {
             this.data = response.data.data;
             this.filter.page = response.data.data.current_page;
@@ -497,9 +504,12 @@ export default {
         this.web = access;
       }
     }
+    this.penunjang = this.baseData.data;
     // this._url = window.location.origin + "/api/v1/layanan-penunjang/";
     this.filterPage("");
+    this.baseData.data.pop();
   },
+
   computed: {
     dialogState() {
       return this.dialog.state;
@@ -511,8 +521,9 @@ export default {
   watch: {
     dialogState: function (n, o) {
       this.setSeletPoliklinik();
+      
       //  this.inspection.param = this.params;
-       console.log(this.params);
+      //  console.log(this.params);
       if (n && this.currentData) this.show(this.currentData.id);
       else this.clear();
     },

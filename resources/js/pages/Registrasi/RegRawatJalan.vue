@@ -108,13 +108,13 @@
               <v-row>
                 <v-col cols="12" md="4">
                   <v-text-field
-                    label="Nomor Kunjungan"
+                    
                     placeholder="Nomor Kunjungan dibuat secara otomatis"
                     outlined
                     dense
                     disabled
                     small
-                    v-model="registration.visit_number"
+                    
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="4" sm="4">

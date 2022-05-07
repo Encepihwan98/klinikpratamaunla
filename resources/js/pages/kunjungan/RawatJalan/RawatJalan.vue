@@ -86,8 +86,8 @@
               </thead>
               <tbody v-if="data.data.length > 0 && web.isTableLoad == false">
                 <tr v-for="(item, index) in data.data" :key="item.name">
-                  <td>{{ index }}</td>
-                  <td>{{ item.medical_activity_id }}</td>
+                  <td>{{ index + data.from  }}</td>
+                  <td>{{ item.visit_number }}</td>
                   <td>{{ item.name }}</td>
                   <td>{{ item.entry_time }}</td>
                   <td>{{ item.exit_time }}</td>
@@ -365,7 +365,7 @@ export default {
         .then((response) => {
           console.log(response);
           if (response.status == 200) {
-            this.data = response.data;
+            this.data = response.data.data;
             this.filter.page = response.data.current_page;
             this.web.isTableLoad = false;
             this.getCurrentUser();

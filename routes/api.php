@@ -156,11 +156,12 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('layanan-resep',RecipeDetailServiceController::class);
 
             Route::apiResource('reg-rawat-jalan', OutPatienController::class);
+            Route::put('update-pasien-pulang/{id}',[ OutPatienController::class,'updatePasienPulang']);
             Route::apiResource('penunjang-tindakan', SupportActionServiceCOntroller::class);
             Route::get('getGlobal',[ SupportActionServiceCOntroller::class,'getGlobal']);
             Route::get('rate-laboratorium',[ SupportActionServiceCOntroller::class,'rateLaboratorium']);
             Route::apiResource('rawat-jalan', OutPatienController::class);
-            Route::apiResource('rawat-jalan-detail', OutPatienController::class);
+            Route::get('rawat-jalan-detail', [OutPatienController::class,'getDetail']);
             Route::apiResource('reg-rawat-darurat', EmergancyController::class);
             Route::apiResource('kategori-kualifikasi', KategoriKualifikasiController::class);
             Route::get('list-kategori-kualifikasi', [KategoriKualifikasiController::class, 'global_function']);
