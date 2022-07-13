@@ -17,6 +17,7 @@ class ModuleWithRoleController extends Controller
      */
     public function index(Request $request)
     {
+        
         if($this->cekAkses($request)->read == 0) {
             return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
         }
