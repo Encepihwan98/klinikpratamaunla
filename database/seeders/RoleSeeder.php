@@ -41,8 +41,8 @@ class RoleSeeder extends Seeder
             ModelsRole::create( [
             'id'=>3,
             'uuid'=>'8f4d0ca1-1b49-44dd-802e-e966135e3555',
-            'name'=>'Suster',
-            'description'=>'hak akses untuk suster',
+            'name'=>'Administrasi',
+            'description'=>'hak akses untuk administrasi',
             'superuser'=>0,
             'created_at'=>'2021-09-21 02:51:00',
             'updated_at'=>'2021-09-21 02:51:00'
@@ -53,8 +53,8 @@ class RoleSeeder extends Seeder
             ModelsRole::create( [
             'id'=>4,
             'uuid'=>'1caaa8be-f8fe-4889-a0f2-48e8edce37b0',
-            'name'=>'Admin',
-            'description'=>'Hak akses untuk admin',
+            'name'=>'Apoteker',
+            'description'=>'Hak akses untuk Apoteker',
             'superuser'=>0,
             'created_at'=>'2021-09-22 04:05:56',
             'updated_at'=>'2021-09-28 06:14:46'

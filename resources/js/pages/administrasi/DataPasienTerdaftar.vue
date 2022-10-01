@@ -1,9 +1,6 @@
 <template>
   <v-app>
-    <vertical-nav-menu
-      :is-drawer-open.sync="isDrawerOpen"
-      :modules="modules"
-    ></vertical-nav-menu>
+    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
     <app-bar></app-bar>
     <v-main>
       <div class="app-content-container pa-6">
@@ -14,7 +11,7 @@
                 <p class="font-weight-bold">
                   <v-icon small>far fa-edit</v-icon>Total Pasien
                 </p>
-                <p class="text-h3">2</p>
+                <p class="text-h3">3</p>
               </v-container>
             </v-card>
           </v-col>
@@ -24,7 +21,7 @@
                 <p class="font-weight-bold">
                   <v-icon small>far fa-edit</v-icon>Pasien Bulan Ini
                 </p>
-                <p class="text-h3">2</p>
+                <p class="text-h3">3</p>
               </v-container>
             </v-card>
           </v-col>
@@ -32,7 +29,7 @@
             <v-card>
               <v-container>
                 <p class="font-weight-bold">Pasien Hari ini</p>
-                <p class="text-h3">2</p>
+                <p class="text-h3">0</p>
               </v-container>
             </v-card>
           </v-col>
@@ -42,25 +39,14 @@
             <v-card>
               <v-row>
                 <v-col class="d-flex" cols="12" sm="2">
-                  <v-select
-                    v-model="filter.limit"
-                    dense
-                    :items="['1', '2', '3', '4']"
-                    label="Tampilkan"
-                    outlined
-                  ></v-select>
+                  <v-select v-model="filter.limit" dense :items="selectItem" label="Tampilkan" @input="filterPage('')"
+                    outlined>
+                  </v-select>
                 </v-col>
 
                 <v-col class="d-flex" cols="12" sm="8">
-                  <v-text-field
-                    v-model="filter.searchQuery"
-                    dense
-                    append-icon="far fa-search"
-                    outlined
-                    clearable
-                    label="Search"
-                    type="text"
-                  ></v-text-field>
+                  <v-text-field v-model="filter.searchQuery" dense append-icon="far fa-search" outlined clearable
+                    label="Search" type="text" @click:append="filterPage('')" @input="filterPage('')"></v-text-field>
                 </v-col>
               </v-row>
               <v-simple-table dense>
@@ -71,197 +57,143 @@
                       <th class="text-left">ID</th>
                       <th class="text-left">Name</th>
                       <th class="text-left">Alamat</th>
-                      <th class="text-left">Tgl Periksa</th>
+                      <th class="text-left">Jenis Kelamin</th>
                       <th class="text-left">Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>P001</td>
-                      <td>Maman</td>
-                      <td>Jl Buah batu</td>
-                      <td>25-01-2022</td>
+                    <tr v-for="(item, index) in data.data" :key="item.name">
+                      <td>{{ index + data.from }}</td>
+                      <td>{{ item.pasien_id }}</td>
+                      <td>{{ item.nama }}</td>
+                      <td>{{ item.alamat }}</td>
+                      <td>{{ item.jenis_kelamin }}</td>
                       <td class="center-center">
-                        <v-btn small @click.stop="dialog1 = true">
+                        <v-btn small @click="selectMethod(item, 'edit')">
                           <v-icon small>far fa-edit</v-icon>
                         </v-btn>
-                        <v-btn small>
+                        <v-btn small @click="selectMethod(item, 'delete')">
                           <v-icon small>far fa-trash</v-icon>
                         </v-btn>
-                        <v-btn small @click.stop="dialog = true">
+                        <v-btn small @click="selectMethod(item, 'add')">
                           <v-icon small>far fa-plus</v-icon>
+                        </v-btn>
+                        <v-btn small>
+                          <v-icon small>far fa-print</v-icon>
                         </v-btn>
                       </td>
                     </tr>
                   </tbody>
                 </template>
               </v-simple-table>
+              <v-card-actions class="d-flex justify-center">
+                <v-pagination v-model="filter.page" :length="data.last_page" :total-visible="7" @input="filterPage('')">
+                </v-pagination>
+              </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
       </div>
       <div>
-        <v-dialog v-model="dialog1" persistent max-width="600px">
+        <v-dialog v-model="dialogs.dialogDataPasien.state" persistent max-width="600px">
           <v-card>
             <v-card-title class="text-h5"> Edit Data </v-card-title>
 
-            <form class="mx-3 my-3">
+            <v-form ref="form" v-model="valid" class="mx-3 my-3">
               <v-container>
                 <v-row>
                   <v-col class="pa-0" cols="12" sm="12">
-                    <v-text-field
-                      label="ID"
-                      placeholder="PS001"
-                      outlined
-                      dense
-                      small
-                      disabled
-                    ></v-text-field>
+                    <v-text-field label="ID" v-model="pasien.pasien_id" outlined dense small disabled></v-text-field>
                   </v-col>
                   <v-col class="pa-0" cols="12" sm="12">
-                    <v-text-field
-                      label="Nama"
-                      placeholder="Maman Abdul"
-                      outlined
-                      dense
-                      small
-                    ></v-text-field>
+                    <v-text-field label="Nama" v-model="pasien.nama" placeholder="Maman Abdul" outlined dense small>
+                    </v-text-field>
                   </v-col>
                   <v-col class="pa-0" cols="12" sm="12">
-                    <v-text-field
-                      label="No Ktp"
-                      placeholder="088686xxxx"
-                      outlined
-                      dense
-                      small
-                    ></v-text-field>
+                    <v-text-field label="No Ktp" v-model="pasien.no_ktp" placeholder="088686xxxx" outlined dense small>
+                    </v-text-field>
                   </v-col>
                   <v-col cols="12" class="pa-0 mr-2" sm="6" md="4">
-                    <v-menu
-                      v-model="menu2"
-                      :close-on-content-click="false"
-                      :nudge-right="40"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="auto"
-                    >
+                    <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40"
+                      transition="scale-transition" offset-y min-width="auto">
                       <template v-slot:activator="{ on, attrs }">
-                        <v-text-field
-                          v-model="date"
-                          label="Picker without buttons"
-                          prepend-icon="mdi-calendar"
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                          outlined
-                          dense
-                        ></v-text-field>
+                        <v-text-field v-model="pasien.tgl_lahir" label="Tanggal Lahir" prepend-icon="mdi-calendar"
+                          readonly v-bind="attrs" v-on="on" outlined dense></v-text-field>
                       </template>
-                      <v-date-picker
-                        v-model="date"
-                        @input="menu2 = false"
-                      ></v-date-picker>
+                      <v-date-picker v-model="pasien.tgl_lahir" @input="menu2 = false"></v-date-picker>
                     </v-menu>
                   </v-col>
-                  <v-col class="pa-0 mr-2" cols="12" sm="6">
-                    <v-select
-                      :items="items"
-                      label="Jenis kelamin"
-                      dense
-                      outlined
-                    ></v-select>
+                  <v-col class="pa-0 mr-6" cols="12" sm="12">
+                    <v-select :items="['laki-laki', 'perempuan']" v-model="pasien.jenis_kelamin" label="Jenis Kelamin"
+                      dense outlined></v-select>
                   </v-col>
                   <v-col cols="12" class="pa-0" sm="12">
-                    <v-text-field
-                      label="Pekerjaan"
-                      placeholder="Polisi"
-                      outlined
-                      dense
-                      small
-                    ></v-text-field>
+                    <v-text-field label="Pekerjaan" v-model="pasien.pekerjaan" placeholder="Polisi" outlined dense
+                      small></v-text-field>
                   </v-col>
                   <v-col cols="12" class="pa-0 mr-2" sm="4">
-                    <v-text-field
-                      label="No Telp/Hp"
-                      placeholder="082xxxxxxxx"
-                      outlined
-                      dense
-                      small
-                    ></v-text-field>
+                    <v-text-field label="No Telp/Hp" v-model="pasien.no_hp" placeholder="082xxxxxxxx" outlined dense
+                      small></v-text-field>
                   </v-col>
-                  <v-col class="d-flex pa-0" cols="12" sm="4">
-                    <v-select
-                      :items="dokter"
-                      label="Pilih Dokter"
-                      dense
-                      outlined
-                    ></v-select>
+                  <v-col class="d-flex pa-0 mr-2" cols="12" sm="4">
+                    <v-select :items="dokter.items" @input="changeID('dokter')" v-model="pasien.user_nama"
+                      label="Pilih Dokter" dense outlined>
+                    </v-select>
                   </v-col>
                   <v-col cols="12" class="pa-0" sm="12">
-                    <v-textarea
-                      label="Alamat"
-                      auto-grow
-                      outlined
-                      rows="1"
-                      row-height="15"
-                    ></v-textarea>
+                    <v-textarea label="Alamat" v-model="pasien.alamat" auto-grow outlined rows="1" row-height="15">
+                    </v-textarea>
                   </v-col>
                   <v-col cols="12" sm="12">
-                    <v-btn class="mr-4" @click="submit"> Submit </v-btn>
-                    <v-btn @click="dialog1 = false"> Close </v-btn>
+                    <v-btn class="mr-4" @click="selectStore"> Submit </v-btn>
+                    <v-btn @click="dialogs.dialogDataPasien.state = false"> Close </v-btn>
                   </v-col>
                 </v-row>
               </v-container>
-            </form>
+            </v-form>
           </v-card>
         </v-dialog>
-        <v-dialog v-model="dialog" persistent max-width="500px">
+        <v-dialog v-model="dialogs.dialogAntrian.state" persistent max-width="500px">
           <v-card>
-            <v-card-title class="text-h5"> Edit Data </v-card-title>
+            <v-card-title class="text-h5"> Registrasi Pasien </v-card-title>
 
-            <form class="mx-3 my-3 mb-2">
+            <v-form ref="form" v-model="valid" class="mx-3 my-3 mb-2">
               <v-container>
                 <v-row>
                   <v-col class="pa-0" cols="12" sm="12">
-                    <v-text-field
-                      label="ID Pasien"
-                      placeholder="PS001"
-                      outlined
-                      dense
-                      small
-                      disabled
-                    ></v-text-field>
+                    <v-text-field label="ID Pasien" placeholder="PS001" v-model="pasien.pasien_id" outlined dense small
+                      disabled></v-text-field>
                   </v-col>
                   <v-col class="pa-0" cols="12" sm="12">
-                    <v-text-field
-                      label="Nama Pasien"
-                      placeholder="nama"
-                      outlined
-                      dense
-                      small
-                      disabled
-                    ></v-text-field>
+                    <v-text-field label="Nama Pasien" placeholder="nama" v-model="pasien.nama" outlined dense small
+                      disabled></v-text-field>
                   </v-col>
                   <v-col class="d-flex pa-0" cols="12" sm="12">
-                    <v-select
-                      :items="dokter"
-                      label="Pilih Dokter"
-                      dense
-                      outlined
-                    ></v-select>
+                    <v-select :items="dokter.items" v-model="pasien.dokter" @click="changeID('dokter')"
+                      label="Pilih Dokter" dense outlined></v-select>
+                  </v-col>
+                  <v-col class="d-flex pa-0" cols="12" sm="12">
+                    <v-select :items="['BPJS', 'Umum']" v-model="pasien.jenis_pembayaran" label="Jenis Pembayaran" dense
+                      outlined></v-select>
                   </v-col>
                   <v-col class="mb-2" cols="12" sm="12">
-                    <v-btn class="mr-4" @click="submit">
+                    <v-btn class="mr-4" @click="selectStore">
                       Tambah Ke antrian
                     </v-btn>
-                    <v-btn @click="dialog = false"> close </v-btn>
+                    <v-btn @click="dialogs.dialogAntrian.state = false"> close </v-btn>
                   </v-col>
                 </v-row>
               </v-container>
-            </form>
+            </v-form>
           </v-card>
         </v-dialog>
+        <confirmation-dialog :confirmationDialog="dialogConfirmation" :method="
+          condition == 'store'
+            ? store
+            : condition == 'update'
+              ? update
+              : remove
+        " @changeDialogState="dialogConfirmation.state = $event"></confirmation-dialog>
       </div>
     </v-main>
   </v-app>
@@ -278,9 +210,31 @@ export default {
   },
   data() {
     return {
+      valid: false,
+      pasien: {
+        tgl_lahir: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+          .toISOString()
+          .substr(0, 10),
+      },
+      antri: "/?status=antri",
+      dokter: {
+        items: [],
+        data: {},
+      },
+      dialogs: {
+        dialogAntrian: {
+          state: false,
+          title: null,
+        },
+        dialogDataPasien: {
+          state: false,
+          title: null,
+        },
+      },
       dialog: false,
-      dialog1: false,
+
       _url: "",
+      urlStatus: "",
       web: {
         isTableLoad: false,
       },
@@ -306,12 +260,7 @@ export default {
         state: false,
         message: null,
       },
-
       items: ["Pria", "Wanita"],
-      dokter: ["Ahmad", "Anggun"],
-      date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10),
       menu: false,
       modal: false,
       menu2: false,
@@ -319,14 +268,138 @@ export default {
       selectItem: ["10", "25", "50", "100"],
     };
   },
-  computed: {
-    computedDateFormatted() {
-      return this.formatDate(this.date);
-    },
-  },
+
   methods: {
+
+    setSelectedDokter() {
+      axios.get(`/api/v1/list-dokter/`).then((res) => {
+        if (res.status === 200) {
+          res.data.data.forEach((v) => {
+            this.dokter.items.push(v.name);
+          });
+          this.dokter.data = res.data.data;
+        } else {
+          this.makeDefaultNotification(
+            response.data.status,
+            response.data.message
+          );
+        }
+      });
+    },
+    changeID(event) {
+      if (event == "dokter") {
+        let currentID = this.pasien.dokter_id;
+        this.dokter.data.forEach((v) => {
+          if (v.nama == currentID) {
+            this.pasien.dokter_id = v.id;
+          }
+        });
+      }
+    },
+    formatDate(date) {
+      if (!date) return null;
+
+      const [year, month, day] = date.split("-");
+      return `${month}/${day}/${year}`;
+    },
+    parseDate(date) {
+      if (!date) return null;
+
+      const [month, day, year] = date.split("/");
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    },
+    selectStore() {
+      if (this.$refs.form.validate()) {
+        if (this.condition == "store") {
+          this.dialogConfirmation.message = "menyimpan";
+          this.popDialog();
+        } else {
+          this.dialogConfirmation.message = "mengubah";
+          this.popDialog();
+        }
+      }
+    },
+    selectMethod(data, item) {
+      this.currentData = data;
+      if (item == "delete") {
+        this.condition = "delete";
+        // console.log("ini untuk remove");
+        this.dialogConfirmation.message = "menghapus";
+        this.showDialog(true);
+      } else if (item == "add") {
+        this.pasien = data;
+        this.currentData = null;
+        this.condition = "store";
+        this.dialogs.dialogAntrian.title = "Tambah Data";
+        this.showDialog(false);
+      } else if (item == "show") {
+        this.condition = "show";
+        this.dialogs.dialogDataPasien.title = "Data Pasien";
+        this.showDialog(false);
+      } else if (item == "edit") {
+        this.pasien = data;
+        this.condition = "update";
+        this.dialogs.dialogDataPasien.title = "Edit Pasien";
+        this.showDialog(false);
+      }
+    },
+    store() {
+      let req = Object.assign(this.pasien, this.filter);
+      this.urlStatus = window.location.origin + "/api/v1/update-status-pasien/";
+      this.currentData = null;
+      axios
+        .post(`${this.urlStatus}`, req)
+        .then((response) => {
+          if (response.status == 200) {
+            this.dialogs.dialogAntrian.state = false;
+            this.data = response.data.data;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    update() {
+      let req = Object.assign(this.pasien, this.filter);
+      axios
+        .put(`${this._url}${this.pasien.id}`, req)
+        .then((response) => {
+          if (response.status == 'success') {
+            this.dialogs.dialogDataPasien.state = false;
+            this.retriveData = response.data.data;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    show(id) {
+      let url = `${this._url}${id}`;
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 'success') {
+            this.pasien = response.data.data;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    popDialog() {
+      this.dialogConfirmation.state = !this.dialogConfirmation.state;
+    },
     remove() {
       this.web.isTableLoad = true;
+      // console.log("ini untuk remove");
       axios
         .delete(`${this._url}${this.currentData.id}`, { data: this.filter })
         .then((response) => {
@@ -344,52 +417,95 @@ export default {
           this.errorState(e);
         });
     },
-    formatDate(date) {
-      if (!date) return null;
-
-      const [year, month, day] = date.split("-");
-      return `${month}/${day}/${year}`;
-    },
-    parseDate(date) {
-      if (!date) return null;
-
-      const [month, day, year] = date.split("/");
-      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-    },
-    selectMethod(data, item) {
+    edit(data) {
       this.currentData = data;
-      if (item == "delete") {
-        this.condition = item;
-        this.dialogConfirmation.message = "menghapus";
-        this.showDialog(true);
-      } else if (item == "add") {
-        this.currentData = null;
-        this.condition = "store";
-        this.dialog.title = "Tambah Pasien";
-        this.showDialog(false);
-      } else if (item == "show") {
-        this.condition = "show";
-        this.dialog.title = "Data Pasien";
-        this.showDialog(false);
-      } else if (item == "edit") {
-        this.condition = "update";
-        this.dialog.title = "Edit Pasien";
-        this.showDialog(false);
-      }
+      this.condition = "update";
+      this.dialogs.dialogDataPasien.title = "Edit";
+      this.showDialog(false);
+    },
+    add() {
+      this.currentData = null;
+      this.condition = "store";
+      this.dialogs.dialogDataPasien.title = "Tambah Data";
+      this.showDialog(false);
     },
     showDialog(isConfirmation) {
       if (isConfirmation) {
         this.dialogConfirmation.state = !this.dialogConfirmation.state;
       } else {
-        this.dialog.state = !this.dialog.state;
+        if (this.condition == "store") {
+          this.dialogs.dialogAntrian.state = !this.dialogs.dialogAntrian.state;
+        } else {
+          this.dialogs.dialogDataPasien.state = !this.dialogs.dialogDataPasien.state;
+        }
       }
+    },
+    filterPage(sort_by) {
+      this.web.isTableLoad = true;
+      if (sort_by != "" && sort_by != null && sort_by != "undefined") {
+        this.filter.sortBy == sort_by
+          ? this.filter.orderBy == "asc"
+            ? (this.filter.orderBy = "desc")
+            : (this.filter.orderBy = "asc")
+          : (this.filter.sortBy = sort_by);
+      }
+      let url =
+        this._url +
+        "?page=" +
+        this.filter.page +
+        "&limit=" +
+        this.filter.limit +
+        "&searchQuery=" +
+        this.filter.searchQuery +
+        "&sortBy=" +
+        this.filter.sortBy +
+        "&orderBy=" +
+        this.filter.orderBy;
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.data = response.data.data;
+            this.filter.page = response.data.data.current_page;
+            this.web.isTableLoad = false;
+            this.currentUser = this.requestCurrentUser();
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+
+    updateStatus(data, item) {
+      this.pasien = data;
+      let req = Object.assign(this.pasien, this.filter);
+      console.log(this.pasien);
+      this.urlStatus = window.location.origin + "/api/v1/update-status-pasien/" + this.pasien.pasien_id + "?status=" + this.antri;
+      // console.log(this.urlStatus); 
+      axios
+        .post(this.urlStatus)
+        .then((response) => {
+          // console.log(response); 
+          if (response.status == 200) {
+            this.dialog.state = false;
+            this.retriveData = response.data.data;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+
     },
 
     changeData(newdata) {
       this.data = newdata;
     },
     errorState(e) {
-      console.log(e.response);
+      // console.log(e.response);
       this.web.isTableLoad = false;
       this.errors = e.response.data.errors;
       if (e.response.status == 401) {
@@ -402,6 +518,24 @@ export default {
     },
   },
 
+  created() {
+    if (this.modules.length > 0) {
+      let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    }
+    this._url = window.location.origin + "/api/v1/daftar-pasien/";
+    this.filterPage("");
+    this.setSelectedDokter();
+  },
+  computed: {
+    computedDateFormatted() {
+      return this.formatDate(this.date);
+    },
+  },
   watch: {
     modules: function (n, o) {
       let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ReferenceType;
 use Illuminate\Http\Request;
+use App\Models\Rujukan;
 use Illuminate\Support\Facades\Validator;
 
 class RujukanController extends Controller
@@ -15,14 +16,14 @@ class RujukanController extends Controller
      */
     public function index(Request $request)
     {
-        if($this->cekAkses($request)->read == 0) {
-            return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
-        }
+        // if($this->cekAkses($request)->read == 0) {
+        //     return response()->json(['message' => 'Anda tidak memiliki akses ke module ini.', 'status'=>'error'], 403);
+        // }
 
          if(isset($request->limit)) {
             $data = $this->filter($request);
         } else {
-            $data = ReferenceType::all();
+            $data = Rujukan::all();
         }
 
         return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
@@ -56,7 +57,7 @@ class RujukanController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors(),'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
         }
-        $store = new ReferenceType();
+        $store = new Rujukan();
         // $store->id = Str::id();
         $store->description = $request->description;
         // $store->superuser = $request->superuser ? 1 : 0;
@@ -73,7 +74,7 @@ class RujukanController extends Controller
      */
     public function show($id)
     {
-        $data = ReferenceType::where('id',$id)->first();
+        $data = Rujukan::where('id',$id)->first();
         return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
     }
 
@@ -103,7 +104,7 @@ class RujukanController extends Controller
             return response()->json(['errors' => $validator->errors(), 'status' => 'error', 'message' => 'Tolong pastikan semua sesuai dengan ketentuan!'], 400);
         }
 
-        ReferenceType::where('id', $id)->update([
+        Rujukan::where('id', $id)->update([
             'description' => $request->description,
         ]);
 
@@ -126,7 +127,7 @@ class RujukanController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Data gagal dihapus!', 'errors' => 'ID kosong']);
         }
 
-        ReferenceType::where('id', $id)->delete();
+        Rujukan::where('id', $id)->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!', 'data' => $this->filter($request)]);
     }
@@ -135,18 +136,17 @@ class RujukanController extends Controller
     public function filter(Request $request) {
         $searchRequest = $request->searchQuery;
         $search = !empty($searchRequest) && $searchRequest != "null" ? $searchRequest : "";
-        $data = ReferenceType::when(!empty($search), function ($query) use ($search) {
+        $data = Rujukan::when(!empty($search), function ($query) use ($search) {
             $query->where('description', 'LIKE', '%' . $search . '%');
-        })->orderBy($request->sortBy, $request->orderBy)->paginate($request->limit != "" ? $request->limit : 10);
+        })
+        ->join('rekammedis','rujukans.rekamedis_id','=','rekammedis.id')
+        ->join('pasiens','rekammedis.pasien_id','=','pasiens.id')
+        ->join('registrasi_pasiens','pasiens.id','=','registrasi_pasiens.pasien_id')
+        ->orderBy($request->sortBy, $request->orderBy)
+        ->select('pasiens.nama','rujukans.id','rujukans.rujukan','registrasi_pasiens.tgl')
+        ->paginate($request->limit != "" ? $request->limit : 10);
 
         return $data;
     }
-    public function global_function(Request $request){
-        if (isset($request->limit)) {
-            $data = $this->filter($request);
-        } else {
-            $data = ReferenceType::all();
-        }
-        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
-    }
+    
 }

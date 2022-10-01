@@ -13,7 +13,7 @@
                                     <p class="font-weight-bold">
                                         <v-icon small>far fa-edit</v-icon>Total Rekam Medis
                                     </p>
-                                    <p class="text-h3">2</p>
+                                    <p class="text-h3">9</p>
                                 </v-container>
                             </v-card>
                         </v-col>
@@ -23,7 +23,7 @@
                                     <p class="font-weight-bold">
                                         <v-icon small>far fa-edit</v-icon>Total Rekam Medis Hari ini
                                     </p>
-                                    <p class="text-h3">2</p>
+                                    <p class="text-h3">1</p>
                                 </v-container>
                             </v-card>
                         </v-col>
@@ -62,18 +62,19 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Maman</td>
-                                                <td>25-01-2022</td>
+                                            <tr v-for="(item, index) in data.data" :key="item.nama">
+                                                <td>{{ index + data.from }}</td>
+                                                <td>{{ item.nama }}</td>
+                                                <td>{{ item.tgl }}</td>
                                                 <td class="center-center">
-                                                    <v-btn small @click.stop="dialog = true">
+                                                    <v-btn small @click="selectMethod(item, 'show')">
                                                         <v-icon small>far fa-eye</v-icon>
                                                     </v-btn>
-                                                    <v-btn small @click.stop="dialog = true">
+                                                    <!-- <v-btn small @click="selectMethod(item, 'edit')">
                                                         <v-icon small>far fa-edit</v-icon>
-                                                    </v-btn>
-                                                    <v-btn small>
+                                                    </v-btn> -->
+                                                    <v-btn small @click="selectMethod(item, 'delete')"
+                                                        v-if="web.delete">
                                                         <v-icon small>far fa-trash</v-icon>
                                                     </v-btn>
                                                 </td>
@@ -87,57 +88,71 @@
                 </v-container>
             </div>
             <div>
-                <v-dialog v-model="dialog" persistent max-width="600px">
+                <v-dialog v-model="dialog.state" persistent max-width="600px">
                     <v-card>
                         <v-card-title class="text-h5"> Detail Data </v-card-title>
 
-                        <form class="mx-3 my-3">
+                        <v-form class="mx-3 my-3" ref="form" v-model="valid" lazy-validation :currentData="currentData">
                             <v-container>
                                 <v-row>
                                     <v-col class="pa-0 mr-6" cols="12" sm="6">
-                                        <v-text-field label="Berat Badan" suffix="Kg" outlined dense small>
+                                        <v-text-field label="Berat Badan" :disabled="condition == 'show' ? true : false"
+                                            v-model="rekamedis.bb" suffix="Kg" outlined dense small>
                                         </v-text-field>
                                     </v-col>
                                     <v-col class="pa-0" cols="12" sm="5">
-                                        <v-text-field label="Tensi Darah" suffix="mmHg" outlined dense small>
+                                        <v-text-field label="Tensi Darah" :disabled="condition == 'show' ? true : false"
+                                            v-model="rekamedis.tensi" suffix="mmHg" outlined dense small>
                                         </v-text-field>
                                     </v-col>
                                     <v-col class="pa-0 mr-6" cols="12" sm="6">
-                                        <v-text-field label="Tinggi Badan" suffix="Cm" outlined dense small>
+                                        <v-text-field label="Tinggi Badan"
+                                            :disabled="condition == 'show' ? true : false" v-model="rekamedis.tb"
+                                            suffix="Cm" outlined dense small>
                                         </v-text-field>
                                     </v-col>
-                                    <v-col class="pa-0" cols="12" sm="5">
-                                        <v-select :items="['Ya', 'Tidak']" label="Buta Warna" dense outlined></v-select>
-                                    </v-col>
                                     <v-col class="pa-0" cols="12" sm="12">
-                                        <v-textarea label="Keluhan" auto-grow outlined rows="1" row-height="15">
+                                        <v-textarea label="Keluhan" :disabled="condition == 'show' ? true : false"
+                                            v-model="rekamedis.keluhan" auto-grow outlined rows="1" row-height="15">
                                         </v-textarea>
                                     </v-col>
                                     <v-col class="pa-0" cols="12" sm="12">
-                                        <v-textarea label="Anamnesis" auto-grow outlined rows="1" row-height="15">
+                                        <v-textarea label="Anamnesis" :disabled="condition == 'show' ? true : false"
+                                            v-model="rekamedis.anamnesis" auto-grow outlined rows="1" row-height="15">
                                         </v-textarea>
                                     </v-col>
                                     <v-col class="pa-0" cols="12" sm="12">
-                                        <v-textarea label="Diagnosa" auto-grow outlined rows="1" row-height="15">
+                                        <v-textarea label="Diagnosa" :disabled="condition == 'show' ? true : false"
+                                            v-model="rekamedis.diagnosa" auto-grow outlined rows="1" row-height="15">
                                         </v-textarea>
                                     </v-col>
-                                    <v-col class="pa-0" cols="12" sm="12">
-                                        <v-textarea label="Tindakan" auto-grow outlined rows="1" row-height="15">
-                                        </v-textarea>
+                                    <v-col class="d-flex pa-0 mr-2" cols="12" sm="12">
+                                        <v-select :disabled="condition == 'show' ? true : false" :items="tindakan.items"
+                                            @input="changeID('tindakan')" v-model="rekamedis.tindakan" label="Tindakan"
+                                            dense outlined>
+                                        </v-select>
                                     </v-col>
                                     <v-col class="pa-0" cols="12" sm="12">
-                                        <v-textarea label="Keterangan" auto-grow outlined rows="1" row-height="15">
+                                        <v-textarea label="Keterangan" :disabled="condition == 'show' ? true : false"
+                                            v-model="rekamedis.keterangan" auto-grow outlined rows="1" row-height="15">
                                         </v-textarea>
                                     </v-col>
                                     <v-col cols="12" sm="12">
-                                        <v-btn class="mr-4" @click="submit"> Submit </v-btn>
-                                        <v-btn @click="dialog = false"> Close </v-btn>
+                                        <v-btn class="mr-4" @click="selectStore"> Submit </v-btn>
+                                        <v-btn @click="dialog.state = false"> Close </v-btn>
                                     </v-col>
                                 </v-row>
                             </v-container>
-                        </form>
+                        </v-form>
                     </v-card>
                 </v-dialog>
+                <confirmation-dialog :confirmationDialog="dialogConfirmation" :method="
+                    condition == 'store'
+                        ? store
+                        : condition == 'update'
+                            ? update
+                            : remove
+                " @changeDialogState="dialogConfirmation.state = $event"></confirmation-dialog>
             </div>
         </v-main>
     </v-app>
@@ -151,9 +166,15 @@ export default {
     data() {
         return {
             _url: "",
+            valid: false,
+            rekamedis: {},
             web: {
                 isTableLoad: false,
                 filterOpen: false,
+            },
+            tindakan: {
+                items: [],
+                data: {}
             },
             filter: {
                 page: 1,
@@ -183,7 +204,10 @@ export default {
             roles: [],
             currentData: {},
             currentUser: {},
-            dialog: false,
+            dialog: {
+                state: false,
+                title: null,
+            },
             dialogConfirmation: {
                 state: false,
                 message: null,
@@ -193,6 +217,43 @@ export default {
         };
     },
     methods: {
+        changeID(event) {
+            if (event == "tindakan") {
+                let currentID = this.rekamedis.tindakan;
+                this.tindakan.data.forEach((v) => {
+                    // console.log(v);
+                    if (v.description == currentID) {
+                        this.rekamedis.tindakan_id = v.id;
+                    }
+                });
+            }
+        },
+        setSelectedTindakan() {
+            axios.get(`/api/v1/list-tindakan/`).then((res) => {
+                if (res.status === 200) {
+                    res.data.data.forEach((v) => {
+                        this.tindakan.items.push(v.description);
+                    });
+                    this.tindakan.data = res.data.data;
+                } else {
+                    this.makeDefaultNotification(
+                        response.data.status,
+                        response.data.message
+                    );
+                }
+            });
+        },
+        selectStore() {
+            if (this.$refs.form.validate()) {
+                if (this.condition == "store") {
+                    this.dialogConfirmation.message = "menyimpan";
+                    this.popDialog();
+                } else {
+                    this.dialogConfirmation.message = "mengubah";
+                    this.popDialog();
+                }
+            }
+        },
         selectMethod(data, item) {
             this.currentData = data;
             if (item == "delete") {
@@ -211,12 +272,123 @@ export default {
             } else if (item == "show") {
                 this.condition = "show";
                 this.dialog.title = "Data Menu";
+                this.rekamedis = data;
                 this.showDialog(false);
             } else if (item == "edit") {
                 this.condition = "update";
                 this.dialog.title = "Edit Menu";
+                this.rekamedis = data;
                 this.showDialog(false);
             }
+        },
+        store() {
+            let req = Object.assign(this.obatMasuk, this.filter);
+            this.currentData = null;
+            axios
+                .post(this._url, req)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.dialog.state = false;
+                        this.data = response.data.data;
+                        this.makeDefaultNotification(
+                            response.data.status,
+                            response.data.message
+                        );
+                    }
+                })
+                .catch((e) => {
+                    this.errorState(e);
+                });
+        },
+        update() {
+            let req = Object.assign(this.rekamedis, this.filter);
+            axios
+                .put(`${this._url}${this.rekamedis.id}`, req)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.dialog.state = false;
+                        this.retriveData = response.data.data;
+                        this.makeDefaultNotification(
+                            response.data.status,
+                            response.data.message
+                        );
+                    }
+                })
+                .catch((e) => {
+                    this.errorState(e);
+                });
+        },
+        show(id) {
+            let url = `${this._url}${id}`;
+            axios
+                .get(url)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.rekamedis = response.data.data;
+                    }
+                })
+                .catch((e) => {
+                    this.errorState(e);
+                });
+        },
+        popDialog() {
+            this.dialogConfirmation.state = !this.dialogConfirmation.state;
+        },
+        clear() {
+            this.rekamedis = {};
+            this.errors = {};
+            if (this.$refs.form) this.$refs.form.resetValidation();
+        },
+
+        changeData(newdata) {
+            this.data = newdata;
+        },
+
+        errorState(e) {
+            if (e.response.status == 401) {
+                localStorage.removeItem("token");
+                this._token = "";
+                this.$router.push({ name: "index" });
+            } else {
+                if (e.response.data.errors) {
+                    this.errors = e.response.data.errors;
+                } else {
+                    this.showDialog = false;
+                }
+
+                this.errorRequestState(e);
+            }
+        },
+        remove() {
+            this.web.isTableLoad = true;
+            axios
+                .delete(`${this._url}${this.currentData.id}`, { data: this.filter })
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.web.isTableLoad = false;
+                        this.data = response.data.data;
+                        this.filter.page = response.data.data.current_page;
+                        this.makeDefaultNotification(
+                            response.data.status,
+                            response.data.message
+                        );
+                    }
+                })
+                .catch((e) => {
+                    this.errorState(e);
+                });
+        },
+        add() {
+            this.currentData = null;
+            this.condition = "store";
+            this.dialog.title = "Tambah Data";
+            this.showDialog(false);
+        },
+        edit(data) {
+            this.currentData = data;
+            this.condition = "update";
+            this.dialog.title = "Edit Role";
+            this.showDialog(false);
         },
         showDialog(isConfirmation) {
             if (isConfirmation) {
@@ -227,14 +399,13 @@ export default {
         },
         filterPage(sort_by) {
             this.web.isTableLoad = true;
-            if (sort_by) {
+            if (sort_by != "" && sort_by != null && sort_by != "undefined") {
                 this.filter.sortBy == sort_by
                     ? this.filter.orderBy == "asc"
                         ? (this.filter.orderBy = "desc")
                         : (this.filter.orderBy = "asc")
                     : (this.filter.sortBy = sort_by);
             }
-
             let url =
                 this._url +
                 "?page=" +
@@ -246,72 +417,36 @@ export default {
                 "&sortBy=" +
                 this.filter.sortBy +
                 "&orderBy=" +
-                this.filter.orderBy +
-                "&role=" +
-                this.module.role;
+                this.filter.orderBy;
             axios
                 .get(url)
                 .then((response) => {
+                    // console.log(response);
                     if (response.status == 200) {
-                        this.clearModules();
-                        this.data.data = response.data.data;
-                        response.data.data.forEach((v) => {
-                            let activeAll = v.id;
-                            if (v.is_home) {
-                                this.module.is_home = v.id;
-                                this.module.is_home_old = v.id;
-                            }
-                            if (v.create) this.module.create.push(v.id);
-                            else activeAll = 0;
-                            if (v.read) this.module.read.push(v.id);
-                            else activeAll = 0;
-                            if (v.update) this.module.update.push(v.id);
-                            else activeAll = 0;
-                            if (v.delete) this.module.delete.push(v.id);
-                            else activeAll = 0;
-                            if (v.print) this.module.print.push(v.id);
-                            else activeAll = 0;
-
-                            this.module.is_all.push(activeAll);
-                        });
-                        if (!this.module.role) this.clearModules();
+                        this.data = response.data.data;
                         this.filter.page = response.data.data.current_page;
                         this.web.isTableLoad = false;
-                        this.currentUser = this.requestCurrentUser();
-                        if (!this.roles || this.roles < 1) {
-                            this.roles = this.requestRole();
-                        }
+                        this.getCurrentUser();
                     }
                 })
                 .catch((e) => {
                     this.errorState(e);
                 });
         },
-        clearModules() {
-            this.$delete(this.module, "is_home");
-            this.module.is_home_old = 0;
-            this.module.create = [];
-            this.module.read = [];
-            this.module.update = [];
-            this.module.delete = [];
-            this.module.print = [];
-            this.module.is_all = [];
-        },
-        errorState(e) {
-            console.log(e);
-            this.web.isTableLoad = false;
-            //   this.errors = e.response.data.errors;
-            if (e.response.status == 401) {
-                localStorage.removeItem("token");
-                this._token = "";
-                this.$router.push({ name: "index" });
+
+    },
+    created() {
+        if (this.modules.length > 0) {
+            let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
+            if (Object.keys(access).length === 1 && access.constructor === Object) {
+                this.$router.push({ name: access.home });
             } else {
-                this.errorRequestState(e);
+                this.web = access;
             }
-        },
-        changeData(newdata) {
-            this.data = newdata;
-        },
+        }
+        this._url = window.location.origin + "/api/v1/rekamedis/";
+        this.filterPage("");
+        this.setSelectedTindakan();
     },
 
     watch: {

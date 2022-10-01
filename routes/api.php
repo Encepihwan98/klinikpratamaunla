@@ -1,65 +1,26 @@
 <?php
 
-use App\Http\Controllers\AgamaController;
-use App\Http\Controllers\DaftarCaraPembayaranController;
-use App\Http\Controllers\DaftarGiziController;
-use App\Http\Controllers\MInseneratorController;
-use App\Http\Controllers\OxygenController;
-use App\Http\Controllers\ProfessionController;
-use App\Http\Controllers\ExaminationActionController;
-use App\Http\Controllers\GeneralExaminationController;
-use App\Http\Controllers\EducationController;
+use App\Http\Controllers\AdministrasiController;
+use App\Http\Controllers\ApotekerController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DaftarKasusController;
-use App\Http\Controllers\ActionServiceController;
-
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\CorpseExaminationController;
-use App\Http\Controllers\DaftarRegistrasiController;
-use App\Http\Controllers\DiagnosisTypeController;
-use App\Http\Controllers\EmergancyController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\IdentityTypeController;
-use App\Http\Controllers\InPatientController;
-use App\Http\Controllers\KategoriKegiatanController;
-use App\Http\Controllers\KategoriKualifikasiController;
-use App\Http\Controllers\KegiatanController;
-use App\Http\Controllers\KualifikasiController;
-use App\Http\Controllers\LaundryTypeController;
-use App\Http\Controllers\LogisticController;
-use App\Http\Controllers\LogisticTypeController;
-use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ModuleWithRoleController;
-use App\Http\Controllers\OutPatienController;
-use App\Http\Controllers\DiagnosticServicesController;
-use App\Http\Controllers\DiseaseController;
-use App\Http\Controllers\ExaminationServiceController;
-use App\Http\Controllers\PatientsController;
-use App\Http\Controllers\PoliclinicTypeController;
-use App\Http\Controllers\PolyclinicController;
-use App\Http\Controllers\PolyclinicRoomController;
-use App\Http\Controllers\PositionController;
-use App\Http\Controllers\ProcedureController;
-use App\Http\Controllers\ProvinceController;
-use App\Http\Controllers\RateController;
-use App\Http\Controllers\RecipeDetailServiceController;
-use App\Http\Controllers\RoombedController;
-use App\Http\Controllers\RoomController;
-use App\Http\Controllers\RoomgradeController;
-use App\Http\Controllers\RoomserviceController;
-use App\Http\Controllers\RujukanController;
-use App\Http\Controllers\SupportActionServiceCOntroller;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\SupportServiceController;
-use App\Http\Controllers\TribeController;
-use App\Http\Controllers\UtdrsController;
-use App\Http\Controllers\VisitController;
+use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\PasienController;
 
-;
-use App\Models\Incinerator;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\DokterController;
+use App\Http\Controllers\KategoriObatController;
+use App\Http\Controllers\ModuleWithRoleController;
+use App\Http\Controllers\ObatController;
+use App\Http\Controllers\ObatMasukController;
+use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\RekamedisController;
+use App\Http\Controllers\ResepController;
+use App\Http\Controllers\RujukanController;
+use App\Http\Controllers\SuplierController;
+use App\Http\Controllers\TindakanController;
+use App\Models\Administrasi;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -95,102 +56,74 @@ Route::prefix('v1')->group(function () {
 
             Route::apiResource('roles', RoleController::class);
             Route::apiResource('users', UserController::class);
+            Route::get('list-users', [UserController::class,'global_function']);
             Route::apiResource('modules', ModuleController::class);
-            Route::apiResource('daftar-agama', AgamaController::class);
-            Route::get('list-agama', [AgamaController::class, 'global_function']);
-            Route::apiResource('daftar-cara-pembayaran', DaftarCaraPembayaranController::class);
-            Route::get('list-cara-pembayaran', [DaftarCaraPembayaranController::class, 'global_function']);
-            Route::apiResource('daftar-gizi', DaftarGiziController::class);
-            Route::apiResource('daftar-insenerator', MInseneratorController::class);
-            Route::apiResource('daftar-kasus', DaftarKasusController::class);
-            Route::get('list-kasus', [DaftarKasusController::class, 'global_function']);
-            Route::apiResource('daftar-oksigen', OxygenController::class);
-            Route::apiResource('daftar-pekerjaan', ProfessionController::class);
-            Route::get('list-pekerjaan', [ProfessionController::class, 'global_function']);
-            Route::apiResource('daftar-pemeriksaan-jenazah', CorpseExaminationController::class);
-            Route::apiResource('daftar-pemeriksaan-umum', GeneralExaminationController::class);
-            Route::get('list-pemeriksaan-umum', [GeneralExaminationController::class,'global_function']);
-            Route::apiResource('daftar-tindakan', ExaminationActionController::class);
-            Route::get('list-tindakan', [ExaminationActionController::class, 'global_function']);
-            Route::apiResource('daftar-pendidikan', EducationController::class);
-            Route::get('list-pendidikan', [EducationController::class, 'global_fun']);
-            Route::apiResource('daftar-prosedure', ProcedureController::class);
-            Route::apiResource('daftar-suku', TribeController::class);
-            Route::get('list-suku', [TribeController::class,'global_function']);
-            Route::apiResource('daftar-utdrs', UtdrsController::class);
-            Route::apiResource('daftar-identitas', IdentityTypeController::class);
-            Route::get('list-provinsi', [ProvinceController::class,'global_function']);
-            Route::get('list-identitas', [IdentityTypeController::class, 'global_function']);
-            Route::apiResource('daftar-laundry', LaundryTypeController::class);
-            Route::apiResource('daftar-logistik', LogisticTypeController::class);
-            Route::apiResource('daftar-poliklinik-type', PoliclinicTypeController::class);
-            Route::apiResource('logistik', LogisticController::class);
-            Route::get('list-logistik', [LogisticController::class,'global_function']);
-            Route::get('list-poliklinik-type', [PoliclinicTypeController::class,'global_function']);
-            Route::apiResource('daftar-pasien', PatientsController::class);
-            Route::get('list-pasien', [PatientsController::class,'global_function']);
-            Route::apiResource('jabatan', PositionController::class);
-            Route::get('list-jabatan', [PositionController::class,'global_function']);
-            Route::apiResource('daftar-rujukan', RujukanController::class);
-            Route::get('list-rujukan', [RujukanController::class,'global_function']);
-            Route::apiResource('daftar-registrasi', DaftarRegistrasiController::class);
-            Route::get('list-registrasi', [DaftarRegistrasiController::class,'global_function']);
-            Route::apiResource('daftar-pegawai', EmployeeController::class);
-            Route::get('list-pegawai', [EmployeeController::class,'global_function']);
-            Route::apiResource('reg-rawat-inap', InPatientController::class);
-            Route::apiResource('rawat-inap', InPatientController::class);
-
-            Route::get('list-diagnosa', [DiagnosisTypeController::class,'global_function']);
-            
-            Route::apiResource('layanan-penunjang',SupportServiceController::class);
-            Route::apiResource('layanan-diagnosa',DiagnosticServicesController::class);
-            Route::apiResource('layanan-tindakan',ActionServiceController::class);
-            Route::get('layanan-tindakan-rate',[ActionServiceController::class,'getRate']);
-            Route::get('layanan-penunjang-rate',[SupportServiceController::class,'getRate']);
-            Route::get('layanan-penunjang-radiologi',[SupportServiceController::class,'getRadiologi']);
-            Route::get('layanan-penunjang-operasi',[SupportServiceController::class,'getOperasi']);
-            Route::get('layanan-penunjang-insenerator',[SupportServiceController::class,'getInsenerator']);
-            Route::get('layanan-penunjang-utdrs',[SupportServiceController::class,'getUtdrs']);
-            Route::get('layanan-penunjang-kamarjenazah',[SupportServiceController::class,'getKamarJenazah']);
-            Route::apiResource('layanan-pemeriksaan',ExaminationServiceController::class);
-            Route::apiResource('layanan-resep',RecipeDetailServiceController::class);
-
-            Route::apiResource('reg-rawat-jalan', OutPatienController::class);
-            Route::put('update-pasien-pulang/{id}',[ OutPatienController::class,'updatePasienPulang']);
-            Route::apiResource('penunjang-tindakan', SupportActionServiceCOntroller::class);
-            Route::get('getGlobal',[ SupportActionServiceCOntroller::class,'getGlobal']);
-            Route::get('rate-laboratorium',[ SupportActionServiceCOntroller::class,'rateLaboratorium']);
-            Route::apiResource('rawat-jalan', OutPatienController::class);
-            Route::get('rawat-jalan-detail', [OutPatienController::class,'getDetail']);
-            Route::apiResource('reg-rawat-darurat', EmergancyController::class);
-            Route::apiResource('kategori-kualifikasi', KategoriKualifikasiController::class);
-            Route::get('list-kategori-kualifikasi', [KategoriKualifikasiController::class, 'global_function']);
-            Route::apiResource('kualifikasi', KualifikasiController::class);
-            Route::get('list-kualifikasi', [KualifikasiController::class, 'global_function']);
-            Route::apiResource('kategori-kegiatan', KategoriKegiatanController::class);
-            Route::get('list-kategori-kegiatan', [KategoriKegiatanController::class, 'global_function']);
             Route::apiResource('r-modules', ModuleWithRoleController::class);
-            Route::apiResource('daftar-kegiatan', KegiatanController::class);
-            Route::get('list-kegiatan', [KegiatanController::class, 'global_function']);
-            Route::apiResource('poliklinik', PolyclinicController::class);
-            Route::get('list-poliklinik', [PolyclinicController::class, 'global_function']);
-            Route::apiResource('ruangan', PolyclinicRoomController::class);
-            Route::apiResource('ranjang', RoombedController::class);
-            Route::apiResource('daftar-suplier', SupplierController::class);
-            Route::get('list-poliklinik-room', [PolyclinicRoomController::class, 'global_function']);
-            Route::get('list-room-grade', [RoomgradeController::class, 'global_function']);
-            Route::get('select-room', [RoomController::class, 'select_function']);
-            Route::get('list-room', [RoomController::class, 'global_function']);
-            Route::apiResource('kamar', RoomController::class);
-            Route::apiResource('tarif', RateController::class);
-            Route::get('tarif-keuangan', [RateController::class, 'tarifKeungan']);
-            Route::apiResource('visit', VisitController::class);
 
-            Route::get('list-penyakit', [DiseaseController::class, 'global_function']);
+            
+
+            
             
             Route::post('my-modules', [ModuleController::class, 'myModule']);
 
             Route::post('users/active/{id}', [UserController::class, 'active']);
             Route::post('modules/active/{id}', [ModuleController::class, 'active']);
+
+            Route::apiResource('daftar-pasien', PasienController::class);
+            // menu daftar pasien
+            Route::post('update-status-pasien', [PasienController::class,'statusUpdate']);
+            // untuk update status pasien antri/periksa/selesai
+            // parameter status-string
+            Route::post('remove-status-pasien/{id}', [PasienController::class,'statusRemove']);
+            //remove status pasien
+            Route::get('status-pasien-antri', [PasienController::class,'statusGetAntri']);
+            Route::get('status-pasien', [PasienController::class,'statusGet']);
+            Route::get('status-pasien-selesai', [PasienController::class,'statusGetSelesai']);
+            Route::get('list-pasien',[ResepController::class,'listPasien']);
+            // untuk get status pasien antri/periksa/selesai
+            Route::apiResource('daftar-tindakan', TindakanController::class);
+            // menu daftar tindakan
+            Route::get('list-tindakan',[ TindakanController::class,'global_function']);
+            // list tindakan
+            Route::apiResource('rekamedis', RekamedisController::class);
+            Route::get('daftar-tindakan-pembayaran', [ RekamedisController::class,'getTindakan']);
+            // menu rekam medis
+            Route::apiResource('resep', ResepController::class);
+            Route::get('resep-pasien/{id_pasien}',[ResepController::class,'resep_pasien']);
+            //menu reseps
+            Route::get('get-status-resep',[ResepController::class,'getStatusResep']);
+            Route::get('get-status-resep-today',[ResepController::class,'getStatusResepToday']);
+            Route::get('detail-resep',[ResepController::class,'getDetailResep']);
+            // get status resep ('sudah','belum)
+            Route::post('update-status-resep/{id}',[ResepController::class,'updateStatusResep']);
+            // update status resep ('sudah','belum)
+            Route::apiResource('kategori-obat', KategoriObatController::class);
+            // menu kategori obat
+            Route::get('list-kategori-obat', [KategoriObatController::class,'global_function']);
+            // list kategori obat
+            Route::apiResource('obat', ObatController::class);
+            // menu obat
+            Route::get('list-obat', [ObatController::class,'global_function']);
+            // list obat
+            Route::apiResource('pembayaran', PembayaranController::class);
+            // menu pembayaran
+            Route::get('list-pembayaran', [PembayaranController::class,'global_function']);
+            // list pembayaran
+            Route::apiResource('dokter', DokterController::class);
+            // menu dokter
+            Route::get('list-dokter', [DokterController::class,'global_function']);
+            // list dokter
+            Route::apiResource('apoteker', ApotekerController::class);
+            // menu apoteker
+            Route::apiResource('administrasi', AdministrasiController::class);
+            // menu administrasi
+            Route::apiResource('daftar-suplier', SuplierController::class);
+            // menu suplier
+            Route::get('list-suplier', [SuplierController::class,'global_function']);
+            // list suplier
+            Route::apiResource('daftar-obat-masuk', ObatMasukController::class);
+
+            Route::apiResource('rujukan', RujukanController::class);
+            // menu rujukan
         });
 });

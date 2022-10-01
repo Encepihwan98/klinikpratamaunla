@@ -38,7 +38,7 @@
                         <v-col cols="12" sm="12">
                             <v-card>
                                 <v-card-text>
-                                    <p class="text-h6"> Data Rekam Medis</p>
+                                    <p class="text-h6"> Data Resep</p>
                                 </v-card-text>
                                 <v-row>
                                     <v-col class="d-flex" cols="12" sm="2">
@@ -57,21 +57,23 @@
                                             <tr>
                                                 <th class="text-left">No</th>
                                                 <th class="text-left">Nama Pasien</th>
-                                                <th class="text-left">Tgl Periksa</th>
+                                                <th class="text-left">Jenis Kelamin</th>
+                                                <!-- <th class="text-left">Id</th> -->
                                                 <th class="text-left">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>Maman</td>
-                                                <td>25-01-2022</td>
+                                            <tr v-for="(item, index) in data.data" :key="item.nama">
+                                                <td>{{ index + data.from }}</td>
+                                                <td>{{item.nama}}</td>
+                                                <td>{{item.jenis_kelamin}}</td>
+                                                <!-- <td>{{item.id_pasien}}</td> -->
                                                 <td class="center-center">
-                                                    <v-btn small>
+                                                    <!-- <v-btn small>
                                                         <v-icon small>far fa-print</v-icon>
-                                                    </v-btn>
-                                                    <v-btn small @click.stop="dialog = true">
-                                                        <v-icon small>far fa-search</v-icon>
+                                                    </v-btn> -->
+                                                    <v-btn small @click="selectMethod(item, 'show')" v-if="web.update">
+                                                        <v-icon small>far fa-eye</v-icon>
                                                     </v-btn>
                                                 </td>
                                             </tr>
@@ -84,7 +86,7 @@
                 </v-container>
             </div>
             <div>
-                <v-dialog v-model="dialog" persistent max-width="600px">
+                <v-dialog v-model="dialog.state" persistent max-width="600px">
                     <v-card>
                         <v-card-title class="text-h5"> Detail Resep </v-card-title>
                         <v-simple-table dense>
@@ -96,20 +98,17 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>11-07-2017</td>
-                                        <td>Nama Obat : Bodrex | Jumlah : 12</td>
+                                    <tr v-for="(item, index) in resep" :key="item.nama">
+                                        <td>{{ index + data.from }} {{item.tgl_resep}}</td>
+                                        <td>Nama Obat : {{item.nama_obat}} | Jumlah : {{item.jumlah}}</td>
                                     </tr>
-                                    <tr>
-                                        <td>11-07-2017</td>
-                                        <td>Nama Obat : Bodrex | Jumlah : 12</td>
-                                    </tr>
+                                
                                 </tbody>
                             </template>
                         </v-simple-table>
                         <v-col cols="12" sm="12">
-                            <v-btn class="mr-4" @click="submit"> Submit </v-btn>
-                            <v-btn @click="dialog = false"> Close </v-btn>
+                            <!-- <v-btn class="mr-4" @click="submit"> Submit </v-btn> -->
+                            <v-btn @click="dialog.state = false"> Close </v-btn>
                         </v-col>
                     </v-card>
                 </v-dialog>
@@ -126,6 +125,9 @@ export default {
     data() {
         return {
             _url: "",
+            _urlResep: "",
+            resep: {},
+            valid: false,
             web: {
                 isTableLoad: false,
                 filterOpen: false,
@@ -143,6 +145,10 @@ export default {
                 data: [],
                 current_page: 1,
             },
+            users: {
+                items: [],
+                data: {},
+            },
             module: {
                 create: [],
                 read: [],
@@ -158,16 +164,35 @@ export default {
             roles: [],
             currentData: {},
             currentUser: {},
-            dialog: false,
+            dialog: {
+                state: false,
+                title: null,
+            },
             dialogConfirmation: {
                 state: false,
                 message: null,
             },
             condition: "store",
             selectItem: ["10", "25", "50", "100"],
+            errors: [],
+            rules: {
+                required: (v) => !!v || "Tolong isi form.",
+            },
         };
     },
     methods: {
+
+        selectStore() {
+            if (this.$refs.form.validate()) {
+                if (this.condition == "store") {
+                    this.dialogConfirmation.message = "menyimpan";
+                    this.popDialog();
+                } else {
+                    this.dialogConfirmation.message = "mengubah";
+                    this.popDialog();
+                }
+            }
+        },
         selectMethod(data, item) {
             this.currentData = data;
             if (item == "delete") {
@@ -185,13 +210,127 @@ export default {
                 this.showDialog(false);
             } else if (item == "show") {
                 this.condition = "show";
-                this.dialog.title = "Data Menu";
+                this.dialog.title = "show data";
                 this.showDialog(false);
             } else if (item == "edit") {
                 this.condition = "update";
                 this.dialog.title = "Edit Menu";
                 this.showDialog(false);
             }
+        },
+        store() {
+            let req = Object.assign(this.resep, this.filter);
+            this.currentData = null;
+            axios
+                .post(this._url, req)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.dialog.state = false;
+                        this.data = response.data.data;
+                        this.makeDefaultNotification(
+                            response.data.status,
+                            response.data.message
+                        );
+                    }
+                })
+                .catch((e) => {
+                    this.errorState(e);
+                });
+        },
+        update() {
+            let req = Object.assign(this.resep, this.filter);
+            axios
+                .put(`${this._url}${this.resep.id}`, req)
+                .then((response) => {
+                    if (response.status == 200) {
+                        console.log(response);
+                        this.dialog.state = false;
+                        this.retriveData = response.data.data;
+                        // this.data = response.data.data;
+                        this.makeDefaultNotification(
+                            response.data.status,
+                            response.data.message
+                        );
+                    }
+                })
+                .catch((e) => {
+                    this.errorState(e);
+                });
+        },
+        show(id_) {
+            // console.log(item);
+            console.log(id_);
+            this._urlResep = window.location.origin + "/api/v1/resep-pasien/";
+            let url = `${this._urlResep}${id_}`;
+            axios
+                .get(url)
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.resep = response.data.data;
+                    }
+                })
+                .catch((e) => {
+                    this.errorState(e);
+                });
+        },
+        popDialog() {
+            this.dialogConfirmation.state = !this.dialogConfirmation.state;
+        },
+        clear() {
+            this.resep = {};
+            this.errors = {};
+            if (this.$refs.form) this.$refs.form.resetValidation();
+        },
+
+        changeData(newdata) {
+            this.data = newdata;
+        },
+
+        errorState(e) {
+            if (e.response.status == 401) {
+                localStorage.removeItem("token");
+                this._token = "";
+                this.$router.push({ name: "index" });
+            } else {
+                if (e.response.data.errors) {
+                    this.errors = e.response.data.errors;
+                } else {
+                    this.showDialog = false;
+                }
+
+                this.errorRequestState(e);
+            }
+        },
+        remove() {
+            this.web.isTableLoad = true;
+            axios
+                .delete(`${this._url}${this.currentData.id}`, { data: this.filter })
+                .then((response) => {
+                    if (response.status == 200) {
+                        this.web.isTableLoad = false;
+                        this.data = response.data.data;
+                        this.filter.page = response.data.data.current_page;
+                        this.makeDefaultNotification(
+                            response.data.status,
+                            response.data.message
+                        );
+                    }
+                })
+                .catch((e) => {
+                    this.errorState(e);
+                });
+        },
+        edit(data) {
+            this.currentData = data;
+            this.condition = "update";
+            this.dialog.title = "Edit Role";
+            this.showDialog(false);
+        },
+        add() {
+            this.currentData = null;
+            this.condition = "store";
+            this.dialog.title = "Tambah Data";
+            this.showDialog(false);
         },
         showDialog(isConfirmation) {
             if (isConfirmation) {
@@ -202,14 +341,13 @@ export default {
         },
         filterPage(sort_by) {
             this.web.isTableLoad = true;
-            if (sort_by) {
+            if (sort_by != "" && sort_by != null && sort_by != "undefined") {
                 this.filter.sortBy == sort_by
                     ? this.filter.orderBy == "asc"
                         ? (this.filter.orderBy = "desc")
                         : (this.filter.orderBy = "asc")
                     : (this.filter.sortBy = sort_by);
             }
-
             let url =
                 this._url +
                 "?page=" +
@@ -221,59 +359,25 @@ export default {
                 "&sortBy=" +
                 this.filter.sortBy +
                 "&orderBy=" +
-                this.filter.orderBy +
-                "&role=" +
-                this.module.role;
+                this.filter.orderBy;
             axios
                 .get(url)
                 .then((response) => {
+                    // console.log(response);
                     if (response.status == 200) {
-                        this.clearModules();
-                        this.data.data = response.data.data;
-                        response.data.data.forEach((v) => {
-                            let activeAll = v.id;
-                            if (v.is_home) {
-                                this.module.is_home = v.id;
-                                this.module.is_home_old = v.id;
-                            }
-                            if (v.create) this.module.create.push(v.id);
-                            else activeAll = 0;
-                            if (v.read) this.module.read.push(v.id);
-                            else activeAll = 0;
-                            if (v.update) this.module.update.push(v.id);
-                            else activeAll = 0;
-                            if (v.delete) this.module.delete.push(v.id);
-                            else activeAll = 0;
-                            if (v.print) this.module.print.push(v.id);
-                            else activeAll = 0;
-
-                            this.module.is_all.push(activeAll);
-                        });
-                        if (!this.module.role) this.clearModules();
+                        this.data = response.data.data;
                         this.filter.page = response.data.data.current_page;
                         this.web.isTableLoad = false;
-                        this.currentUser = this.requestCurrentUser();
-                        if (!this.roles || this.roles < 1) {
-                            this.roles = this.requestRole();
-                        }
+                        this.getCurrentUser();
                     }
                 })
                 .catch((e) => {
                     this.errorState(e);
                 });
         },
-        clearModules() {
-            this.$delete(this.module, "is_home");
-            this.module.is_home_old = 0;
-            this.module.create = [];
-            this.module.read = [];
-            this.module.update = [];
-            this.module.delete = [];
-            this.module.print = [];
-            this.module.is_all = [];
-        },
+
         errorState(e) {
-            console.log(e);
+            // console.log(e);
             this.web.isTableLoad = false;
             //   this.errors = e.response.data.errors;
             if (e.response.status == 401) {
@@ -288,17 +392,37 @@ export default {
             this.data = newdata;
         },
     },
-
-    watch: {
-        modules: function (n, o) {
-            let access = this.redirectIfNotHaveAccess(n, this.$route.path);
+    created() {
+        if (this.modules.length > 0) {
+            let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
             if (Object.keys(access).length === 1 && access.constructor === Object) {
                 this.$router.push({ name: access.home });
             } else {
                 this.web = access;
-                n.forEach((v) => {
-                    if (v.url != "#") this.data.data.push(v);
-                });
+            }
+        }
+        // this._url = window.location.origin + "/api/v1/resep-pasien/";
+        this._url = window.location.origin + "/api/v1/list-pasien/";
+        this.filterPage("");
+    },
+    computed: {
+        dialogState() {
+            return this.dialog.state;
+        },
+    },
+    watch: {
+        dialogState: function (n, o) {
+            // console.log(n);
+
+            if (n && this.currentData) this.show(this.currentData.id_);
+            // else this.clear();
+        },
+        modules: function (n, o) {
+            let access = this.redirectIfNotHaveAccess(n, this.$route.fullPath);
+            if (Object.keys(access).length === 1 && access.constructor === Object) {
+                this.$router.push({ name: access.home });
+            } else {
+                this.web = access;
             }
         },
     },

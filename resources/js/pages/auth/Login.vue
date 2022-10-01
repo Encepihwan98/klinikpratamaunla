@@ -5,24 +5,26 @@
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center">
           <router-link to="/" class="d-flex align-center mx-auto">
-            <v-img
+            <!-- <v-img
               src="/assets/images/logos/logo.svg"
               max-height="30px"
               max-width="30px"
               alt="logo"
               contain
               class="mr-3"
-            ></v-img>
+            ></v-img> -->
 
-            <h2 class="text-2xl font-weight-semibold">Materio</h2>
+            <h2 class="text-2xl font-weight-semibold">KLINIK</h2>
           </router-link>
         </v-card-title>
 
         <!-- title -->
         <v-card-text>
-          <p class="text-2xl font-weight-semibold text--primary mb-2">
-            Welcome to Materio! 👋🏻
-          </p>
+          <!-- <p class="text-2xl font-weight-semibold text--primary mb-2">
+            PRATAMA UNLA!  -->
+            <!-- 👋🏻 -->
+          <!-- </p> -->
+          <h2 class="text-2xl text-center font-weight-semibold">PRATAMA UNLA</h2>
           <p class="mb-2">
             Please sign-in to your account and start the adventure
           </p>

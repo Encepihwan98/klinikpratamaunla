@@ -230,4 +230,12 @@ class UserController extends Controller
         return $data;
     }
 
+    public function global_function(Request $request){
+        if (isset($request->limit)) {
+            $data = $this->filter($request);
+        } else {
+            $data = User::all();
+        }
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
 }

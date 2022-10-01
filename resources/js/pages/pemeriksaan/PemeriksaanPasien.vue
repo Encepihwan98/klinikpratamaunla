@@ -1,14 +1,7 @@
 <template>
   <v-app>
-    <vertical-nav-menu
-      :is-drawer-open.sync="isDrawerOpen"
-      :modules="modules"
-    ></vertical-nav-menu>
-    <app-bar
-      :isDrawerOpen="isDrawerOpen"
-      :currentUser="currentUser"
-      @updateNavbar="isDrawerOpen = $event"
-    ></app-bar>
+    <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen" :modules="modules"></vertical-nav-menu>
+    <app-bar :isDrawerOpen="isDrawerOpen" :currentUser="currentUser" @updateNavbar="isDrawerOpen = $event"></app-bar>
     <v-main>
       <div class="app-content-container boxed-container pa-6">
         <v-container>
@@ -20,28 +13,28 @@
                     Daftar Antrian Pasien
                     <v-chip class="float-end mt-2" small color="red">1</v-chip>
                   </p>
-                  
+
                 </v-card-text>
-                <v-conteiner>
+                <v-container>
                   <v-row class="mx-2 mb-5">
-                    <v-col cols="12" sm="12" class="pa-0">
+                    <v-col v-for="(item, index) in status.periksa.data" :key="item.nama" cols="12" sm="12" class="pa-0">
                       <div class="ma-2 d-block pa-2 grey lighten-4 black--text">
-                        maman
-                        <v-btn :to="{name: 'periksa-resep'}" x-small class="float-end" color="green">
+                        {{index + 1}} {{item.nama}}
+                        <v-btn :to="{ name: 'periksa-resep', params: { id: item.pasien_id } }" x-small class="float-end" color="green">
                           periksa
                         </v-btn>
                       </div>
                     </v-col>
-                    <v-col cols="12" sm="12" class="pa-0">
+                    <!-- <v-col cols="12" sm="12" class="pa-0">
                       <div class="ma-2 d-block pa-2 grey lighten-4 black--text">
                         maman 2
                         <v-btn x-small class="float-end" color="green">
                           periksa
                         </v-btn>
                       </div>
-                    </v-col>
+                    </v-col> -->
                   </v-row>
-                </v-conteiner>
+                </v-container>
               </v-card>
             </v-col>
             <v-col cols="12" sm="4">
@@ -49,31 +42,29 @@
                 <v-card-text>
                   <p class="text-h6 font-weight-bold">
                     Pasien Sudah Diperiksa
-                    <v-chip class="float-end mt-2" small color="green"
-                      >1</v-chip
-                    >
+                    <v-chip class="float-end mt-2" small color="green">1</v-chip>
                   </p>
                 </v-card-text>
-                <v-conteiner>
+                <v-container>
                   <v-row class="mx-2 mb-5">
-                    <v-col cols="12" sm="12" class="pa-0">
+                    <v-col v-for="(item, index) in status.selesai.data" :key="item.nama" cols="12" sm="12" class="pa-0">
+                      <div class="ma-2 d-block pa-2 grey lighten-4 black--text">
+                        {{index + 1}} {{item.nama}}
+                        <!-- <p class="float-end" color="green">
+                          (1 second ago)
+                        </p> -->
+                      </div>
+                    </v-col>
+                    <!-- <v-col cols="12" sm="12" class="pa-0">
                       <div class="ma-2 d-block pa-2 grey lighten-4 black--text">
                         maman
                         <p class="float-end" color="green">
                           (1 second ago)
                         </p>
                       </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" class="pa-0">
-                      <div class="ma-2 d-block pa-2 grey lighten-4 black--text">
-                        maman
-                        <p class="float-end" color="green">
-                          (1 second ago)
-                        </p>
-                      </div>
-                    </v-col>
+                    </v-col> -->
                   </v-row>
-                </v-conteiner>
+                </v-container>
               </v-card>
             </v-col>
             <v-col cols="12" sm="4">
@@ -84,26 +75,19 @@
                     <v-chip class="float-end mt-2" small color="blue">1</v-chip>
                   </p>
                 </v-card-text>
-                <v-conteiner>
+                <v-container>
                   <v-row class="mx-2 mb-5">
-                    <v-col cols="12" sm="12" class="pa-0">
-                      <div class="ma-2 d-block pa-2 grey lighten-4 black--text">
-                        maman
+                    <v-col v-for="(item, index) in status.data" :key="item.nama" cols="12" sm="12" class="pa-0">
+                      <div class="ma-2 d-block pa-2  grey lighten-4 black--text">
+                        {{index + 1}} {{item.nama}}
                         <v-btn x-small class="float-end" color="red">
-                          mengantri
+                          {{item.status}}
                         </v-btn>
                       </div>
-                    </v-col>
-                    <v-col cols="12" sm="12" class="pa-0">
-                      <div class="ma-2 d-block pa-2 grey lighten-4 black--text">
-                        maman
-                        <v-btn x-small class="float-end" color="green">
-                          antri obat
-                        </v-btn>
-                      </div>
-                    </v-col>
+                    </v-col>                    
+                    <!--  -->
                   </v-row>
-                </v-conteiner>
+                </v-container>
               </v-card>
             </v-col>
           </v-row>
@@ -121,6 +105,18 @@ export default {
   data() {
     return {
       _url: "",
+      status: {
+        periksa: {
+          items: [],
+          data: {}
+        },
+        selesai: {
+          items: [],
+          data: {},
+        },
+        items: [],
+        data: {},
+      },
       web: {
         isTableLoad: false,
         filterOpen: false,
@@ -166,6 +162,42 @@ export default {
     };
   },
   methods: {
+    setStatusPasien() {
+      axios.get(`/api/v1/status-pasien/`).then((res) => {
+        if (res.status === 200) {
+          this.status.data = res.data.data;
+        } else {
+          this.makeDefaultNotification(
+            response.data.status,
+            response.data.message
+          );
+        }
+      });
+    },
+    setStatusPasienAntri() {
+      axios.get(`/api/v1/status-pasien-antri/`).then((res) => {
+        if (res.status === 200) {
+          this.status.periksa.data = res.data.data;
+        } else {
+          this.makeDefaultNotification(
+            response.data.status,
+            response.data.message
+          );
+        }
+      });
+    },
+    setStatusPasienSelesai() {
+      axios.get(`/api/v1/status-pasien-selesai/`).then((res) => {
+        if (res.status === 200) {
+          this.status.selesai.data = res.data.data;
+        } else {
+          this.makeDefaultNotification(
+            response.data.status,
+            response.data.message
+          );
+        }
+      });
+    },
     selectMethod(data, item) {
       this.currentData = data;
       if (item == "delete") {
@@ -271,7 +303,7 @@ export default {
       this.module.is_all = [];
     },
     errorState(e) {
-      console.log(e);
+      // console.log(e);
       this.web.isTableLoad = false;
       //   this.errors = e.response.data.errors;
       if (e.response.status == 401) {
@@ -286,7 +318,26 @@ export default {
       this.data = newdata;
     },
   },
+  created() {
+    if (this.modules.length > 0) {
+      let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
+      if (Object.keys(access).length === 1 && access.constructor === Object) {
+        this.$router.push({ name: access.home });
+      } else {
+        this.web = access;
+      }
+    }
+    this._url = window.location.origin + "/api/v1/daftar-pasien/";
+    this.filterPage("");
+    this.setStatusPasien();
+    this.setStatusPasienAntri();
+    this.setStatusPasienSelesai();
 
+    setInterval(() => {
+      this.setStatusPasien(), this.setStatusPasienAntri(), this.setStatusPasienSelesai();
+    }, 5000);
+  },
+  
   watch: {
     modules: function (n, o) {
       let access = this.redirectIfNotHaveAccess(n, this.$route.path);
