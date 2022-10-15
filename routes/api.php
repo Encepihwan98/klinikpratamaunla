@@ -75,7 +75,10 @@ Route::prefix('v1')->group(function () {
             // untuk update status pasien antri/periksa/selesai
             // parameter status-string
             Route::post('remove-status-pasien/{id}', [PasienController::class,'statusRemove']);
+            Route::get('print-kartuberobat/{id}', [PasienController::class,'printPdf']);
             //remove status pasien
+            Route::get('print-nota/{id}', [PembayaranController::class,'printNota']);
+            //
             Route::get('status-pasien-antri', [PasienController::class,'statusGetAntri']);
             Route::get('status-pasien', [PasienController::class,'statusGet']);
             Route::get('status-pasien-selesai', [PasienController::class,'statusGetSelesai']);
@@ -88,6 +91,8 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('rekamedis', RekamedisController::class);
             Route::get('daftar-tindakan-pembayaran', [ RekamedisController::class,'getTindakan']);
             // menu rekam medis
+            Route::get('detail-rekamedis-pasien/{id}', [ RekamedisController::class,'listRekamedisPasien']);
+            //rekamedis detail
             Route::apiResource('resep', ResepController::class);
             Route::get('resep-pasien/{id_pasien}',[ResepController::class,'resep_pasien']);
             //menu reseps
@@ -105,6 +110,8 @@ Route::prefix('v1')->group(function () {
             // menu obat
             Route::get('list-obat', [ObatController::class,'global_function']);
             // list obat
+            Route::get('laporan-obat', [ObatController::class,'printLapObat']);
+            //print laporan obat
             Route::apiResource('pembayaran', PembayaranController::class);
             // menu pembayaran
             Route::get('list-pembayaran', [PembayaranController::class,'global_function']);
@@ -125,5 +132,7 @@ Route::prefix('v1')->group(function () {
 
             Route::apiResource('rujukan', RujukanController::class);
             // menu rujukan
+            Route::get('surat-rujukan/{id}', [RujukanController::class,'printSuratRujukan']);
+            //
         });
 });

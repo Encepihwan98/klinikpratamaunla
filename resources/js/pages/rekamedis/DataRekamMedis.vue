@@ -48,7 +48,8 @@
 
                                     <v-col class="d-flex" cols="12" sm="8">
                                         <v-text-field v-model="filter.searchQuery" dense append-icon="far fa-search"
-                                            outlined clearable label="Search" type="text"></v-text-field>
+                                            outlined clearable label="Search" type="text" @click:append="filterPage('')"
+                                            @input="filterPage('')"></v-text-field>
                                     </v-col>
                                 </v-row>
                                 <v-simple-table dense>
@@ -57,7 +58,7 @@
                                             <tr>
                                                 <th class="text-left">No</th>
                                                 <th class="text-left">Nama Pasien</th>
-                                                <th class="text-left">Tgl Periksa</th>
+                                                <th class="text-left">Alamat</th>
                                                 <th class="text-left">Action</th>
                                             </tr>
                                         </thead>
@@ -65,7 +66,7 @@
                                             <tr v-for="(item, index) in data.data" :key="item.nama">
                                                 <td>{{ index + data.from }}</td>
                                                 <td>{{ item.nama }}</td>
-                                                <td>{{ item.tgl }}</td>
+                                                <td>{{ item.alamat }}</td>
                                                 <td class="center-center">
                                                     <v-btn small @click="selectMethod(item, 'show')">
                                                         <v-icon small>far fa-eye</v-icon>
@@ -82,6 +83,11 @@
                                         </tbody>
                                     </template>
                                 </v-simple-table>
+                                <v-card-actions class="d-flex justify-center">
+                                    <v-pagination v-model="filter.page" :length="data.last_page" :total-visible="7"
+                                        @input="filterPage('')">
+                                    </v-pagination>
+                                </v-card-actions>
                             </v-card>
                         </v-col>
                     </v-row>
@@ -90,60 +96,36 @@
             <div>
                 <v-dialog v-model="dialog.state" persistent max-width="600px">
                     <v-card>
-                        <v-card-title class="text-h5"> Detail Data </v-card-title>
+                        <v-card-title class="text-h5"> Detail Rekamedik </v-card-title>
+                        <v-simple-table dense>
+                            <template v-slot:default>
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th class="text-left">Data Rekamedik pasien</th>
 
-                        <v-form class="mx-3 my-3" ref="form" v-model="valid" lazy-validation :currentData="currentData">
-                            <v-container>
-                                <v-row>
-                                    <v-col class="pa-0 mr-6" cols="12" sm="6">
-                                        <v-text-field label="Berat Badan" :disabled="condition == 'show' ? true : false"
-                                            v-model="rekamedis.bb" suffix="Kg" outlined dense small>
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col class="pa-0" cols="12" sm="5">
-                                        <v-text-field label="Tensi Darah" :disabled="condition == 'show' ? true : false"
-                                            v-model="rekamedis.tensi" suffix="mmHg" outlined dense small>
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col class="pa-0 mr-6" cols="12" sm="6">
-                                        <v-text-field label="Tinggi Badan"
-                                            :disabled="condition == 'show' ? true : false" v-model="rekamedis.tb"
-                                            suffix="Cm" outlined dense small>
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col class="pa-0" cols="12" sm="12">
-                                        <v-textarea label="Keluhan" :disabled="condition == 'show' ? true : false"
-                                            v-model="rekamedis.keluhan" auto-grow outlined rows="1" row-height="15">
-                                        </v-textarea>
-                                    </v-col>
-                                    <v-col class="pa-0" cols="12" sm="12">
-                                        <v-textarea label="Anamnesis" :disabled="condition == 'show' ? true : false"
-                                            v-model="rekamedis.anamnesis" auto-grow outlined rows="1" row-height="15">
-                                        </v-textarea>
-                                    </v-col>
-                                    <v-col class="pa-0" cols="12" sm="12">
-                                        <v-textarea label="Diagnosa" :disabled="condition == 'show' ? true : false"
-                                            v-model="rekamedis.diagnosa" auto-grow outlined rows="1" row-height="15">
-                                        </v-textarea>
-                                    </v-col>
-                                    <v-col class="d-flex pa-0 mr-2" cols="12" sm="12">
-                                        <v-select :disabled="condition == 'show' ? true : false" :items="tindakan.items"
-                                            @input="changeID('tindakan')" v-model="rekamedis.tindakan" label="Tindakan"
-                                            dense outlined>
-                                        </v-select>
-                                    </v-col>
-                                    <v-col class="pa-0" cols="12" sm="12">
-                                        <v-textarea label="Keterangan" :disabled="condition == 'show' ? true : false"
-                                            v-model="rekamedis.keterangan" auto-grow outlined rows="1" row-height="15">
-                                        </v-textarea>
-                                    </v-col>
-                                    <v-col cols="12" sm="12">
-                                        <v-btn class="mr-4" @click="selectStore"> Submit </v-btn>
-                                        <v-btn @click="dialog.state = false"> Close </v-btn>
-                                    </v-col>
-                                </v-row>
-                            </v-container>
-                        </v-form>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in rekamedis.data" :key="item.id_">
+                                        <td>{{ index + rekamedis.from }} </td>
+                                        <td>
+                                            Tgl : {{item.tgl}},
+                                            BB : {{item.bb}},
+                                            TB : {{item.tb}},
+                                            Anamnesis : {{item.tensi}},
+                                            Keluhan : {{item.keluhan}},
+                                            Tensi : {{item.tensi}}
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </template>
+                        </v-simple-table>
+                        <v-col cols="12" sm="12">
+                            <!-- <v-btn class="mr-4" @click="submit"> Submit </v-btn> -->
+                            <v-btn @click="dialog.state = false"> Close </v-btn>
+                        </v-col>
                     </v-card>
                 </v-dialog>
                 <confirmation-dialog :confirmationDialog="dialogConfirmation" :method="
@@ -165,6 +147,7 @@ export default {
     },
     data() {
         return {
+            _urlRekamedis: "",
             _url: "",
             valid: false,
             rekamedis: {},
@@ -318,8 +301,9 @@ export default {
                     this.errorState(e);
                 });
         },
-        show(id) {
-            let url = `${this._url}${id}`;
+        show(id_) {
+            this._urlRekamedis = window.location.origin + "/api/v1/detail-rekamedis-pasien/";
+            let url = `${this._urlRekamedis}${id_}`;
             axios
                 .get(url)
                 .then((response) => {
@@ -422,12 +406,12 @@ export default {
                 .get(url)
                 .then((response) => {
                     // console.log(response);
-                    if (response.status == 200) {
-                        this.data = response.data.data;
-                        this.filter.page = response.data.data.current_page;
-                        this.web.isTableLoad = false;
-                        this.getCurrentUser();
-                    }
+                    // if (response.status == 200) {
+                    this.data = response.data.data;
+                    this.filter.page = response.data.data.current_page;
+                    this.web.isTableLoad = false;
+                    this.getCurrentUser();
+                    // }
                 })
                 .catch((e) => {
                     this.errorState(e);
@@ -436,6 +420,7 @@ export default {
 
     },
     created() {
+
         if (this.modules.length > 0) {
             let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
             if (Object.keys(access).length === 1 && access.constructor === Object) {
@@ -444,13 +429,26 @@ export default {
                 this.web = access;
             }
         }
-        this._url = window.location.origin + "/api/v1/rekamedis/";
+        this._url = window.location.origin + "/api/v1/list-pasien/";
         this.filterPage("");
+        // this.show();
         this.setSelectedTindakan();
+    },
+    computed: {
+        dialogState() {
+            return this.dialog.state;
+        },
     },
 
     watch: {
+        dialogState: function (n, o) {
+            // console.log(n);
+
+            if (n && this.currentData) this.show(this.currentData.id_);
+            // else this.clear();
+        },
         modules: function (n, o) {
+            // if (n && this.currentData) this.show(this.currentData.id_);
             let access = this.redirectIfNotHaveAccess(n, this.$route.path);
             if (Object.keys(access).length === 1 && access.constructor === Object) {
                 this.$router.push({ name: access.home });

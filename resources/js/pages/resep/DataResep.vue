@@ -48,7 +48,8 @@
 
                                     <v-col class="d-flex" cols="12" sm="8">
                                         <v-text-field v-model="filter.searchQuery" dense append-icon="far fa-search"
-                                            outlined clearable label="Search" type="text"></v-text-field>
+                                            outlined clearable label="Search" type="text" @click:append="filterPage('')"
+                                            @input="filterPage('')"></v-text-field>
                                     </v-col>
                                 </v-row>
                                 <v-simple-table dense>
@@ -80,6 +81,11 @@
                                         </tbody>
                                     </template>
                                 </v-simple-table>
+                                <v-card-actions class="d-flex justify-center">
+                                    <v-pagination v-model="filter.page" :length="data.last_page" :total-visible="7"
+                                        @input="filterPage('')">
+                                    </v-pagination>
+                                </v-card-actions>
                             </v-card>
                         </v-col>
                     </v-row>
@@ -102,7 +108,7 @@
                                         <td>{{ index + data.from }} {{item.tgl_resep}}</td>
                                         <td>Nama Obat : {{item.nama_obat}} | Jumlah : {{item.jumlah}}</td>
                                     </tr>
-                                
+
                                 </tbody>
                             </template>
                         </v-simple-table>

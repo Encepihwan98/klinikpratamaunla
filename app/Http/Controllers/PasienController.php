@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pasien;
 use App\Models\RegistrasiPasien;
-use Barryvdh\DomPDF\PDF;
+// use Barryvdh\DomPDF\PDF;
+// use Barryvdh\DomPDF\Facade\Pdf;
+use PDF;
 use DateTime;
 
 class PasienController extends Controller
@@ -146,7 +148,6 @@ class PasienController extends Controller
             'no_hp' => $request->no_hp,
             'alamat' => $request->alamat,
             'dokter_id' => $request->dokter_id,
-            'status' => $request->status,
         ]);
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil diubah!', 'data' => $this->filter($request)]);
@@ -179,7 +180,9 @@ class PasienController extends Controller
         $searchRequest = $request->searchQuery;
         $search = !empty($searchRequest) && $searchRequest != "null" ? $searchRequest : "";
         $data = Pasien::when(!empty($search), function ($query) use ($search) {
-            $query->where('nama', 'LIKE', '%' . $search . '%');
+            $query->where('nama', 'LIKE', '%' . $search . '%')
+                ->orwhere('no_ktp', 'LIKE', '%' . $search . '%')
+                ->orwhere('id', 'LIKE', '%' . $search . '%');
         })
             // ->join('dokters', 'pasiens.dokter_id', '=', 'dokters.id')
             //     ->join('users', 'dokters.user_id', '=', 'users.id')
@@ -253,9 +256,12 @@ class PasienController extends Controller
 
     public function printPdf(Request $request, $id)
     {
-        $data = Pasien::where('id', $request->id)->first;
-        $pdf = PDF::loadview('pdf.kartuberobat_pdf',['data' => $data]);
-        return $pdf->download('kartu-berobat');
-
+        // dd($id);
+        $data = Pasien::where('id', $id)->first();
+        // dd($data);
+        // $customPaper = array(0,0,567.00,283.80);
+        $pdf = PDF::loadview('pdf.kartuberobat_pdf', ['data' => $data]);
+        // dd($pdf);
+        return $pdf->download('kartu-berobat.pdf');
     }
 }

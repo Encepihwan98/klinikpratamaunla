@@ -78,7 +78,7 @@
                         <v-btn small @click="selectMethod(item, 'add')">
                           <v-icon small>far fa-plus</v-icon>
                         </v-btn>
-                        <v-btn small>
+                        <v-btn small @click="printPdf(item)">
                           <v-icon small>far fa-print</v-icon>
                         </v-btn>
                       </td>
@@ -235,6 +235,7 @@ export default {
 
       _url: "",
       urlStatus: "",
+      urlPrint:"",
       web: {
         isTableLoad: false,
       },
@@ -270,7 +271,27 @@ export default {
   },
 
   methods: {
-
+    printPdf(data, item){
+      this.pasien = data;
+      let req = Object.assign(this.pasien, this.filter);
+      console.log(this.pasien.pasien_id);
+      this.urlPrint = window.location.origin + "/api/v1/print-kartuberobat/";
+      axios
+        .get(`${this.urlPrint}${this.pasien.pasien_id}`, req)
+        .then((response) => {
+          if (response.status == 'success') {
+            // this.dialogs.dialogDataPasien.state = false;
+            this.retriveData = response.data.data;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
     setSelectedDokter() {
       axios.get(`/api/v1/list-dokter/`).then((res) => {
         if (res.status === 200) {
@@ -366,16 +387,16 @@ export default {
     update() {
       let req = Object.assign(this.pasien, this.filter);
       axios
-        .put(`${this._url}${this.pasien.id}`, req)
+        .put(`${this._url}${this.pasien.pasien_id}`, req)
         .then((response) => {
-          if (response.status == 'success') {
+          console.log(response);
             this.dialogs.dialogDataPasien.state = false;
             this.retriveData = response.data.data;
             this.makeDefaultNotification(
               response.data.status,
               response.data.message
             );
-          }
+          
         })
         .catch((e) => {
           this.errorState(e);

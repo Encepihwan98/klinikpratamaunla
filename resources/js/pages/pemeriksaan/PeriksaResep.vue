@@ -25,10 +25,11 @@
                             dense small></v-text-field>
                         </v-col>
                         <v-col class="pa-0" cols="12" sm="5">
-                          <v-text-field label="Umur" v-model="pasien.umur" placeholder="24" disabled outlined dense small></v-text-field>
+                          <v-text-field label="Umur" v-model="pasien.umur" placeholder="24" disabled outlined dense
+                            small></v-text-field>
                         </v-col>
                         <v-col cols="12" class="pa-0 mb-5" sm="12">
-                          <v-btn @click.stop="dialog = true" color="success">Lihat Riwayat Rekam Medis</v-btn>
+                          <v-btn @click="selectMethod(item, 'show')" color="success">Lihat Riwayat Rekam Medis</v-btn>
                         </v-col>
                       </v-row>
                     </v-container>
@@ -38,7 +39,7 @@
                 <v-card>
                   <v-card-text>
                     <p class="text-h6 font-weight-bold">
-                      Rekam Medis Pasien <v-chip color="blue">P007</v-chip>
+                      Rekam Medis Pasien <v-chip color="blue">{{this.pasien.pasien_id}}</v-chip>
                     </p>
                   </v-card-text>
                   <v-container>
@@ -181,12 +182,13 @@
                                   item-value="name">
                                 </v-select>
                               </v-col> -->
-                              <v-col cols="12" sm="6" class="pa-0 mr-2">
+                              <v-col cols="12" sm="12" class="pa-0">
                                 <v-autocomplete v-model="form.obat[index].name" outlined dense chips small-chips
-                                  label="Obat" :error-messages="errors.parent" @input="changeID('obat', index)"
-                                  :rules="[rules.required]" :items="obat.items"></v-autocomplete>
+                                  label="Obat" :error-messages="errors.parent"
+                                  @input="changeID('obat', index)" :rules="[rules.required]" :items="obat.items">
+                                </v-autocomplete>
                               </v-col>
-                              <v-col class="pa-0" cols="12" sm="5">
+                              <v-col class="pa-0" cols="12" sm="12">
                                 <v-text-field v-model="form.obat[index].total" :error-messages="errors.name"
                                   :rules="[rules.required]" label="Jumlah" outlined dense small>
                                 </v-text-field>
@@ -202,22 +204,6 @@
                                 </v-btn>
                               </v-col>
                             </div>
-                            <!-- <v-col class="pa-0" cols="12" sm="12">
-                              <p>Obat 1</p>
-                            </v-col>
-                            <v-col class="pa-0 mr-2" cols="12" sm="6">
-                              <v-autocomplete :items="['inza', 'bodrex', 'komik']" label="Pilih Obat" outlined dense
-                                hide-no-data flat item-text="name" item-value="name">
-                              </v-autocomplete>
-                            </v-col>
-                            <v-col class="pa-0" cols="12" sm="5">
-                              <v-text-field label="Jumlah" outlined dense small>
-                              </v-text-field>
-                            </v-col>
-                            <v-col class="pa-0" cols="12" sm="12">
-                              <v-text-field label="aturan" outlined dense small>
-                              </v-text-field>
-                            </v-col> -->
                             <v-col cols="12" sm="3">
                               <v-btn color="red" small @click="addObat">
                                 <v-icon small>far fa-plus</v-icon>
@@ -239,6 +225,41 @@
             </v-row>
           </v-container>
         </v-form>
+      </div>
+      <div>
+        <v-dialog v-model="dialog.state" persistent max-width="600px">
+          <v-card>
+            <v-card-title class="text-h5"> Detail Rekamedik </v-card-title>
+            <v-simple-table dense>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th class="text-left">Data Rekamedik pasien</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in rekamedisPasien.data" :key="item.id">
+                    <td>{{ index + rekamedisPasien.from }} </td>
+                    <td>
+                      Tgl : {{item.tgl}},
+                      BB : {{item.bb}},
+                      TB : {{item.tb}},
+                      Anamnesis : {{item.tensi}},
+                      Keluhan : {{item.keluhan}},
+                      Tensi : {{item.tensi}}
+                    </td>
+                  </tr>
+
+                </tbody>
+              </template>
+            </v-simple-table>
+            <v-col cols="12" sm="12">
+              <!-- <v-btn class="mr-4" @click="submit"> Submit </v-btn> -->
+              <v-btn @click="dialog.state = false"> Close </v-btn>
+            </v-col>
+          </v-card>
+        </v-dialog>
       </div>
       <div>
         <confirmation-dialog :confirmationDialog="dialogConfirmation" :method="
@@ -294,6 +315,7 @@ export default {
         ],
         rekamedis: {},
       },
+      rekamedisPasien: {},
       jumlahObat: 1,
       filter: {
         page: 1,
@@ -324,7 +346,10 @@ export default {
       roles: [],
       currentData: {},
       currentUser: {},
-      dialog: false,
+      dialog: {
+        state: false,
+        title: null,
+      },
       dialogConfirmation: {
         state: false,
         message: null,
@@ -384,6 +409,7 @@ export default {
         .indexOf(query.toString().toLowerCase()) > -1
     },
     changeID(event, index = 0) {
+      console.log("masuk sini!");
       if (event == "tindakan") {
         let currentID = this.form.rekamedis.tindakan;
         let index = currentID.length;
@@ -395,12 +421,25 @@ export default {
         });
       } else if (event == "obat") {
         // console.log(`obat index = ${index}`)
-        let currentID = this.from.obat[index].name;
+        let currentID = this.form.obat[index].name;
+        this.obatChange(index);
         this.obat.data.forEach((v) => {
           if (v.nama == currentID) {
-            this.from.obat[index].obat_id = v.id;
+            this.form.obat[index].obat_id = v.id;
           }
         });
+      }
+    },
+    obatChange(data) {
+      console.log(data);
+      let obat = this.form.obat[data];
+      if(this.form.obat.length > 0 ) {
+        for (let index = 0 ; index < this.form.obat.length; index++){
+          if (obat.name == this.form.obat[index].name && index != data){
+            alert("iiiiii");
+            this.form.obat.splice(data, 1);
+          }
+        }
       }
     },
     addObat() {
@@ -413,7 +452,7 @@ export default {
           if (res.status === 200) {
             // console.log(res.data.umur);
             this.pasien = res.data.data;
-            this.pasien.umur = res.data.umur; 
+            this.pasien.umur = res.data.umur;
             this.form.rekamedis.pasien_id = this.pasien.pasien_id;
             this.form.rekamedis.regis_id = this.pasien.regis_id;
           } else {
@@ -428,7 +467,7 @@ export default {
       axios.get(`/api/v1/list-obat/`).then((res) => {
         if (res.status === 200) {
           res.data.data.forEach((v) => {
-            this.obat.items.push(v.nama);
+            this.obat.items.push(`${v.nama}-${v.satuan}`);
           });
           this.obat.data = res.data.data;
         } else {
@@ -482,7 +521,8 @@ export default {
         this.showDialog(false);
       } else if (item == "show") {
         this.condition = "show";
-        this.dialog.title = "Data Menu";
+        this.dialog.title = "Data Rekamedis";
+        this.currentData = this.pasien;
         this.showDialog(false);
       } else if (item == "edit") {
         this.condition = "update";
@@ -498,6 +538,20 @@ export default {
       this.form.obat = [];
       this.errors = {};
       if (this.$refs.form) this.$refs.form.resetValidation();
+    },
+    show(pasien_id) {
+      this._urlRekamedis = window.location.origin + "/api/v1/detail-rekamedis-pasien/";
+      let url = `${this._urlRekamedis}${pasien_id}`;
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.status == 200) {
+            this.rekamedisPasien = response.data.data;
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
     },
     add() {
       this.currentData = null;
@@ -625,8 +679,17 @@ export default {
     modelTindakan() {
       return this.form.rekamedis.tindakan;
     },
+    dialogState() {
+      return this.dialog.state;
+    },
   },
   watch: {
+    dialogState: function (n, o) {
+      console.log(n);
+
+      if (n && this.currentData) this.show(this.currentData.pasien_id);
+      else this.clear();
+    },
     modules: function (n, o) {
       let access = this.redirectIfNotHaveAccess(n, this.$route.path);
       if (Object.keys(access).length === 1 && access.constructor === Object) {

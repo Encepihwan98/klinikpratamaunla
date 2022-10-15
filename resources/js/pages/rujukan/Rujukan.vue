@@ -39,7 +39,7 @@
                                         <td>{{ item.tgl }}</td>
                                         <td>{{ item.rujukan }}</td>
                                         <td class="center-center">
-                                            <v-btn small>
+                                            <v-btn @click="printSurat(item)" small>
                                                 <v-icon small>far fa-print</v-icon>
                                             </v-btn>
                                         </td>
@@ -64,6 +64,7 @@ export default {
     },
     data() {
         return {
+            rujukan : {},
             _url: "",
             obatMasuk: {
                 tgl: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
@@ -81,6 +82,7 @@ export default {
                 data: {},
                 items: []
             },
+            urlPrint:"",
             valid: false,
             web: {
                 isTableLoad: false,
@@ -135,7 +137,27 @@ export default {
         };
     },
     methods: {
-
+        printSurat(data, item) {
+            this.rujukan = data;
+            let req = Object.assign(this.rujukan, this.filter);
+            console.log(this.rujukan.id);
+            this.urlPrint = window.location.origin + "/api/v1/surat-rujukan/";
+            axios
+                .get(`${this.urlPrint}${this.rujukan.id}`, req)
+                .then((response) => {
+                    if (response.status == 'success') {
+                        // this.dialogs.dialogDataPasien.state = false;
+                        this.retriveData = response.data.data;
+                        this.makeDefaultNotification(
+                            response.data.status,
+                            response.data.message
+                        );
+                    }
+                })
+                .catch((e) => {
+                    this.errorState(e);
+                });
+        },
         selectMethod(data, item) {
             this.currentData = data;
             if (item == "delete") {

@@ -144,6 +144,7 @@ class ResepController extends Controller
         // dd($request->param);
         $data = DetailResep::join('obats', 'detailreseps.obat_id', '=', 'obats.id')
             ->join('reseps', 'detailreseps.resep_id', '=', 'reseps.id')
+            
             ->where('resep_id', $request->param)
             ->select('obats.nama', 'detailreseps.id', 'obats.harga', 'detailreseps.jumlah')
             ->get();
@@ -152,7 +153,7 @@ class ResepController extends Controller
             ->join('registrasi_pasiens', 'registrasi_id', '=', 'registrasi_pasiens.id')
             ->join('pasiens', 'rekammedis.pasien_id', '=', 'pasiens.id')
             ->where('reseps.id', $request->param)
-            ->select('reseps.id', 'reseps.tgl_resep', 'pasiens.nama', 'registrasi_pasiens.id as registrasi_id')
+            ->select('reseps.id', 'reseps.tgl_resep', 'pasiens.nama', 'pasiens.id as pasien_id','pasiens.alamat','registrasi_pasiens.id as registrasi_id','registrasi_pasiens.status')
             ->first();
         return response()->json(['data' => $data, 'value' => $value, 'message' => 'Successfully.', 'status' => '200']);
     }
@@ -200,7 +201,13 @@ class ResepController extends Controller
 
     public function listPasien(Request $request)
     {
-        $data = Pasien::select(
+        
+        $searchRequest = $request->searchQuery;
+        $search = !empty($searchRequest) && $searchRequest != "null" ? $searchRequest : "";
+        $data = Pasien::when(!empty($search), function ($query) use ($search) { // 6
+            $query->where('nama', 'LIKE', '%' . $search . '%')
+            ->orwhere('no_ktp', 'LIKE', '%' . $search . '%');
+        })->select(
             'pasiens.id as id_',
             'pasiens.nama',
             'pasiens.no_ktp',

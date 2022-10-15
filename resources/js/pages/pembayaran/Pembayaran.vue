@@ -53,6 +53,9 @@
                                                         :to="{ name: 'pembayaran-detail', params: { id: item.resep_id } }">
                                                         <v-icon small>far fa-eye</v-icon>
                                                     </v-btn>
+                                                    <v-btn @click="printNota(item)" small>
+                                                        <v-icon small>far fa-print</v-icon>
+                                                    </v-btn>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -76,6 +79,7 @@ export default {
     data() {
         return {
             _url: "",
+            urlPrint: "",
             web: {
                 isTableLoad: false,
                 filterOpen: false,
@@ -89,6 +93,7 @@ export default {
                 role: [],
             },
             isDrawerOpen: true,
+            pembayaran: {},
             data: {
                 data: [],
                 current_page: 1,
@@ -118,6 +123,48 @@ export default {
         };
     },
     methods: {
+        printNota(data, item) {
+            this.pembayaran = data;
+            axios.get(window.location.origin + `api/v1/print-nota/${this.pembayaran.id}`, { responseType: 'blob' }).then(response => {
+
+                const url = window.location.origin.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'remaining_fee.pdf'); //or any other extension
+                document.body.appendChild(link);
+                link.click();
+
+            })
+                .catch(error => {
+                    console.log(error);
+                })
+        },
+        // printNota(data, item) {
+        //     this.pembayaran = data;
+        //     let req = Object.assign(this.pembayaran, this.filter);
+        //     console.log(this.pembayaran.id);
+        //     this.urlPrint = window.location.origin + "/api/v1/print-nota/";
+        //     axios
+        //         .get(`${this.urlPrint}${this.pembayaran.id}`, {
+        //         }, req)
+        //         .then((response) => {
+        //             doc.save("nota.pdf");
+        //             const content = response.headers['content-type'];
+        //             download(response.data, file.file_name, content)
+        //              window.print();
+        //             if (response.status == 'success') {
+        //                 // this.dialogs.dialogDataPasien.state = false;
+        //                 this.retriveData = response.data.data;
+        //                 this.makeDefaultNotification(
+        //                     response.data.status,
+        //                     response.data.message
+        //                 );
+        //             }
+        //         })
+        //         .catch((e) => {
+        //             this.errorState(e);
+        //         });
+        // },
         selectMethod(data, item) {
             this.currentData = data;
             if (item == "delete") {

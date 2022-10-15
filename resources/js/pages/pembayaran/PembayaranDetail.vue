@@ -7,7 +7,7 @@
             <v-container>
                 <v-row>
                     <v-col cols="12" sm="12">
-                        <v-expansion-panels focusable v-model="disable">
+                        <v-expansion-panels focusable>
                             <v-expansion-panel>
                                 <v-expansion-panel-header>Data Pasien</v-expansion-panel-header>
                                 <v-expansion-panel-content>
@@ -15,17 +15,17 @@
                                         <v-container>
                                             <v-row>
                                                 <v-col cols="12" sm="6" md="4">
-                                                    <v-text-field label="Nama Pasien" placeholder="Pasien" outlined
-                                                        dense small></v-text-field>
+                                                    <v-text-field label="Nama Pasien" placeholder="Pasien" disabled
+                                                        outlined v-model="pembayaran.nama" dense small></v-text-field>
                                                 </v-col>
                                                 <v-col cols="12" sm="6" md="4">
-                                                    <v-text-field label="ID Pasien" placeholder="PS0007" outlined dense
-                                                        small>
+                                                    <v-text-field label="ID Pasien" placeholder="PS0007" disabled
+                                                        outlined dense v-model="pembayaran.pasien_id" small>
                                                     </v-text-field>
                                                 </v-col>
                                                 <v-col cols="12" sm="6" md="4">
-                                                    <v-text-field label="Alamat" placeholder="Alamat" outlined dense
-                                                        small></v-text-field>
+                                                    <v-text-field label="Alamat" placeholder="Alamat" disabled outlined
+                                                        dense v-model="pembayaran.alamat" small></v-text-field>
                                                 </v-col>
                                             </v-row>
                                         </v-container>
@@ -53,8 +53,8 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(item, index) in bayar.resep.data" :key="item.id">
-                                                <td>{{  index + data.current_page  }}</td>
+                                            <tr v-for="(item, index) in tindakan.data" :key="item.id">
+                                                <td>{{ index + data.current_page }}</td>
                                                 <td>{{item.description}}</td>
                                                 <td colspan="2">{{item.harga}}</td>
                                                 <td colspan="2">{{item.harga}}</td>
@@ -74,17 +74,17 @@
                                         </thead>
                                         <tbody>
                                             <tr v-for="(item, index) in bayar.resep.data" :key="item.id">
-                                                <td>{{  index + data.current_page  }}</td>
-                                                <td>{{  item.nama  }}</td>
-                                                <td>{{  item.jumlah  }}</td>
-                                                <td>{{  item.harga  }}</td>
-                                                <td>{{  item.harga * item.jumlah  }}</td>
+                                                <td>{{ index + data.current_page }}</td>
+                                                <td>{{ item.nama }}</td>
+                                                <td>{{ item.jumlah }}</td>
+                                                <td>{{ item.harga }}</td>
+                                                <td>{{ item.harga * item.jumlah }}</td>
                                             </tr>
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 <td colspan="3">Total Semua</td>
-                                                <td>Rp. {{  totalHarga  }}</td>
+                                                <td>Rp. {{ totalHarga }}</td>
                                             </tr>
                                         </tfoot>
                                     </template>
@@ -93,23 +93,29 @@
                             </v-container>
                         </v-card>
                         <v-card>
-                            <v-card-text>
-                                <v-form>
-                                    <v-col class="pa-0 mr-2" cols="12" sm="6">
-                                        <v-text-field @input="kembalian" v-model="pembayaran.jumlah_bayar"
-                                            label="Jumlah Bayar" outlined dense small>
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col class="pa-0" cols="12" sm="4">
-                                        <v-text-field v-model="pembayaran.kembalian" disabled label="Kembalian" outlined
-                                            dense small>
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col cols="12" sm="6">
-                                        <v-btn class="mr-4" @click="selectMethod()"> Bayar </v-btn>
-                                    </v-col>
-                                </v-form>
-                            </v-card-text>
+                            <div v-if="this.pembayaran.status != 'selesai'">
+                                <v-card-text>
+                                    <v-form>
+                                        <v-col class="pa-0 mr-2" cols="12" sm="6">
+                                            <v-text-field @input="kembalian" v-model="pembayaran.jumlah_bayar"
+                                                label="Jumlah Bayar" outlined dense small>
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col class="pa-0" cols="12" sm="4">
+                                            <v-text-field v-model="pembayaran.kembalian" disabled label="Kembalian"
+                                                outlined dense small>
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="6">
+                                            <v-btn class="mr-4" @click="selectMethod()"> Bayar </v-btn>
+                                        </v-col>
+                                    </v-form>
+                                </v-card-text>
+                            </div>
+                            <div v-else>
+                                <v-card-text >
+                                </v-card-text>
+                            </div>
                         </v-card>
                     </v-col>
                 </v-row>
@@ -205,8 +211,10 @@ export default {
                 .post(`${this.urlStatus}`, req)
                 .then((response) => {
                     if (response.status == 200) {
+                        // this.setDetailObat();
                         this.dialogs.dialogAntrian.state = false;
                         this.data = response.data.data;
+                        // this.pembayaran = response.data.data;
                         this.makeDefaultNotification(
                             response.data.status,
                             response.data.message

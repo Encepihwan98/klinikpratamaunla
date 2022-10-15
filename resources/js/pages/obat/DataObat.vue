@@ -26,7 +26,7 @@
                             </v-btn>
                         </v-col>
                         <v-col cols="12" sm="4" class="pa-0 ml-3">
-                            <v-btn dense smal color="red">
+                            <v-btn dense smal color="red" @click="selectMethod(null, 'print')">
                                 Export To PDF
                                 <v-icon right dark>
                                     far fa-file-pdf
@@ -48,7 +48,8 @@
 
                                         <v-col class="d-flex" cols="12" sm="8">
                                             <v-text-field v-model="filter.searchQuery" dense append-icon="far fa-search"
-                                                outlined clearable label="Search" type="text"></v-text-field>
+                                                outlined clearable label="Search" type="text"
+                                                @click:append="filterPage('')" @input="filterPage('')"></v-text-field>
                                         </v-col>
                                     </v-row>
                                     <v-simple-table dense>
@@ -59,6 +60,7 @@
                                                     <th class="text-left">Nama</th>
                                                     <th class="text-left">Kandungan</th>
                                                     <th class="text-left">Kategori</th>
+                                                    <th class="text-left">Satuan</th>
                                                     <th class="text-left">Stock</th>
                                                     <th class="text-left">Action</th>
                                                 </tr>
@@ -69,12 +71,14 @@
                                                     <td>{{ item.nama }}</td>
                                                     <td>{{ item.kandungan }}</td>
                                                     <td>{{ item.kategori }}</td>
+                                                    <td>{{ item.satuan }}</td>
                                                     <td>{{ item.stock }}</td>
                                                     <td class="center-center">
                                                         <v-btn small @click="selectMethod(null, 'show')">
                                                             <v-icon small>far fa-eye</v-icon>
                                                         </v-btn>
-                                                        <v-btn small @click="selectMethod(item, 'edit')" v-if="web.update">
+                                                        <v-btn small @click="selectMethod(item, 'edit')"
+                                                            v-if="web.update">
                                                             <v-icon small>far fa-edit</v-icon>
                                                         </v-btn>
                                                         <v-btn small @click="selectMethod(item, 'delete')"
@@ -86,6 +90,11 @@
                                             </tbody>
                                         </template>
                                     </v-simple-table>
+                                    <v-card-actions class="d-flex justify-center">
+                                        <v-pagination v-model="filter.page" :length="data.last_page" :total-visible="7"
+                                            @input="filterPage('')">
+                                        </v-pagination>
+                                    </v-card-actions>
                                 </v-card-text>
                             </v-card>
                         </v-col>
@@ -93,7 +102,7 @@
                 </v-container>
             </div>
             <div>
-                <v-dialog v-model="dialog.state" persistent max-width="600px">
+                <v-dialog v-model="dialog.dialogObat.state" persistent max-width="600px">
                     <v-card>
                         <v-card-title class="text-h5"> Detail Data </v-card-title>
 
@@ -117,8 +126,12 @@
                                         <v-text-field label="Stock" v-model="obat.stock" outlined dense small>
                                         </v-text-field>
                                     </v-col>
-                                    <v-col class="pa-0" cols="12" sm="12">
+                                    <v-col class="pa-0 mr-2" cols="12" sm="7">
                                         <v-text-field label="Harga" v-model="obat.harga" outlined dense small>
+                                        </v-text-field>
+                                    </v-col>
+                                    <v-col class="pa-0" cols="12" sm="4">
+                                        <v-text-field label="Satuan Obat" v-model="obat.satuan" outlined dense small>
                                         </v-text-field>
                                     </v-col>
                                     <v-col class="pa-0" cols="12" sm="12">
@@ -128,7 +141,30 @@
                                     </v-col>
                                     <v-col cols="12" sm="12">
                                         <v-btn class="mr-4" @click="selectStore"> Submit </v-btn>
-                                        <v-btn @click="dialog.state = false"> Close </v-btn>
+                                        <v-btn @click="dialog.dialogObat.state = false"> Close </v-btn>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-form>
+                    </v-card>
+                </v-dialog>
+                <v-dialog v-model="dialog.dialogPrint.state" persistent max-width="400px">
+                    <v-card>
+                        <v-card-title class="text-h5"> Laporan Data Obat </v-card-title>
+
+                        <v-form class="mx-3 my-3" ref="form" v-model="valid" lazy-validation :currentData="currentData">
+                            <v-container>
+                                <v-row>
+                                    <v-col class="pa-0" cols="12" sm="12">
+                                        <v-radio-group v-model="radios">
+                                            <v-radio value="all" label="All data obat"></v-radio>
+                                            <v-radio value="kosong" label="Stock Kosong"></v-radio>
+                                        </v-radio-group>
+                                    </v-col>
+
+                                    <v-col cols="12" sm="12">
+                                        <v-btn class="mr-4" @click="selectPrint"> Print </v-btn>
+                                        <v-btn @click="dialog.dialogPrint.state = false"> Close </v-btn>
                                     </v-col>
                                 </v-row>
                             </v-container>
@@ -156,6 +192,7 @@ export default {
     data() {
         return {
             _url: "",
+            urlPrint: "",
             total_obat: 0,
             obat: {},
             valid: false,
@@ -192,12 +229,19 @@ export default {
             errors: {
                 role: [],
             },
+            radios: null,
             roles: [],
             currentData: {},
             currentUser: {},
             dialog: {
-                state: false,
-                title: null,
+                dialogObat: {
+                    state: false,
+                    title: null,
+                },
+                dialogPrint: {
+                    state: false,
+                    title: null,
+                }
             },
             dialogConfirmation: {
                 state: false,
@@ -223,6 +267,39 @@ export default {
                 });
             }
         },
+        selectPrint() {
+            this.urlPrint = window.location.origin + "/api/v1/laporan-obat/";
+            if (this.radios == "kosong") {
+                let url = this.urlPrint + "?laporan=kosong";
+                axios
+                    .get(url)
+                    .then((response) => {
+                        if (response.status == 'success') {
+                            // this.dialogs.dialogDataPasien.state = false;
+                            this.retriveData = response.data.data;
+                            this.makeDefaultNotification(
+                                response.data.status,
+                                response.data.message
+                            );
+                        }
+                    });
+            } else {
+                let url = this.urlPrint;
+                axios
+                    .get(url)
+                    .then((response) => {
+                        if (response.status == 'success') {
+                            // this.dialogs.dialogDataPasien.state = false;
+                            this.retriveData = response.data.data;
+                            this.makeDefaultNotification(
+                                response.data.status,
+                                response.data.message
+                            );
+                        }
+                    });
+            }
+
+        },
         selectStore() {
             if (this.$refs.form.validate()) {
                 if (this.condition == "store") {
@@ -247,15 +324,19 @@ export default {
             } else if (item == "add") {
                 this.currentData = null;
                 this.condition = "store";
-                this.dialog.title = "Tambah";
+                this.dialog.dialogObat.title = "Tambah";
                 this.showDialog(false);
             } else if (item == "show") {
                 this.condition = "show";
-                this.dialog.title = "Data Menu";
+                this.dialog.dialogObat.title = "Data Menu";
                 this.showDialog(false);
             } else if (item == "edit") {
                 this.condition = "update";
-                this.dialog.title = "Edit ";
+                this.dialog.dialogObat.title = "Edit ";
+                this.showDialog(false);
+            } else if (item == "print") {
+                this.condition = "print";
+                this.dialog.dialogPrint.title = "print ";
                 this.showDialog(false);
             }
         },
@@ -282,7 +363,7 @@ export default {
                 .post(this._url, req)
                 .then((response) => {
                     if (response.status == 200) {
-                        this.dialog.state = false;
+                        this.dialog.dialogObat.state = false;
                         this.data = response.data.data;
                         this.makeDefaultNotification(
                             response.data.status,
@@ -301,9 +382,9 @@ export default {
                 .then((response) => {
                     if (response.status == 200) {
                         // console.log(response);
-                        this.dialog.state = false;
+                        this.dialog.dialogObat.state = false;
                         this.retriveData = response.data.data;
-                        // this.data = response.data.data;
+                        this.data = response.data.data;
                         this.makeDefaultNotification(
                             response.data.status,
                             response.data.message
@@ -379,20 +460,30 @@ export default {
         edit(data) {
             this.currentData = data;
             this.condition = "update";
-            this.dialog.title = "Edit data";
+            this.dialog.dialogObat.title = "Edit data";
             this.showDialog(false);
         },
         add() {
             this.currentData = null;
             this.condition = "store";
-            this.dialog.title = "Tambah Data";
+            this.dialog.dialogObat.title = "Tambah Data";
+            this.showDialog(false);
+        },
+        print() {
+            this.currentData = null;
+            this.condition = "print";
+            this.dialog.dialogPrint.title = "Print Data";
             this.showDialog(false);
         },
         showDialog(isConfirmation) {
             if (isConfirmation) {
                 this.dialogConfirmation.state = !this.dialogConfirmation.state;
             } else {
-                this.dialog.state = !this.dialog.state;
+                if (this.condition == "print") {
+                    this.dialog.dialogPrint.state = !this.dialog.dialogPrint.state;
+                } else {
+                    this.dialog.dialogObat.state = !this.dialog.dialogObat.state;
+                }
             }
         },
         filterPage(sort_by) {
@@ -475,7 +566,7 @@ export default {
     },
     computed: {
         dialogState() {
-            return this.dialog.state;
+            return this.dialog.dialogObat.state;
         },
     },
     watch: {

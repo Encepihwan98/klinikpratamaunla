@@ -422,11 +422,12 @@ export default {
     this._url = window.location.origin + "/api/v1/daftar-pasien/";
     this.filterPage("");
     this.setSelectedDokter();
-    this.setStatusPasien();
+    // this.setStatusPasien();
 
     setInterval(() => {
       this.setStatusPasien();
-    }, 3000);
+    }, 30000);
+    
   },
   computed: {
     searchPasien() {

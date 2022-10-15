@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ReferenceType;
 use Illuminate\Http\Request;
 use App\Models\Rujukan;
+use PDF;
 use Illuminate\Support\Facades\Validator;
 
 class RujukanController extends Controller
@@ -141,12 +142,26 @@ class RujukanController extends Controller
         })
         ->join('rekammedis','rujukans.rekamedis_id','=','rekammedis.id')
         ->join('pasiens','rekammedis.pasien_id','=','pasiens.id')
-        ->join('registrasi_pasiens','pasiens.id','=','registrasi_pasiens.pasien_id')
-        ->orderBy($request->sortBy, $request->orderBy)
-        ->select('pasiens.nama','rujukans.id','rujukans.rujukan','registrasi_pasiens.tgl')
+        // ->join('registrasi_pasiens','pasiens.id','=','registrasi_pasiens.pasien_id')
+        // ->orderBy($request->sortBy, $request->orderBy)
+        ->select('pasiens.nama','rujukans.id','rujukans.rujukan','rekammedis.tgl')
         ->paginate($request->limit != "" ? $request->limit : 10);
-
+        // dd($data);
         return $data;
     }
     
+    public function printSuratRujukan(Request $request, $id)
+    {
+        // dd($id);
+        $data = Rujukan::join('rekammedis','rujukans.rekamedis_id','=','rekammedis.id')
+        ->join('pasiens','rekammedis.pasien_id','=','pasiens.id')
+        ->where('rujukans.id', $id)
+        ->select('pasiens.id as pasien_id','pasiens.nama as nama','pasiens.alamat','pasiens.tgl_lahir',
+        'pasiens.jenis_kelamin','rekammedis.anamnesis','rekammedis.keterangan','rujukans.rujukan')
+        ->first();
+        // dd($data);
+        $pdf = PDF::loadview('pdf.suratrujukan',['data' => $data]);
+        return $pdf->download('surat-rujukan.pdf');
+
+    }
 }

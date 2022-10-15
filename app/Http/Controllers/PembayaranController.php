@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pembayaran;
 use App\Models\RegistrasiPasien;
+use App\Models\Rekammedis;
 use App\Models\Reseps;
+use App\Models\DetailResep;
+use App\Models\Tindakan;
+use PDF;
+// use Dompdf
 
 class PembayaranController extends Controller
 {
@@ -16,19 +21,18 @@ class PembayaranController extends Controller
      */
     public function index(Request $request)
     {
-        if(isset($request->limit)){
+        if (isset($request->limit)) {
             $data = $this->filter($request);
-        }else{
-            $data = Pembayaran::join('reseps','pembayarans.resep_id','=','reseps.id')
-            ->join('rekammedis','reseps.rekamedis_id','=','rekammedis.id')
-            ->join('obats','reseps.obat_id','=','obats.id')
-            ->join('tindakans','rekammedis.tindakan_id','=','tindakan.id')
-            ->join('pasiens','rekammedis.pasien_id','=','pasien.id')
-            ->get();
-
+        } else {
+            $data = Pembayaran::join('reseps', 'pembayarans.resep_id', '=', 'reseps.id')
+                ->join('rekammedis', 'reseps.rekamedis_id', '=', 'rekammedis.id')
+                ->join('obats', 'reseps.obat_id', '=', 'obats.id')
+                ->join('tindakans', 'rekammedis.tindakan_id', '=', 'tindakan.id')
+                ->join('pasiens', 'rekammedis.pasien_id', '=', 'pasien.id')
+                ->get();
         }
 
-        return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']); 
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
     }
 
     /**
@@ -50,7 +54,7 @@ class PembayaranController extends Controller
     public function store(Request $request)
     {
         $store = new Pembayaran();
-        $store->user_id = $request->user_id ;
+        $store->user_id = $request->user_id;
         $store->regis_id = $request->registrasi_id;
         $store->resep_id = $request->id;
         $store->total_bayar = $request->total;
@@ -74,7 +78,7 @@ class PembayaranController extends Controller
     public function show($id)
     {
         $data = Pembayaran::where('id', $id)->first();
-        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status'=>'success']);
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
     }
 
     /**
@@ -115,7 +119,7 @@ class PembayaranController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
         Pembayaran::where('id', $id)->delete();
         return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus!', 'data' => $this->filter($request)]);
@@ -137,16 +141,56 @@ class PembayaranController extends Controller
     }
 
 
-    public function global_function(Request $request){
-        
-        $data = RegistrasiPasien::join('pasiens','registrasi_pasiens.pasien_id','=','pasiens.id')
-        ->join('rekammedis','pasiens.id','=','rekammedis.pasien_id')
-        ->join('reseps','rekammedis.id','=','reseps.rekamedis_id')
-        ->join('tindakans','rekammedis.tindakan_id','=','tindakans.id')
-        ->where('registrasi_pasiens.jenis_pembayaran','umum')
-        ->select('pasiens.id as pasien_id','registrasi_pasiens.id','pasiens.nama','rekammedis.id as rekamedis_id','registrasi_pasiens.tgl','reseps.id as resep_id')
-        ->paginate(10);
-        
+    public function global_function(Request $request)
+    {
+
+        $data = Rekammedis::join('registrasi_pasiens', 'rekammedis.registrasi_id', '=', 'registrasi_pasiens.id')
+            ->join('pasiens', 'registrasi_pasiens.pasien_id', '=', 'pasiens.id')
+            ->join('reseps', 'rekammedis.id', '=', 'reseps.rekamedis_id')
+            ->join('tindakans', 'rekammedis.tindakan_id', '=', 'tindakans.id')
+            ->where('registrasi_pasiens.jenis_pembayaran', 'umum')
+            ->select('pasiens.id as pasien_id', 'registrasi_pasiens.id as regis_id', 'pasiens.nama', 'rekammedis.id as id', 'registrasi_pasiens.tgl', 'reseps.id as resep_id')
+            ->paginate(10);
+
         return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+    public function printNota(Request $request, $id)
+    {
+        // dd($id);
+        $data = Pembayaran::join('reseps', 'pembayarans.resep_id', '=', 'reseps.id')
+            ->join('rekammedis', 'reseps.rekamedis_id', '=', 'rekammedis.id')
+            // ->join('obats','reseps.obat_id','=','obats.id')
+            ->join('tindakans', 'rekammedis.tindakan_id', '=', 'tindakans.id')
+            ->join('pasiens', 'rekammedis.pasien_id', '=', 'pasiens.id')
+            ->where('rekammedis.id', $id)
+            ->select('pasiens.id as pasien_id', 'pasiens.nama', 'pasiens.alamat', 'pasiens.no_hp', 'reseps.id as resep_id', 'rekammedis.tindakan_id', 'pembayarans.id', 'pembayarans.jumlah_bayar', 'pembayarans.total_bayar')
+            ->first();
+
+        $resep = DetailResep::join('obats', 'detailreseps.obat_id', '=', 'obats.id')
+            ->join('reseps', 'detailreseps.resep_id', '=', 'reseps.id')
+
+            ->where('resep_id', $data->resep_id)
+            ->select('obats.nama', 'detailreseps.id', 'obats.harga', 'detailreseps.jumlah')
+            ->get();
+
+        $pisah = explode(',', $data->tindakan_id);
+        // dd($resep);
+        // print $pisah;
+        $value = [];
+        for ($x = 0; $pisah[$x] != null && $pisah[$x] != ""; $x++) {
+            $tindakan =  Tindakan::where('id', $pisah[$x])
+                ->select('tindakans.description', 'tindakans.harga')
+                ->first();
+            array_push($value, $tindakan);
+            // dd($tindakan);
+        }
+        // dd($data);
+        $pdf = PDF::loadView('pdf.nota', ['data' => $data, 'resep' => $resep, 'tindakan' => $value]);
+        $pdf->setPaper('a4', 'portrait');
+        return $pdf->output();
+        // echo $pdf->stream('nota.pdf');
+        // return view('pdf.nota',['data' => $data, 'resep' => $resep,'tindakan' => $value]);
+
     }
 }

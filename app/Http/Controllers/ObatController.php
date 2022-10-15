@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Obat;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ObatController extends Controller
 {
@@ -57,6 +58,7 @@ class ObatController extends Controller
         $store->harga = $request->harga;
         $store->stock = $request->stock;
         $store->keterangan = $request->keterangan;
+        $store->satuan = $request->satuan;
         $store->save();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan!', 'data' => $this->filter($request)]);
@@ -99,7 +101,6 @@ class ObatController extends Controller
             'nama' => 'required',
             'kandungan' => 'required',
             'harga' => 'required',
-            'keterangan' => 'keterangan'
         ]);
 
         Obat::where('id', $id)->update([
@@ -108,8 +109,11 @@ class ObatController extends Controller
             'kandungan' => $request->kandungan,
             'harga' => $request->harga,
             'stock' => $request->stock,
+            'satuan' => $request->satuan,
             'keterangan' => $request->keterangan,
         ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil diubah!', 'data' => $this->filter($request)]);
     }
 
     /**
@@ -135,10 +139,10 @@ class ObatController extends Controller
         $searchRequest = $request->searchQuery;
         $search = !empty($searchRequest) && $searchRequest != "null" ? $searchRequest : "";
         $data = Obat::when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'LIKE', '%' . $search . '%');
+            $query->where('obats.nama', 'LIKE', '%' . $search . '%');
         })->join('kategori_obats','obats.kategori_id','=','kategori_obats.id')
         ->orderBy($request->sortBy, $request->orderBy)
-        ->select('kategori_obats.kategori','obats.id','obats.nama','obats.kandungan','obats.harga','obats.stock','obats.keterangan')
+        ->select('kategori_obats.kategori','obats.id','obats.nama','obats.kandungan','obats.harga','obats.stock','obats.keterangan','obats.satuan')
         ->paginate($request->limit != "" ? $request->limit : 10);
 
         return $data;
@@ -152,6 +156,21 @@ class ObatController extends Controller
             $data = Obat::all();
         }
         return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+    public function printLapObat(Request $request) 
+    {
+        // dd($request->laporan);
+        if(isset($request->laporan)){
+            $data = Obat::where('stock',0)->get();
+            // dd($data);
+        }else{
+            $data = Obat::all();
+            // dd($data);
+        }
+
+        $pdf = PDF::loadview('pdf.laporanobat_pdf',['data' => $data]);
+        return $pdf->download('laporan-obat.pdf');
     }
 
 }

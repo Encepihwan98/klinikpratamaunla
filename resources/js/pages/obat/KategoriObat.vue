@@ -228,16 +228,16 @@ export default {
             axios
                 .put(`${this._url}${this.kategoriObat.id}`, req)
                 .then((response) => {
-                    if (response.status == 200) {
-                        console.log(response);
+                    console.log(response);
+                    // if (response.status == 200) {
                         this.dialog.state = false;
                         this.retriveData = response.data.data;
-                        // this.data = response.data.data;
+                        this.data = response.data.data;
                         this.makeDefaultNotification(
                             response.data.status,
                             response.data.message
                         );
-                    }
+                    // }
                 })
                 .catch((e) => {
                     this.errorState(e);

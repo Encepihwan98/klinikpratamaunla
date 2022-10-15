@@ -12,6 +12,7 @@ use App\Models\Dokter;
 use App\Models\RegistrasiPasien;
 use App\Models\DetailResep;
 use Namshi\JOSE\Signer\SecLib\RSA;
+use Svg\Tag\Rect;
 
 class RekamedisController extends Controller
 {
@@ -155,7 +156,8 @@ class RekamedisController extends Controller
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
-     */
+    */
+
     public function destroy(Request $request, $id)
     {
         Rekammedis::where('id', $id)->delete();
@@ -172,13 +174,12 @@ class RekamedisController extends Controller
         $searchRequest = $request->searchQuery;
         $search = !empty($searchRequest) && $searchRequest != "null" ? $searchRequest : "";
         $data = Rekammedis::when(!empty($search), function ($query) use ($search) {
-            $query->where('name', 'LIKE', '%' . $search . '%');
+            $query->where('pasiens.nama', 'LIKE', '%' . $search . '%');
         })
             ->join('pasiens', 'rekammedis.pasien_id', '=', 'pasiens.id')
-            ->join('registrasi_pasiens', 'pasiens.id', '=', 'registrasi_pasiens.pasien_id')
             ->join('tindakans', 'rekammedis.tindakan_id', '=', 'tindakans.id')
             ->orderBy($request->sortBy, $request->orderBy)
-            ->select('rekammedis.id', 'pasiens.nama', 'pasiens.id as pasien_id', 'tindakans.description as tindakan', 'rekammedis.bb', 'rekammedis.tb', 'rekammedis.tensi', 'rekammedis.keluhan', 'rekammedis.anamnesis', 'rekammedis.keterangan', 'rekammedis.tgl', 'rekammedis.tindakan_id', 'registrasi_pasiens.id as regis_id')
+            ->select('rekammedis.id', 'pasiens.nama', 'pasiens.id as pasien_id', 'tindakans.description as tindakan', 'rekammedis.bb', 'rekammedis.tb', 'rekammedis.tensi', 'rekammedis.keluhan', 'rekammedis.anamnesis', 'rekammedis.keterangan', 'rekammedis.tgl', 'rekammedis.tindakan_id')
             ->paginate($request->limit != "" ? $request->limit : 10);
 
         return $data;
@@ -186,7 +187,6 @@ class RekamedisController extends Controller
 
     public function getTindakan(Request $request)
     {
-
         $data = Rekammedis::where('id', $request->param)->first();
         $pisah = explode(',', $data->tindakan_id);
         // dd($pisah);
@@ -195,10 +195,22 @@ class RekamedisController extends Controller
         for ($x = 0; $pisah[$x] != null && $pisah[$x] != ""; $x++) {
             $tindakan =  Tindakan::where('id', $pisah[$x])
                 ->select('tindakans.description', 'tindakans.harga')
-                ->get();
+                ->first();
             array_push($value, $tindakan);
         }
 
         return response()->json(['data' => $value,  'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+    public function listRekamedisPasien(Request $request, $id)
+    {
+        // dd($id);
+        $data = Rekammedis::join('registrasi_pasiens','rekammedis.registrasi_id','=','registrasi_pasiens.id')
+        ->join('pasiens','registrasi_pasiens.pasien_id','=','pasiens.id')
+        ->where('pasiens.id', $id)
+        ->select('rekammedis.id','rekammedis.bb','rekammedis.tb','rekammedis.tgl','rekammedis.tensi','rekammedis.keluhan','anamnesis','registrasi_pasiens.jenis_pembayaran')
+        ->paginate(10);
+
+        return response()->json(['data' => $data,  'message' => 'Successfully.', 'status' => 'success']);
     }
 }

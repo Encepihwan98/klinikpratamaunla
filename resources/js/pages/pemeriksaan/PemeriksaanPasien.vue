@@ -335,7 +335,7 @@ export default {
 
     setInterval(() => {
       this.setStatusPasien(), this.setStatusPasienAntri(), this.setStatusPasienSelesai();
-    }, 5000);
+    }, 30000);
   },
   
   watch: {

@@ -91,6 +91,8 @@ class KategoriObatController extends Controller
         KategoriObat::where('id', $id)->update([
             'kategori' => $request->kategori,
         ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil di ubah!', 'data' => $this->filter($request)]);
     }
 
     /**
