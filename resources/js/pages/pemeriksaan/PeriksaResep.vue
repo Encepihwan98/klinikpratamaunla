@@ -143,7 +143,7 @@
                       <v-row>
                         <v-col class="pa-0" cols="12" sm="12">
                           <v-text-field label="Rumah Sakit Rujukan" v-model="form.rekamedis.rujukan"
-                            :error-messages="errors.name" :rules="[rules.required]" outlined dense small>
+                            :error-messages="errors.name"  outlined dense small>
                           </v-text-field>
                         </v-col>
                       </v-row>
@@ -409,7 +409,7 @@ export default {
         .indexOf(query.toString().toLowerCase()) > -1
     },
     changeID(event, index = 0) {
-      console.log("masuk sini!");
+      // console.log("masuk sini!");
       if (event == "tindakan") {
         let currentID = this.form.rekamedis.tindakan;
         let index = currentID.length;
@@ -431,12 +431,12 @@ export default {
       }
     },
     obatChange(data) {
-      console.log(data);
+      // console.log(data);
       let obat = this.form.obat[data];
       if(this.form.obat.length > 0 ) {
         for (let index = 0 ; index < this.form.obat.length; index++){
           if (obat.name == this.form.obat[index].name && index != data){
-            alert("iiiiii");
+            alert("Obat sudah di dipilih");
             this.form.obat.splice(data, 1);
           }
         }
@@ -444,6 +444,25 @@ export default {
     },
     addObat() {
       this.form.obat.push({ name: "", desc: "", total: 0 });
+    },
+    setSelectedRekamedis() {
+      axios
+        .get(`/api/v1/get-rekamedis?param=` + this.param)
+        .then((res) => {
+
+          if (res.status == 200) {
+            console.log('masuk sini');
+            this.form.rekamedis.bb = res.data.data.bb;
+            this.form.rekamedis.tb = res.data.data.tb;
+            this.form.rekamedis.tensi = res.data.data.tensi;
+            this.form.rekamedis.id = res.data.data.id;
+          } else {
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
+          }
+        });
     },
     setSelectedPasien() {
       axios
@@ -467,7 +486,7 @@ export default {
       axios.get(`/api/v1/list-obat/`).then((res) => {
         if (res.status === 200) {
           res.data.data.forEach((v) => {
-            this.obat.items.push(`${v.nama}-${v.satuan}`);
+            this.obat.items.push(`${v.id}-${v.nama}-${v.satuan}`);
           });
           this.obat.data = res.data.data;
         } else {
@@ -495,6 +514,7 @@ export default {
     },
     selectStore() {
       if (this.$refs.form.validate()) {
+        this.condition = "update";
         if (this.condition == "store") {
           this.dialogConfirmation.message = "menyimpan";
           this.popDialog();
@@ -573,7 +593,28 @@ export default {
         .post(this._url, req)
         .then((response) => {
           if (response.status == 200) {
+            // this.clear();
+            this.data = response.data.data;
+            this.makeDefaultNotification(
+              response.data.status,
+              response.data.message
+            );
             this.clear();
+            this.filterPage();
+          }
+        })
+        .catch((e) => {
+          this.errorState(e);
+        });
+    },
+    update() {
+      let req = Object.assign(this.form, this.filter);
+      this.currentData = null;
+      axios
+        .put(`${this._url}${this.form.rekamedis.id}`, req)
+        .then((response) => {
+          if (response.status == 200) {
+            // this.clear();
             this.data = response.data.data;
             this.makeDefaultNotification(
               response.data.status,
@@ -672,6 +713,7 @@ export default {
     this.setSelectedPasien();
     this.setSelectedTindakan();
     this.setSelectedObat();
+    this.setSelectedRekamedis();
     // this.setSelectedResep();
     // 
   },
@@ -685,10 +727,10 @@ export default {
   },
   watch: {
     dialogState: function (n, o) {
-      console.log(n);
+      // console.log(n);
 
       if (n && this.currentData) this.show(this.currentData.pasien_id);
-      else this.clear();
+      // else this.clear();
     },
     modules: function (n, o) {
       let access = this.redirectIfNotHaveAccess(n, this.$route.path);

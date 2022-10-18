@@ -39,9 +39,14 @@
                                         <td>{{ item.tgl }}</td>
                                         <td>{{ item.rujukan }}</td>
                                         <td class="center-center">
-                                            <v-btn @click="printSurat(item)" small>
+                                            <!-- <v-btn @click="printSurat(item)" small>
                                                 <v-icon small>far fa-print</v-icon>
-                                            </v-btn>
+                                            </v-btn> -->
+                                            <a :href="`/api/v1/surat-rujukan/${item.id}`">
+                                                <v-btn small>
+                                                    <v-icon small>far fa-print</v-icon>
+                                                </v-btn>
+                                            </a>
                                         </td>
                                     </tr>
                                 </tbody>

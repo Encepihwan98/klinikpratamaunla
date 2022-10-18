@@ -144,7 +144,14 @@ class PembayaranController extends Controller
     public function global_function(Request $request)
     {
 
-        $data = Rekammedis::join('registrasi_pasiens', 'rekammedis.registrasi_id', '=', 'registrasi_pasiens.id')
+        $searchRequest = $request->searchQuery;
+        $search = !empty($searchRequest) && $searchRequest != "null" ? $searchRequest : "";
+
+        $data = Rekammedis::when(!empty($search), function ($query) use ($search) {
+            $query->where('pasiens.nama', 'LIKE', '%' . $search . '%')
+            ->orwhere('pasiens.id', 'LIKE', '%' . $search . '%');
+        })->orderBy($request->sortBy, $request->orderBy)
+            ->join('registrasi_pasiens', 'rekammedis.registrasi_id', '=', 'registrasi_pasiens.id')
             ->join('pasiens', 'registrasi_pasiens.pasien_id', '=', 'pasiens.id')
             ->join('reseps', 'rekammedis.id', '=', 'reseps.rekamedis_id')
             ->join('tindakans', 'rekammedis.tindakan_id', '=', 'tindakans.id')
@@ -157,19 +164,16 @@ class PembayaranController extends Controller
 
     public function printNota(Request $request, $id)
     {
-        // dd($id);
         $data = Pembayaran::join('reseps', 'pembayarans.resep_id', '=', 'reseps.id')
             ->join('rekammedis', 'reseps.rekamedis_id', '=', 'rekammedis.id')
-            // ->join('obats','reseps.obat_id','=','obats.id')
             ->join('tindakans', 'rekammedis.tindakan_id', '=', 'tindakans.id')
             ->join('pasiens', 'rekammedis.pasien_id', '=', 'pasiens.id')
             ->where('rekammedis.id', $id)
             ->select('pasiens.id as pasien_id', 'pasiens.nama', 'pasiens.alamat', 'pasiens.no_hp', 'reseps.id as resep_id', 'rekammedis.tindakan_id', 'pembayarans.id', 'pembayarans.jumlah_bayar', 'pembayarans.total_bayar')
             ->first();
-
+        // dd($data);
         $resep = DetailResep::join('obats', 'detailreseps.obat_id', '=', 'obats.id')
             ->join('reseps', 'detailreseps.resep_id', '=', 'reseps.id')
-
             ->where('resep_id', $data->resep_id)
             ->select('obats.nama', 'detailreseps.id', 'obats.harga', 'detailreseps.jumlah')
             ->get();
@@ -183,14 +187,28 @@ class PembayaranController extends Controller
                 ->select('tindakans.description', 'tindakans.harga')
                 ->first();
             array_push($value, $tindakan);
-            // dd($tindakan);
         }
-        // dd($data);
+
         $pdf = PDF::loadView('pdf.nota', ['data' => $data, 'resep' => $resep, 'tindakan' => $value]);
         $pdf->setPaper('a4', 'portrait');
-        return $pdf->output();
-        // echo $pdf->stream('nota.pdf');
-        // return view('pdf.nota',['data' => $data, 'resep' => $resep,'tindakan' => $value]);
+        if ($request->download == 1) {
+            return $pdf->download('nota' . time() . '.pdf');
+        } else {
+            return $pdf->stream('nota.pdf');
+        }
+    }
 
+    public function printLaporanKeungan(Request $request)
+    {
+        $from = $request->awal;
+        $to = $request->akhir;
+        // dd($from, $to);
+        $data = Pembayaran::join('registrasi_pasiens','pembayarans.regis_id','=','registrasi_pasiens.id')
+        ->whereBetween('tgl_bayar',[$from, $to])
+        ->select('pembayarans.id','pembayarans.total_bayar','pembayarans.jumlah_bayar','pembayarans.tgl_bayar','registrasi_pasiens.pasien_id')
+        ->get();
+        $pdf = PDF::loadView('pdf.laporankeungan',['data' => $data, 'from' => $from, 'to' => $to]);
+        $pdf->setPaper('a4','portrait');
+        return $pdf->stream('laporan-keungan'.time().'.pdf');
     }
 }

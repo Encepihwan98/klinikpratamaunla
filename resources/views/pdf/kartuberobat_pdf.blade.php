@@ -13,10 +13,11 @@
 
         .container {
             width: 400px;
-            height: 300px;
+            height: 280px;
         }
 
         h3,
+        h4,
         h5 {
             margin: 0px;
         }
@@ -39,10 +40,18 @@
             background-color: black;
             color: white;
         }
+        p{
+            padding: 3px;
+            font-weight: bold;
+            margin-top: 0px;
+            margin-bottom: 0px;
+            text-align: center;
+        }
     </style>
 </head>
-<!-- <body> -->
-<body style='font-family:tahoma; font-size:8pt;' onload="javascript:window.print()">
+
+<body>
+    <!-- <body style='font-family:tahoma; font-size:8pt;' onload="javascript:window.print()"> -->
     <div class="container border">
         <div class="row">
             <div class="col-lg-12">
@@ -54,35 +63,55 @@
                 <h4 class="kartu">Kartu Berobat</h4>
             </div>
             <div class="col-lg-12">
-                <table border="1">
-                    <tr>
-                        <td>Nama</td>
-                        <td>:</td>
-                        <td>{{$data->nama}}</td>
-                    </tr>
-                    <tr>
-                        <td>Tgl Lahir</td>
-                        <td>:</td>
-                        <td>{{$data->tgl_lahir}}</td>
-                    </tr>
-                    <tr>
-                        <td>Alamat</td>
-                        <td>:</td>
-                        <td>{{$data->alamat}}</td>
-                    </tr>
+                <table style="margin-top: 10px;" width="250px">
                     <tr>
                         <td>
-                            <p>Perhatian :</p>
+                            <h4>No Pasien</h4>
                         </td>
+                        <td style="margin-right: -10px;">:</td>
                         <td>
-                            <p>Setiap Berobat Harus di Bawa</p>
+                            <h4>{{$id}}</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h4>Nama</h4>
+                        </td>
+                        <td style="margin-right: -10px;">:</td>
+                        <td>
+                            <h4>{{$data->nama}}</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h4>Tgl Lahir</h4>
+                        </td>
+                        <td style="margin-right: -10px;">:</td>
+                        <td>
+                            <h4>{{$data->tgl_lahir}}</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h4>No Hp</h4>
+                        </td>
+                        <td style="margin-right: -10px;">:</td>
+                        <td>
+                            <h4>{{$data->no_hp}}</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <h4>Alamat</h4>
+                        </td>
+                        <td style="margin-right: -10px;">:</td>
+                        <td>
+                            <h4>{{$data->alamat}}</h4>
                         </td>
                     </tr>
                 </table>
-                <div class="">
-                    <table>
-
-                    </table>
+                <div class="border" style="margin-top: 5px;">
+                    <p>Harap Dibawa Setiap Berobat</p>
                 </div>
             </div>
         </div>

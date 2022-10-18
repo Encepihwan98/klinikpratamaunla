@@ -170,7 +170,8 @@ class ObatController extends Controller
         }
 
         $pdf = PDF::loadview('pdf.laporanobat_pdf',['data' => $data]);
-        return $pdf->download('laporan-obat.pdf');
+        $pdf->setPaper('a4','portrait');
+        return $pdf->download('laporan-obat'. time() .'.pdf');
     }
 
 }

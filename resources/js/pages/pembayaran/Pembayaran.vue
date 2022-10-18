@@ -20,10 +20,11 @@
 
                                     <v-col class="d-flex" cols="12" sm="6">
                                         <v-text-field v-model="filter.searchQuery" dense append-icon="far fa-search"
-                                            outlined clearable label="Search" type="text"></v-text-field>
+                                            outlined clearable label="Search" type="text" @click:append="filterPage('')"
+                                            @input="filterPage('')"></v-text-field>
                                     </v-col>
                                     <v-col cols="12" sm="4">
-                                        <v-btn dense smal color="red">
+                                        <v-btn @click="printLaporan" dense smal color="red">
                                             Export To PDF
                                             <v-icon right dark>
                                                 far fa-file-pdf
@@ -53,18 +54,75 @@
                                                         :to="{ name: 'pembayaran-detail', params: { id: item.resep_id } }">
                                                         <v-icon small>far fa-eye</v-icon>
                                                     </v-btn>
-                                                    <v-btn @click="printNota(item)" small>
+                                                    <!-- <a :href="`/api/v1/print-nota/${item.id}?download=1`" download>
                                                         <v-icon small>far fa-print</v-icon>
-                                                    </v-btn>
+                                                    </a> -->
+                                                    <a :href="`/api/v1/print-nota/` + item.id">
+                                                        <v-icon small>far fa-print</v-icon>
+                                                    </a>
+
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </template>
                                 </v-simple-table>
+                                <v-card-actions class="d-flex justify-center">
+                                    <v-pagination v-model="filter.page" :length="data.last_page" :total-visible="7"
+                                        @input="filterPage('')">
+                                    </v-pagination>
+                                </v-card-actions>
                             </v-card>
                         </v-col>
+
                     </v-row>
                 </v-container>
+            </div>
+            <div>
+                <v-dialog v-model="dialog.state" persistent max-width="400px">
+                    <v-card>
+                        <v-card-title class="text-h5"> Laporan Keungan </v-card-title>
+                        <v-form class="mx-3 my-3" ref="form" v-model="valid" lazy-validation :currentData="currentData">
+                            <v-container>
+                                <v-row>
+                                    <v-col class="pa-0" cols="12" sm="5">
+                                        <v-menu v-model="menu2" :close-on-content-click="false" :nudge-right="40"
+                                            transition="scale-transition" offset-y min-width="auto">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-text-field v-model="laporan.date" label="Pilih Tanggal"
+                                                    prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
+                                                </v-text-field>
+                                            </template>
+                                            <v-date-picker v-model="laporan.date" @input="menu2 = false">
+                                            </v-date-picker>
+                                        </v-menu>
+                                    </v-col>
+                                    <v-col class="pa-0" cols="12" sm="2">
+                                        <p class="text-center mt-3">s/d</p>
+                                    </v-col>
+                                    <v-col class="pa-0" cols="12" sm="5">
+                                        <v-menu v-model="menu" :close-on-content-click="false" :nudge-right="40"
+                                            transition="scale-transition" offset-y min-width="auto">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-text-field v-model="laporan.date1" label="Pilih Tanggal"
+                                                    prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
+                                                </v-text-field>
+                                            </template>
+                                            <v-date-picker v-model="laporan.date1" @input="menu = false">
+                                            </v-date-picker>
+                                        </v-menu>
+                                    </v-col>
+                                    <v-col cols="12" sm="12">
+                                        <!-- <v-btn class="mr-4" @click="selectPrint"> Print </v-btn> -->
+                                        <v-btn>
+                                            <a :href="`/api/v1/laporan-keungan/?awal=${laporan.date}&akhir=${laporan.date1}`" class="mr-4" download> Print </a>
+                                        </v-btn>
+                                        <v-btn @click="dialog.state = false"> Close </v-btn>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-form>
+                    </v-card>
+                </v-dialog>
             </div>
 
         </v-main>
@@ -84,6 +142,10 @@ export default {
                 isTableLoad: false,
                 filterOpen: false,
             },
+            dialog: {
+                state: false,
+                title: null
+            },
             filter: {
                 page: 1,
                 searchQuery: "",
@@ -92,6 +154,13 @@ export default {
                 orderBy: "asc",
                 role: [],
             },
+            laporan: {
+                date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+                date1: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+            },
+            menu: false,
+            modal: false,
+            menu2: false,
             isDrawerOpen: true,
             pembayaran: {},
             data: {
@@ -123,48 +192,10 @@ export default {
         };
     },
     methods: {
-        printNota(data, item) {
-            this.pembayaran = data;
-            axios.get(window.location.origin + `api/v1/print-nota/${this.pembayaran.id}`, { responseType: 'blob' }).then(response => {
-
-                const url = window.location.origin.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'remaining_fee.pdf'); //or any other extension
-                document.body.appendChild(link);
-                link.click();
-
-            })
-                .catch(error => {
-                    console.log(error);
-                })
+        printLaporan() {
+            this.showDialog(false);
+            this.condition = "print";
         },
-        // printNota(data, item) {
-        //     this.pembayaran = data;
-        //     let req = Object.assign(this.pembayaran, this.filter);
-        //     console.log(this.pembayaran.id);
-        //     this.urlPrint = window.location.origin + "/api/v1/print-nota/";
-        //     axios
-        //         .get(`${this.urlPrint}${this.pembayaran.id}`, {
-        //         }, req)
-        //         .then((response) => {
-        //             doc.save("nota.pdf");
-        //             const content = response.headers['content-type'];
-        //             download(response.data, file.file_name, content)
-        //              window.print();
-        //             if (response.status == 'success') {
-        //                 // this.dialogs.dialogDataPasien.state = false;
-        //                 this.retriveData = response.data.data;
-        //                 this.makeDefaultNotification(
-        //                     response.data.status,
-        //                     response.data.message
-        //                 );
-        //             }
-        //         })
-        //         .catch((e) => {
-        //             this.errorState(e);
-        //         });
-        // },
         selectMethod(data, item) {
             this.currentData = data;
             if (item == "delete") {
@@ -272,6 +303,7 @@ export default {
             }
         }
         this._url = window.location.origin + "/api/v1/list-pembayaran/";
+        this.urlPrint = window.location.origin + "/api/v1/print-nota/";
         this.filterPage("");
 
     },

@@ -35,7 +35,7 @@ class PasienController extends Controller
             return response()->json(['data' => $data, 'id' => $id, 'message' => 'Successfully.', 'status' => 'success']);
         } else {
             $data = Pasien::join('registrasi_pasiens', 'pasiens.id', '=', 'registrasi_pasiens.pasien_id')
-                ->where('pasiens.id', $request->param)
+                ->where('registrasi_pasiens.id', $request->param)
                 ->select(
                     'pasiens.id as pasien_id',
                     'pasiens.nama',
@@ -238,6 +238,15 @@ class PasienController extends Controller
             ->select('registrasi_pasiens.id', 'registrasi_pasiens.status', 'pasiens.nama', 'registrasi_pasiens.tgl', 'pasiens.id as pasien_id')->get();
         return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
     }
+
+    public function statusGetCheckup()
+    {
+        $data = Pasien::join('registrasi_pasiens', 'pasiens.id', '=', 'registrasi_pasiens.pasien_id')
+            ->where('registrasi_pasiens.status', '=', 'checkup')
+            ->select('registrasi_pasiens.id', 'registrasi_pasiens.status', 'pasiens.nama', 'registrasi_pasiens.tgl', 'pasiens.id as pasien_id')->get();
+        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+    }
+
     public function statusGetSelesai()
     {
         $data = Pasien::join('registrasi_pasiens', 'pasiens.id', '=', 'registrasi_pasiens.pasien_id')
@@ -258,10 +267,35 @@ class PasienController extends Controller
     {
         // dd($id);
         $data = Pasien::where('id', $id)->first();
-        // dd($data);
         // $customPaper = array(0,0,567.00,283.80);
-        $pdf = PDF::loadview('pdf.kartuberobat_pdf', ['data' => $data]);
-        // dd($pdf);
-        return $pdf->download('kartu-berobat.pdf');
+        $pdf = PDF::loadview('pdf.kartuberobat_pdf', ['data' => $data, 'id' => $id]);
+        $pdf->setPaper('a4','portrait');
+        return $pdf->stream('kartu-berobat'.time().'.pdf');
+    }
+
+    public function SuratKeterangan(Request $request, $id){
+        // dd($request->from,$request->to, $request->jumlahIstirahat);
+        $pisah = explode('-',$request->from);
+        // $from = $pisah[2],'-',$pisah[1],'-',$pisah[0];
+        $from = $request->from;
+        $to = $request->to;
+        $jumlah = $request->jumlahIstirahat;
+
+        $keperluan = $request->keperluan;
+        $data = Pasien::where('id', $id)->first();
+        $lahir = new DateTime($data->tgl_lahir);
+        $today = new DateTime(date('Y-m-d'));
+        $umur = $today->diff($lahir)->y;
+
+        if (isset($request->sakit)){
+            $pdf = PDF::loadView('pdf.suratsakit',['data' => $data, 'umur' => $umur, 'from' => $from, 'to' => $to, 'jumlah' => $jumlah]);
+            $pdf->setPaper('a4','portrait');
+            return $pdf->stream('surat-sehat'.time().'.pdf');
+        }else if(isset($request->sehat)){
+            $pdf = PDF::loadView('pdf.suratsehat',['data' => $data, 'umur' => $umur, 'keperluan' => $keperluan]);
+            $pdf->setPaper('a4','portrait');
+            return $pdf->stream('surat-sehat'.time().'.pdf');
+        }
+
     }
 }

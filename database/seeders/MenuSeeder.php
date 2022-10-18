@@ -88,13 +88,31 @@ class MenuSeeder extends Seeder
 
         ModelsMenu::create([
             'id' => 12,
+            'uuid' => '7a89d8c5-6855-42df-b2be-143b60b8O0aa',
+            'name' => 'Antrian Pasien',
+            'slug' => 'pemeriksaan-perawat',
+            'url' => 'http://localhost:8000/pemeriksaan/pemeriksaan-perawat',
+            'parent_id' => 0,
+            'api_module' => NULL,
+            'order' => 5,
+            'icon' => 'far fa-book-medical',
+            'component' => './pages/pemeriksaan/PerawarawatPeriksa.vue',
+            'must_login' => 1,
+            'is_active' => 1,
+            'is_parent' => 0,
+            'created_at' => '2021-09-21 09:32:57',
+            'updated_at' => '2021-09-21 09:32:57'
+        ]);
+
+        ModelsMenu::create([
+            'id' => 13,
             'uuid' => '02ddd360-0c2d-424b-9fcb-8bb0a8a0d903',
             'name' => 'Data Rekam Medis',
             'slug' => 'data-rekam-medis',
             'url' => 'http://localhost:8000/rekamedis/data-rekam-medis',
             'parent_id' => 0,
             'api_module' => NULL,
-            'order' => 5,
+            'order' => 6,
             'icon' => 'far fa-hospital-user',
             'component' => './pages/rekamedis/DataRekamMedis.vue',
             'must_login' => 1,
@@ -105,14 +123,14 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 13,
+            'id' => 14,
             'uuid' => '8fd13713-3a29-408e-a59a-44742e7e4d8e',
             'name' => 'Data Resep',
             'slug' => 'data-resep',
             'url' => 'http://localhost:8000/resep/data-resep',
             'parent_id' => 0,
             'api_module' => NULL,
-            'order' => 6,
+            'order' => 7,
             'icon' => 'far fa-boxes-alt',
             'component' => './pages/resep/DataResep.vue',
             'must_login' => 1,
@@ -123,14 +141,14 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 14,
+            'id' => 15,
             'uuid' => 'e96238c3-1fde-49bd-ba97-bd1fd662c5bd',
             'name' => 'Resep Hari Ini',
             'slug' => 'resep',
             'url' => 'http://localhost:8000/resep/resep',
             'parent_id' => 0,
             'api_module' => NULL,
-            'order' => 7,
+            'order' => 8,
             'icon' => 'far fa-hospital-user',
             'component' => './pages/resep/Resep.vue',
             'must_login' => 1,
@@ -141,14 +159,14 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 15,
+            'id' => 16,
             'uuid' => 'd505fd77-663c-424d-adb9-b509d8496e19',
             'name' => 'Data Obat',
             'slug' => 'data-obat',
             'url' => 'http://localhost:8000/obat/data-obat',
             'parent_id' => 0,
             'api_module' => NULL,
-            'order' => 8,
+            'order' => 9,
             'icon' => 'far fa-hospital-user',
             'component' => './pages/obat/DataObat.vue',
             'must_login' => 1,
@@ -159,14 +177,14 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 16,
+            'id' => 17,
             'uuid' => '99393631-f287-4a00-8708-8285b7a90eee',
             'name' => 'Kategori Obat',
             'slug' => 'kategori-obat',
             'url' => 'http://localhost:8000/obat/kategori-obat',
             'parent_id' => 0,
             'api_module' => NULL,
-            'order' => 9,
+            'order' => 10,
             'icon' => 'far fa-money-check-alt',
             'component' => './pages/obat/KategoriObat.vue',
             'must_login' => 1,
@@ -177,14 +195,14 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 17,
+            'id' => 18,
             'uuid' => '88696631-f287-7a00-8708-8665b7a40eik',
             'name' => 'Pembayaran',
             'slug' => 'pembayaran',
             'url' => 'http://localhost:8000/pembayaran/pembayaran',
             'parent_id' => 0,
             'api_module' => NULL,
-            'order' => 10,
+            'order' => 11,
             'icon' => 'far fa-money-check-alt',
             'component' => './pages/pembayaran/pembayaran.vue',
             'must_login' => 1,
@@ -195,14 +213,14 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 18,
+            'id' => 19,
             'uuid' => '99996631-f287-7a00-9876-8665b7a40emn',
             'name' => 'Rujukan',
             'slug' => 'rujukan',
             'url' => 'http://localhost:8000/rujukan/rujukan',
             'parent_id' => 0,
             'api_module' => NULL,
-            'order' => 10,
+            'order' => 12,
             'icon' => 'far fa-money-check-alt',
             'component' => './pages/rujukan/rujukan.vue',
             'must_login' => 1,
@@ -213,14 +231,14 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 19,
+            'id' => 20,
             'uuid' => '789112d9-6612-4906-a91e-fd41bd8e9087',
             'name' => 'Master Data',
             'slug' => '#',
             'url' => '#',
             'parent_id' => 0,
             'api_module' => NULL,
-            'order' => 11,
+            'order' => 13,
             'icon' => 'far fa-database',
             'component' => '.',
             'must_login' => 1,
@@ -231,12 +249,12 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 20,
+            'id' => 21,
             'uuid' => '789112d9-6612-4906-a91e-fd41bd8e8790',
             'name' => 'Daftar Tindakan',
             'slug' => 'daftar-tindakan',
             'url' => 'http://localhost:8000/masterdata/daftar-tindakan',
-            'parent_id' => 19,
+            'parent_id' => 20,
             'api_module' => NULL,
             'order' => 1,
             'icon' => 'far fa-database',
@@ -249,14 +267,14 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 26,
+            'id' => 27,
             'uuid' => '789112d9-6612-4906-a91e-fd41bd8e8791',
             'name' => 'Daftar Dokter',
             'slug' => 'daftar-dokter',
             'url' => 'http://localhost:8000/masterdata/daftar-dokter',
-            'parent_id' => 19,
+            'parent_id' => 20,
             'api_module' => NULL,
-            'order' => 1,
+            'order' => 2,
             'icon' => 'far fa-database',
             'component' => './pages/masterdata/DaftarDokter.vue',
             'must_login' => 1,
@@ -267,12 +285,12 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 27,
+            'id' => 28,
             'uuid' => '789112d9-6612-4906-a91e-fd41bd8e8792',
             'name' => 'Daftar Apoteker',
             'slug' => 'daftar-apoteker',
             'url' => 'http://localhost:8000/masterdata/daftar-apoteker',
-            'parent_id' => 19,
+            'parent_id' => 20,
             'api_module' => NULL,
             'order' => 1,
             'icon' => 'far fa-database',
@@ -285,12 +303,12 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 28,
+            'id' => 29,
             'uuid' => '789112d9-6612-4906-a91e-fd41bd8e8793',
             'name' => 'Daftar Administrasi',
             'slug' => 'daftar-administrasi',
             'url' => 'http://localhost:8000/masterdata/daftar-administrasi',
-            'parent_id' => 19,
+            'parent_id' => 20,
             'api_module' => NULL,
             'order' => 1,
             'icon' => 'far fa-database',
@@ -303,12 +321,12 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 29,
+            'id' => 30,
             'uuid' => '789112d9-6612-4906-a91e-fd41bd8e6733',
             'name' => 'Obat Masuk',
             'slug' => 'obat-masuk',
             'url' => 'http://localhost:8000/masterdata/obat-masuk',
-            'parent_id' => 19,
+            'parent_id' => 20,
             'api_module' => NULL,
             'order' => 1,
             'icon' => 'far fa-database',
@@ -320,12 +338,12 @@ class MenuSeeder extends Seeder
             'updated_at' => '2021-09-21 10:53:05'
         ]);
         ModelsMenu::create([
-            'id' => 30,
+            'id' => 31,
             'uuid' => '789112d9-6612-4809-a91e-fd41bd8e6770',
             'name' => 'Daftar Supliers',
             'slug' => 'daftar-suplier',
             'url' => 'http://localhost:8000/masterdata/daftar-suplier',
-            'parent_id' => 19,
+            'parent_id' => 20,
             'api_module' => NULL,
             'order' => 1,
             'icon' => 'far fa-database',
@@ -338,14 +356,14 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 21,
+            'id' => 22,
             'uuid' => '42ccc697-6215-4b27-9ed3-29d4e3fff751',
             'name' => 'System',
             'slug' => '#',
             'url' => '#',
             'parent_id' => 0,
             'api_module' => NULL,
-            'order' => 12,
+            'order' => 14,
             'icon' => 'far fa-cogs',
             'component' => '.',
             'must_login' => 1,
@@ -356,12 +374,12 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 22,
+            'id' => 23,
             'uuid' => '00762b06-cf8e-4570-956e-f9eca0927d4c',
             'name' => 'Manajemen Role',
             'slug' => 'role-management',
             'url' => 'http://localhost:8000/system/role-management',
-            'parent_id' => 21,
+            'parent_id' => 22,
             'api_module' => 'roles',
             'order' => 1,
             'icon' => 'far fa-user-shield',
@@ -374,12 +392,12 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 23,
+            'id' => 24,
             'uuid' => 'd0456291-7c66-4ee9-b1f0-fcf1df8a6eaa',
             'name' => 'Manajemen User',
             'slug' => 'user-management',
             'url' => 'http://localhost:8000/system/user-management',
-            'parent_id' => 21,
+            'parent_id' => 22,
             'api_module' => 'users',
             'order' => 2,
             'icon' => 'far fa-user-cog',
@@ -392,12 +410,12 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 24,
+            'id' => 25,
             'uuid' => '52452a79-43f8-4a00-9914-bd6646e3ba35',
             'name' => 'Manajemen Module',
             'slug' => 'module-management',
             'url' => 'http://localhost:8000/system/module-management',
-            'parent_id' => 21,
+            'parent_id' => 22,
             'api_module' => 'modules',
             'order' => 3,
             'icon' => 'far fa-sliders-v',
@@ -410,12 +428,12 @@ class MenuSeeder extends Seeder
         ]);
 
         ModelsMenu::create([
-            'id' => 25,
+            'id' => 26,
             'uuid' => '9daef5e9-5d7f-45a4-a4ba-4f4e24ec2103',
             'name' => 'Manajemen Akses Module',
             'slug' => 'access-module-management',
             'url' => 'http://localhost:8000/system/access-module-management',
-            'parent_id' => 21,
+            'parent_id' => 22,
             'api_module' => 'r-modules',
             'order' => 4,
             'icon' => 'far fa-bars',

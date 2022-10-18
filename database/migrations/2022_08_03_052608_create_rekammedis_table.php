@@ -18,13 +18,13 @@ class CreateRekammedisTable extends Migration
             $table->string('pasien_id',6);
             $table->unsignedBigInteger('registrasi_id');
             $table->bigInteger('dokter_id')->unsigned();
-            $table->string('tindakan_id', 15);
+            $table->string('tindakan_id', 15)->nullable();
             $table->integer('bb');
             $table->integer('tb');
             $table->integer('tensi');
-            $table->text('keluhan');
-            $table->text('anamnesis');
-            $table->text('keterangan');
+            $table->text('keluhan')->nullable();
+            $table->text('anamnesis')->nullable();
+            $table->text('keterangan')->nullable();
             $table->date('tgl');
             $table->timestamps();
 

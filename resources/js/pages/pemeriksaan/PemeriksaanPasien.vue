@@ -20,7 +20,7 @@
                     <v-col v-for="(item, index) in status.periksa.data" :key="item.nama" cols="12" sm="12" class="pa-0">
                       <div class="ma-2 d-block pa-2 grey lighten-4 black--text">
                         {{index + 1}} {{item.nama}}
-                        <v-btn :to="{ name: 'periksa-resep', params: { id: item.pasien_id } }" x-small class="float-end" color="green">
+                        <v-btn :to="{ name: 'periksa-resep', params: { id: item.id } }" x-small class="float-end" color="green">
                           periksa
                         </v-btn>
                       </div>
@@ -174,8 +174,8 @@ export default {
         }
       });
     },
-    setStatusPasienAntri() {
-      axios.get(`/api/v1/status-pasien-antri/`).then((res) => {
+    setStatusPasienCheckup() {
+      axios.get(`/api/v1/status-pasien-checkup/`).then((res) => {
         if (res.status === 200) {
           this.status.periksa.data = res.data.data;
         } else {
@@ -330,11 +330,11 @@ export default {
     this._url = window.location.origin + "/api/v1/daftar-pasien/";
     this.filterPage("");
     this.setStatusPasien();
-    this.setStatusPasienAntri();
+    this.setStatusPasienCheckup();
     this.setStatusPasienSelesai();
 
     setInterval(() => {
-      this.setStatusPasien(), this.setStatusPasienAntri(), this.setStatusPasienSelesai();
+      this.setStatusPasien(), this.setStatusPasienCheckup(), this.setStatusPasienSelesai();
     }, 30000);
   },
   

@@ -48,22 +48,38 @@ class RekamedisController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function tambahDataRekamedis(Request $request){
+        $store = new Rekammedis();
+        $store->bb = $request->bb;
+        $store->tb = $request->tb;
+        $store->tensi = $request->td;
+        $store->pasien_id = $request->pasien_id;
+        $store->registrasi_id = $request->regis_id;
+        $store->save();
+
+        RegistrasiPasien::where('id', $request->regis_id)->update([
+            'status' => 'checkup'
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan!', 'data' => $this->filter($request)]);
+    }
+
     public function store(Request $request)
     {
         $tindakan = "";
         foreach ($request->rekamedis['tindakan'] as $data) {
-
             $tindakan .= Tindakan::where('description', $data['text'])->first()['id'] . ",";
         }
+
         $store = new Rekammedis();
+        $store->bb = $request->rekamedis['bb'];
+        $store->tb = $request->rekamedis['tb'];
+        $store->tensi = $request->rekamedis['tensi'];
         $store->pasien_id = $request->rekamedis['pasien_id'];
         $store->tindakan_id = $tindakan;
         $store->registrasi_id = $request->rekamedis['regis_id'];
         $store->dokter_id = Dokter::where('user_id', $request->user()->id)->first()['id'];
-        $store->bb = $request->rekamedis['bb'];
-        $store->tb = $request->rekamedis['tb'];
         $store->keluhan = $request->rekamedis['keluhan'];
-        $store->tensi = $request->rekamedis['tensi'];
         $store->anamnesis = $request->rekamedis['anamnesis'];
         $store->keterangan = $request->rekamedis['keterangan'];
         $store->tgl = date('Y-m-d');
@@ -77,16 +93,19 @@ class RekamedisController extends Controller
         $resep->save();
 
         foreach ($request->obat as $obat) {
+            // dd($obat['name']);
             // dd(Obat::where('nama', $obat['name'])->first()['id']);
+            $pisah = explode('-', $obat['name']);
+            // dd(Obat::where('id', $pisah[0])->first()['id']);
             $store1 = new DetailResep();
             $store1->resep_id = $resep->id;
-            $store1->obat_id = Obat::where('nama', $obat['name'])->first()['id'];
+            $store1->obat_id = Obat::where('id', $pisah[0])->first()['id'];
             $store1->jumlah = $obat['total'];
             $store1->keterangan = $obat['desc'];
-            $store1->harga = Obat::where('nama', $obat['name'])->first()['harga'];
+            $store1->harga = Obat::where('id', $pisah[0])->first()['harga'];
             $store1->save();
 
-            $id = Obat::where('nama', $obat['name'])->first()['id'];
+            $id = Obat::where('id', $pisah[0])->first()['id'];
             
             $stock = Obat::findOrFail($id);
             $stock->stock -= $obat['total'];
@@ -96,11 +115,14 @@ class RekamedisController extends Controller
         RegistrasiPasien::where('id', $request->rekamedis['regis_id'])->update([
             'status' => 'obat'
         ]);
+        
+        if(isset($request->rekamedis['rujukan'])){
+            $store3 = new Rujukan();
+            $store3->rekamedis_id = $store->id;
+            $store3->rujukan = $request->rekamedis['rujukan'];
+            $store3->save();
+        }
 
-        $store3 = new Rujukan();
-        $store3->rekamedis_id = $store->id;
-        $store3->rujukan = $request->rekamedis['rujukan'];
-        $store3->save();
 
         return response()->json(['status' => 'success', 'message' => 'Data berhasil disimpan!', 'data' => $this->filter($request)]);
     }
@@ -137,17 +159,67 @@ class RekamedisController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $tindakan = "";
+        foreach ($request->rekamedis['tindakan'] as $data) {
+            $tindakan .= Tindakan::where('description', $data['text'])->first()['id'] . ",";
+        }
+        // dd($tindakan);
+        $dokter_id = Dokter::where('user_id', $request->user()->id)->first()['id'];
+
         Rekammedis::where('id', $id)->update([
-            'pasien_id' => $request->pasien_id,
-            'tindakan_id' => $request->tindakan_id,
-            'bb' => $request->bb,
-            'tb' => $request->tb,
-            'tensi' => $request->tensi,
-            'keluhan' => $request->keluhan,
-            'anamnesis' => $request->anamnesis,
-            'keterangan' => $request->keterangan,
-            'tgl' => $request->tgl,
+            'pasien_id' => $request->rekamedis['pasien_id'],
+            'tindakan_id' => $tindakan,
+            'bb' => $request->rekamedis['bb'],
+            'tb' => $request->rekamedis['tb'],
+            'tensi' => $request->rekamedis['tensi'],
+            'keluhan' => $request->rekamedis['keluhan'],
+            'anamnesis' => $request->rekamedis['anamnesis'],
+            'keterangan' => $request->rekamedis['keterangan'],
+            'dokter_id' => $dokter_id,
+            'tgl' => date('Y-m-d'),
         ]);
+        // dd($id);
+        if(isset($request->rekamedis['rujukan'])){
+            $store3 = new Rujukan();
+            $store3->rekamedis_id = $id;
+            $store3->rujukan = $request->rekamedis['rujukan'];
+            $store3->save();
+        }
+
+
+        $resep = new Reseps();
+        $resep->status = 'belum';
+        $resep->tgl_resep = date('Y-m-d');
+        $resep->rekamedis_id = $id;
+        // $resep->apoteker_id = $request->user()->id;
+        $resep->save();
+
+        foreach ($request->obat as $obat) {
+            // dd($obat['name']);
+            // dd(Obat::where('nama', $obat['name'])->first()['id']);
+            $pisah = explode('-', $obat['name']);
+            // dd(Obat::where('id', $pisah[0])->first()['id']);
+            $store1 = new DetailResep();
+            $store1->resep_id = $resep->id;
+            $store1->obat_id = Obat::where('id', $pisah[0])->first()['id'];
+            $store1->jumlah = $obat['total'];
+            $store1->keterangan = $obat['desc'];
+            $store1->harga = Obat::where('id', $pisah[0])->first()['harga'];
+            $store1->save();
+
+            $id = Obat::where('id', $pisah[0])->first()['id'];
+            
+            $stock = Obat::findOrFail($id);
+            $stock->stock -= $obat['total'];
+            $stock->save();
+        }
+
+        RegistrasiPasien::where('id', $request->rekamedis['regis_id'])->update([
+            'status' => 'obat'
+        ]);
+        
+        // dd($id);
+        
         return response()->json(['status' => 'success', 'message' => 'Data berhasil diubah!', 'data' => $this->filter($request)]);
     }
 
@@ -187,7 +259,9 @@ class RekamedisController extends Controller
 
     public function getTindakan(Request $request)
     {
-        $data = Rekammedis::where('id', $request->param)->first();
+        $data = Rekammedis::join('reseps','rekammedis.id','=','reseps.rekamedis_id')
+        ->where('reseps.id', $request->param)
+        ->first();
         $pisah = explode(',', $data->tindakan_id);
         // dd($pisah);
         // print $pisah;
@@ -198,7 +272,7 @@ class RekamedisController extends Controller
                 ->first();
             array_push($value, $tindakan);
         }
-
+        // dd($value);
         return response()->json(['data' => $value,  'message' => 'Successfully.', 'status' => 'success']);
     }
 
@@ -211,6 +285,15 @@ class RekamedisController extends Controller
         ->select('rekammedis.id','rekammedis.bb','rekammedis.tb','rekammedis.tgl','rekammedis.tensi','rekammedis.keluhan','anamnesis','registrasi_pasiens.jenis_pembayaran')
         ->paginate(10);
 
+        return response()->json(['data' => $data,  'message' => 'Successfully.', 'status' => 'success']);
+    }
+
+    public function getRekamedis(Request $request) {
+        $data = Rekammedis::join('registrasi_pasiens','rekammedis.registrasi_id','=','registrasi_pasiens.id')
+        ->where('registrasi_pasiens.id', $request->param)
+        ->select('rekammedis.id as id','rekammedis.bb','rekammedis.tb','rekammedis.tensi')
+        ->first();
+        // dd($data);
         return response()->json(['data' => $data,  'message' => 'Successfully.', 'status' => 'success']);
     }
 }

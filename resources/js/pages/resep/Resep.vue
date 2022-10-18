@@ -298,7 +298,7 @@ export default {
 
     setInterval(() => {
       this.setStatusResep(), this.setStatusResepToday();
-    }, 5000);
+    }, 30000);
   },
 
   watch: {

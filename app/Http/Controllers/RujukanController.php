@@ -161,7 +161,8 @@ class RujukanController extends Controller
         ->first();
         // dd($data);
         $pdf = PDF::loadview('pdf.suratrujukan',['data' => $data]);
-        return $pdf->download('surat-rujukan.pdf');
+        $pdf->setPaper('a4','portrait');
+        return $pdf->stream('surat-rujukan'.time().'.pdf');
 
     }
 }

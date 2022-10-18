@@ -163,7 +163,8 @@
                                     </v-col>
 
                                     <v-col cols="12" sm="12">
-                                        <v-btn class="mr-4" @click="selectPrint"> Print </v-btn>
+                                        <!-- <v-btn class="mr-4" @click="selectPrint"> Print </v-btn> -->
+                                        <a class="mr-4" :href="this.radios == 'kosong' ? `/api/v1/laporan-obat/?laporan='kosong'` : `/api/v1/laporan-obat/`" download> Print </a>
                                         <v-btn @click="dialog.dialogPrint.state = false"> Close </v-btn>
                                     </v-col>
                                 </v-row>
@@ -510,10 +511,10 @@ export default {
             axios
                 .get(url)
                 .then((response) => {
-                    // console.log(response);
+                    // console.log(response.status);
                     if (response.status == 200) {
                         this.data = response.data.data;
-                        console.log(this.data.length);
+                        // console.log(this.data.length);
                         this.total_obat = data.length;
                         // console.log(this.total_obat);
                         this.filter.page = response.data.data.current_page;
@@ -525,16 +526,7 @@ export default {
                     this.errorState(e);
                 });
         },
-        clearModules() {
-            this.$delete(this.module, "is_home");
-            this.module.is_home_old = 0;
-            this.module.create = [];
-            this.module.read = [];
-            this.module.update = [];
-            this.module.delete = [];
-            this.module.print = [];
-            this.module.is_all = [];
-        },
+        
         errorState(e) {
             // console.log(e);
             this.web.isTableLoad = false;

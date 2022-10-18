@@ -1353,5 +1353,57 @@ class MenuWithRolesSeeder extends Seeder
             'created_at' => '2021-09-24 08:35:10',
             'updated_at' => '2021-09-27 10:40:22'
         ]);
+
+        MenuWithRole::create([
+            'role_id' => 1,
+            'menu_id' => 31,
+            'is_home' => 0,
+            'create' => 1,
+            'read' => 1,
+            'update' => 1,
+            'delete' => 1,
+            'print' => 1,
+            'created_at' => '2021-09-24 08:35:10',
+            'updated_at' => '2021-09-27 09:36:19'
+        ]);
+
+        MenuWithRole::create([
+            'role_id' => 2,
+            'menu_id' => 31,
+            'is_home' => 0,
+            'create' => 0,
+            'read' => 0,
+            'update' => 0,
+            'delete' => 0,
+            'print' => 0,
+            'created_at' => '2021-09-24 08:35:10',
+            'updated_at' => '2021-09-28 06:20:05'
+        ]);
+
+        MenuWithRole::create([
+            'role_id' => 3,
+            'menu_id' => 31,
+            'is_home' => 0,
+            'create' => 0,
+            'read' => 0,
+            'update' => 0,
+            'delete' => 0,
+            'print' => 0,
+            'created_at' => '2021-09-24 08:35:10',
+            'updated_at' => '2021-09-24 08:35:10'
+        ]);
+
+        MenuWithRole::create([
+            'role_id' => 4,
+            'menu_id' => 31,
+            'is_home' => 0,
+            'create' => 0,
+            'read' => 0,
+            'update' => 0,
+            'delete' => 0,
+            'print' => 0,
+            'created_at' => '2021-09-24 08:35:10',
+            'updated_at' => '2021-09-27 10:40:22'
+        ]);
     }
 }

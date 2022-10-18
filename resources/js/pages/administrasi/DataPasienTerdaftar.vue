@@ -78,9 +78,17 @@
                         <v-btn small @click="selectMethod(item, 'add')">
                           <v-icon small>far fa-plus</v-icon>
                         </v-btn>
-                        <v-btn small @click="printPdf(item)">
-                          <v-icon small>far fa-print</v-icon>
+                        <v-btn small @click="selectMethod(item, 'sehat')">
+                          <v-icon small>far fa-tablets</v-icon>
                         </v-btn>
+                        <v-btn small @click="selectMethod(item, 'sakit')">
+                          <v-icon small>far fa-viruses</v-icon>
+                        </v-btn>
+                        <a :href="`/api/v1/print-kartuberobat/${item.pasien_id}`">
+                          <v-btn small>
+                            <v-icon small>far fa-print</v-icon>
+                          </v-btn>
+                        </a>
                       </td>
                     </tr>
                   </tbody>
@@ -187,6 +195,81 @@
             </v-form>
           </v-card>
         </v-dialog>
+        <v-dialog v-model="dialogs.dialogSehat.state" persistent max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5"> Surat Sehat Pasien </v-card-title>
+
+            <v-form ref="form" v-model="valid" class="mx-3 my-3 mb-2">
+              <v-container>
+                <v-row>
+                  <v-col class="pa-0" cols="12" sm="12">
+                    <v-text-field label="Keperluan" placeholder="keperluan" v-model="sehat.keperluan" outlined dense
+                      small></v-text-field>
+                  </v-col>
+                  <v-col class="mb-2" cols="12" sm="12">
+                    <a :href="`/api/v1/surat-keterangan/${sehat.pasien_id}?sehat=1&keperluan=${sehat.keperluan}`">
+                      <v-btn class="mr-4">
+                        Print
+                      </v-btn>
+                    </a>
+                    <v-btn @click="dialogs.dialogSehat.state = false"> close </v-btn>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="dialogs.dialogSakit.state" persistent max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5"> Surat Sakit Pasien </v-card-title>
+
+            <v-form ref="form" v-model="valid" class="mx-3 my-3 mb-2">
+              <v-container>
+                <v-row>
+                  <v-col class="pa-0" cols="12" sm="12">
+                    <v-text-field label="Jumlah Istirahat" placeholder="1 Hari" v-model="sakit.jumlah" outlined dense
+                      small></v-text-field>
+                  </v-col>
+                  <v-col class="pa-0" cols="12" sm="5">
+                    <v-menu outlined v-model="menu4" :close-on-content-click="false" :nudge-right="40"
+                      transition="scale-transition" offset-y min-width="auto">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field outlined dense v-model="sakit.date" label="Pilih Tanggal"
+                          prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
+                        </v-text-field>
+                      </template>
+                      <v-date-picker v-model="sakit.date" @input="menu4 = false">
+                      </v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col class="pa-0" cols="12" sm="2">
+                    <p class="text-center mt-3">s/d</p>
+                  </v-col>
+                  <v-col class="pa-0" cols="12" sm="5">
+                    <v-menu v-model="menu3" :close-on-content-click="false" :nudge-right="40"
+                      transition="scale-transition" offset-y min-width="auto">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field outlined dense v-model="sakit.date1" label="Pilih Tanggal"
+                          prepend-icon="mdi-calendar" readonly v-bind="attrs" v-on="on">
+                        </v-text-field>
+                      </template>
+                      <v-date-picker v-model="sakit.date1" @input="menu3 = false">
+                      </v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col class="mb-2" cols="12" sm="12">
+                    <a :href="`/api/v1/surat-keterangan/${sakit.pasien_id}?sakit=1&jumlahIstirahat=${sakit.jumlah}&from=${sakit.date}&to=${sakit.date1}`">
+                      <v-btn class="mr-4">
+                        Print
+                      </v-btn>
+                    </a>
+                    <v-btn @click="dialogs.dialogSakit.state = false"> close </v-btn>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </v-card>
+        </v-dialog>
         <confirmation-dialog :confirmationDialog="dialogConfirmation" :method="
           condition == 'store'
             ? store
@@ -211,6 +294,13 @@ export default {
   data() {
     return {
       valid: false,
+      sakit: {
+        date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+        date1: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+      },
+      sehat: {},
+      menu3: false,
+      menu4: false,
       pasien: {
         tgl_lahir: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
           .toISOString()
@@ -230,12 +320,20 @@ export default {
           state: false,
           title: null,
         },
+        dialogSehat: {
+          state: false,
+          title: null,
+        },
+        dialogSakit: {
+          state: false,
+          title: null,
+        },
       },
       dialog: false,
 
       _url: "",
       urlStatus: "",
-      urlPrint:"",
+      urlPrint: "",
       web: {
         isTableLoad: false,
       },
@@ -271,7 +369,7 @@ export default {
   },
 
   methods: {
-    printPdf(data, item){
+    printPdf(data, item) {
       this.pasien = data;
       let req = Object.assign(this.pasien, this.filter);
       console.log(this.pasien.pasien_id);
@@ -362,6 +460,16 @@ export default {
         this.condition = "update";
         this.dialogs.dialogDataPasien.title = "Edit Pasien";
         this.showDialog(false);
+      } else if (item == 'sehat') {
+        this.sehat = data;
+        this.condition = "sehat";
+        this.dialogs.dialogDataPasien.title = "Surat Sehat Pasien";
+        this.showDialog(false);
+      } else if (item == 'sakit') {
+        this.sakit = data;
+        this.condition = "sakit";
+        this.dialogs.dialogDataPasien.title = "Surat Sehat Pasien";
+        this.showDialog(false);
       }
     },
     store() {
@@ -390,13 +498,13 @@ export default {
         .put(`${this._url}${this.pasien.pasien_id}`, req)
         .then((response) => {
           console.log(response);
-            this.dialogs.dialogDataPasien.state = false;
-            this.retriveData = response.data.data;
-            this.makeDefaultNotification(
-              response.data.status,
-              response.data.message
-            );
-          
+          this.dialogs.dialogDataPasien.state = false;
+          this.retriveData = response.data.data;
+          this.makeDefaultNotification(
+            response.data.status,
+            response.data.message
+          );
+
         })
         .catch((e) => {
           this.errorState(e);
@@ -456,6 +564,10 @@ export default {
       } else {
         if (this.condition == "store") {
           this.dialogs.dialogAntrian.state = !this.dialogs.dialogAntrian.state;
+        } else if (this.condition == "sehat") {
+          this.dialogs.dialogSehat.state = !this.dialogs.dialogSehat.state;
+        } else if (this.condition == "sakit") {
+          this.dialogs.dialogSakit.state = !this.dialogs.dialogSakit.state;
         } else {
           this.dialogs.dialogDataPasien.state = !this.dialogs.dialogDataPasien.state;
         }

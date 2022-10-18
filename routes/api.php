@@ -47,6 +47,13 @@ Route::prefix('v1')->group(function () {
         // Route::post('register', 'AuthController@register');
         // Login User
         Route::post('login', [AuthController::class, 'login']);
+        Route::get('print-nota/{id}', [PembayaranController::class,'printNota']);
+        Route::get('laporan-keungan', [PembayaranController::class,'printLaporanKeungan']);
+
+        Route::get('laporan-obat', [ObatController::class,'printLapObat']);
+        Route::get('print-kartuberobat/{id}', [PasienController::class,'printPdf']);
+        Route::get('surat-keterangan/{id}', [PasienController::class,'SuratKeterangan']);
+        Route::get('surat-rujukan/{id}', [RujukanController::class,'printSuratRujukan']);
 
         // Below mention routes are available only for the authenticated users.
         Route::middleware('auth:sanctum')->group(function () {
@@ -75,11 +82,12 @@ Route::prefix('v1')->group(function () {
             // untuk update status pasien antri/periksa/selesai
             // parameter status-string
             Route::post('remove-status-pasien/{id}', [PasienController::class,'statusRemove']);
-            Route::get('print-kartuberobat/{id}', [PasienController::class,'printPdf']);
+            
             //remove status pasien
-            Route::get('print-nota/{id}', [PembayaranController::class,'printNota']);
+            
             //
             Route::get('status-pasien-antri', [PasienController::class,'statusGetAntri']);
+            Route::get('status-pasien-checkup', [PasienController::class,'statusGetCheckup']);
             Route::get('status-pasien', [PasienController::class,'statusGet']);
             Route::get('status-pasien-selesai', [PasienController::class,'statusGetSelesai']);
             Route::get('list-pasien',[ResepController::class,'listPasien']);
@@ -89,6 +97,11 @@ Route::prefix('v1')->group(function () {
             Route::get('list-tindakan',[ TindakanController::class,'global_function']);
             // list tindakan
             Route::apiResource('rekamedis', RekamedisController::class);
+            //rekamedis dari dokter
+            Route::post('rekamedis-perawat', [RekamedisController::class,'tambahDataRekamedis']);
+            //tambah data rekamedis dari perawat
+            Route::get('get-rekamedis', [RekamedisController::class,'getRekamedis']);
+            //
             Route::get('daftar-tindakan-pembayaran', [ RekamedisController::class,'getTindakan']);
             // menu rekam medis
             Route::get('detail-rekamedis-pasien/{id}', [ RekamedisController::class,'listRekamedisPasien']);
@@ -110,7 +123,7 @@ Route::prefix('v1')->group(function () {
             // menu obat
             Route::get('list-obat', [ObatController::class,'global_function']);
             // list obat
-            Route::get('laporan-obat', [ObatController::class,'printLapObat']);
+            
             //print laporan obat
             Route::apiResource('pembayaran', PembayaranController::class);
             // menu pembayaran
@@ -132,7 +145,7 @@ Route::prefix('v1')->group(function () {
 
             Route::apiResource('rujukan', RujukanController::class);
             // menu rujukan
-            Route::get('surat-rujukan/{id}', [RujukanController::class,'printSuratRujukan']);
+            
             //
         });
 });

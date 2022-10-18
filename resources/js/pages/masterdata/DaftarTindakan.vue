@@ -237,7 +237,7 @@ export default {
                         console.log(response);
                         this.dialog.state = false;
                         this.retriveData = response.data.data;
-                        // this.data = response.data.data;
+                        this.data = response.data.data;
                         this.makeDefaultNotification(
                             response.data.status,
                             response.data.message

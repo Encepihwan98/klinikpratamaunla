@@ -19,7 +19,7 @@
                           <p class="text-h6 text--primary">Data Pasien</p>
                         </v-col>
                         <v-col class="pa-0" cols="12" sm="12">
-                          <v-text-field label="ID" v-model="pasien.id" placeholder="PS001" outlined dense small
+                          <v-text-field label="ID" v-model="pasien.id" placeholder="PS0001" outlined dense small
                             disabled></v-text-field>
                         </v-col>
                         <v-col class="pa-0" cols="12" sm="12">

@@ -56,8 +56,8 @@
                                             <tr v-for="(item, index) in tindakan.data" :key="item.id">
                                                 <td>{{ index + data.current_page }}</td>
                                                 <td>{{item.description}}</td>
-                                                <td colspan="2">{{item.harga}}</td>
-                                                <td colspan="2">{{item.harga}}</td>
+                                                <td colspan="2">{{formatPrice(item.harga)}}</td>
+                                                <td colspan="2">{{formatPrice(item.harga)}}</td>
                                             </tr>
                                         </tbody>
                                         <thead>
@@ -77,14 +77,14 @@
                                                 <td>{{ index + data.current_page }}</td>
                                                 <td>{{ item.nama }}</td>
                                                 <td>{{ item.jumlah }}</td>
-                                                <td>{{ item.harga }}</td>
-                                                <td>{{ item.harga * item.jumlah }}</td>
+                                                <td>{{ formatPrice(item.harga) }}</td>
+                                                <td>{{ formatPrice(item.harga * item.jumlah) }}</td>
                                             </tr>
                                         </tbody>
                                         <tfoot>
                                             <tr>
                                                 <td colspan="3">Total Semua</td>
-                                                <td>Rp. {{ totalHarga }}</td>
+                                                <td>Rp. {{ formatPrice(totalHarga) }}</td>
                                             </tr>
                                         </tfoot>
                                     </template>
@@ -95,7 +95,7 @@
                         <v-card>
                             <div v-if="this.pembayaran.status != 'selesai'">
                                 <v-card-text>
-                                    <v-form>
+                                    <v-form ref="form" v-model="valid" lazy-validation :currentData="currentData">
                                         <v-col class="pa-0 mr-2" cols="12" sm="6">
                                             <v-text-field @input="kembalian" v-model="pembayaran.jumlah_bayar"
                                                 label="Jumlah Bayar" outlined dense small>
@@ -113,7 +113,7 @@
                                 </v-card-text>
                             </div>
                             <div v-else>
-                                <v-card-text >
+                                <v-card-text>
                                 </v-card-text>
                             </div>
                         </v-card>
@@ -140,7 +140,10 @@ export default {
                 isTableLoad: false,
                 filterOpen: false,
             },
+            valid: false,
             totalHarga: 0,
+            totalTindakan : 0,
+            totalObat:0,
             pembayaran: {
                 total: 0,
                 kembalian: 0,
@@ -194,6 +197,10 @@ export default {
         }
     },
     methods: {
+        formatPrice(value) {
+            let val = (value / 1).toFixed(2).replace('.', ',')
+            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+        },
         kembalian() {
             this.pembayaran.kembalian = this.pembayaran.jumlah_bayar - this.totalHarga;
         },
@@ -210,7 +217,7 @@ export default {
             axios
                 .post(`${this.urlStatus}`, req)
                 .then((response) => {
-                    if (response.status == 200) {
+                    // if (response.status == 200) {
                         // this.setDetailObat();
                         this.dialogs.dialogAntrian.state = false;
                         this.data = response.data.data;
@@ -219,7 +226,7 @@ export default {
                             response.data.status,
                             response.data.message
                         );
-                    }
+                    // }
                 })
                 .catch((e) => {
                     this.errorState(e);
@@ -230,12 +237,11 @@ export default {
                 if (res.status === 200) {
                     res.data.data.forEach((v) => {
                         this.bayar.resep.items.push(v.nama);
-                        this.totalHarga += v.jumlah * v.harga;
+                        this.totalObat += v.jumlah * v.harga;
                     });
                     // console.log(this.pembayaran.totalHarga);
                     this.bayar.resep.data = res.data.data;
                     this.pembayaran = res.data.value;
-                    this.pembayaran.total = this.totalHarga;
                     this.data.data = res.data.value;
                 } else {
                     this.makeDefaultNotification(
@@ -251,10 +257,11 @@ export default {
                     console.log(res.data.data);
                     res.data.data.forEach((v) => {
                         this.tindakan.items.push(v.harga);
-                        // console.log(v);
-
+                        this.totalTindakan += parseInt(v.harga);
                     });
                     this.tindakan.data = res.data.data;
+                    this.totalHarga = this.totalObat + this.totalTindakan;
+                    this.pembayaran.total = this.totalHarga;
                 } else {
                     this.makeDefaultNotification(
                         response.data.status,
