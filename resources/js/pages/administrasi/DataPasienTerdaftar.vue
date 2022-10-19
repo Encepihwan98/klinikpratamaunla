@@ -4,7 +4,7 @@
     <app-bar></app-bar>
     <v-main>
       <div class="app-content-container pa-6">
-        <v-row>
+        <!-- <v-row>
           <v-col cols="12" sm="4">
             <v-card>
               <v-container>
@@ -33,10 +33,13 @@
               </v-container>
             </v-card>
           </v-col>
-        </v-row>
+        </v-row> -->
         <v-row>
           <v-col cols="12" sm="12">
             <v-card>
+              <v-card-text>
+                <p class="text-h6"> Data Pasien Terdaftar</p>
+              </v-card-text>
               <v-row>
                 <v-col class="d-flex" cols="12" sm="2">
                   <v-select v-model="filter.limit" dense :items="selectItem" label="Tampilkan" @input="filterPage('')"
@@ -47,6 +50,14 @@
                 <v-col class="d-flex" cols="12" sm="8">
                   <v-text-field v-model="filter.searchQuery" dense append-icon="far fa-search" outlined clearable
                     label="Search" type="text" @click:append="filterPage('')" @input="filterPage('')"></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="2" class="">
+                  <v-btn dense smal @click="printLaporan" color="red">
+                    Export To PDF
+                    <v-icon right dark>
+                      far fa-file-pdf
+                    </v-icon>
+                  </v-btn>
                 </v-col>
               </v-row>
               <v-simple-table dense>
@@ -258,12 +269,60 @@
                     </v-menu>
                   </v-col>
                   <v-col class="mb-2" cols="12" sm="12">
-                    <a :href="`/api/v1/surat-keterangan/${sakit.pasien_id}?sakit=1&jumlahIstirahat=${sakit.jumlah}&from=${sakit.date}&to=${sakit.date1}`">
+                    <a
+                      :href="`/api/v1/surat-keterangan/${sakit.pasien_id}?sakit=1&jumlahIstirahat=${sakit.jumlah}&from=${sakit.date}&to=${sakit.date1}`">
                       <v-btn class="mr-4">
                         Print
                       </v-btn>
                     </a>
                     <v-btn @click="dialogs.dialogSakit.state = false"> close </v-btn>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="dialogs.dialogLaporan.state" persistent max-width="400px">
+          <v-card>
+            <v-card-title class="text-h5"> Laporan Data Pasien </v-card-title>
+            <v-form class="mx-3 my-3" ref="form" v-model="valid" lazy-validation :currentData="currentData">
+              <v-container>
+                <v-row>
+                  <v-col class="pa-0" cols="12" sm="5">
+                    <v-menu v-model="menu5" :close-on-content-click="false" :nudge-right="40"
+                      transition="scale-transition" offset-y min-width="auto">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field v-model="laporan.date" label="Pilih Tanggal" prepend-icon="mdi-calendar" readonly
+                          v-bind="attrs" v-on="on">
+                        </v-text-field>
+                      </template>
+                      <v-date-picker v-model="laporan.date" @input="menu5 = false">
+                      </v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col class="pa-0" cols="12" sm="2">
+                    <p class="text-center mt-3">s/d</p>
+                  </v-col>
+                  <v-col class="pa-0" cols="12" sm="5">
+                    <v-menu v-model="menu6" :close-on-content-click="false" :nudge-right="40"
+                      transition="scale-transition" offset-y min-width="auto">
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-text-field v-model="laporan.date1" label="Pilih Tanggal" prepend-icon="mdi-calendar" readonly
+                          v-bind="attrs" v-on="on">
+                        </v-text-field>
+                      </template>
+                      <v-date-picker v-model="laporan.date1" @input="menu6 = false">
+                      </v-date-picker>
+                    </v-menu>
+                  </v-col>
+                  <v-col cols="12" sm="12">
+                    <!-- <v-btn class="mr-4" @click="selectPrint"> Print </v-btn> -->
+                    <v-btn>
+                      <a :href="`/api/v1/laporan-pasien/?awal=${laporan.date}&akhir=${laporan.date1}`" class="mr-4"
+                        download> Print </a>
+                    </v-btn>
+                    <v-btn @click="dialogs.dialogLaporan.state = false"> Close </v-btn>
                   </v-col>
                 </v-row>
               </v-container>
@@ -293,6 +352,10 @@ export default {
   },
   data() {
     return {
+      laporan: {
+        date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+        date1: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+      },
       valid: false,
       sakit: {
         date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
@@ -301,6 +364,8 @@ export default {
       sehat: {},
       menu3: false,
       menu4: false,
+      menu5: false,
+      menu6: false,
       pasien: {
         tgl_lahir: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
           .toISOString()
@@ -328,9 +393,12 @@ export default {
           state: false,
           title: null,
         },
+        dialogLaporan: {
+          state: false,
+          title: null,
+        }
       },
       dialog: false,
-
       _url: "",
       urlStatus: "",
       urlPrint: "",
@@ -369,6 +437,10 @@ export default {
   },
 
   methods: {
+    printLaporan() {
+      this.condition = "laporan";
+      this.showDialog(false);
+    },
     printPdf(data, item) {
       this.pasien = data;
       let req = Object.assign(this.pasien, this.filter);
@@ -470,7 +542,7 @@ export default {
         this.condition = "sakit";
         this.dialogs.dialogDataPasien.title = "Surat Sehat Pasien";
         this.showDialog(false);
-      }
+      } 
     },
     store() {
       let req = Object.assign(this.pasien, this.filter);
@@ -568,6 +640,8 @@ export default {
           this.dialogs.dialogSehat.state = !this.dialogs.dialogSehat.state;
         } else if (this.condition == "sakit") {
           this.dialogs.dialogSakit.state = !this.dialogs.dialogSakit.state;
+        } else if (this.condition == "laporan") {
+          this.dialogs.dialogLaporan.state = !this.dialogs.dialogLaporan.state;
         } else {
           this.dialogs.dialogDataPasien.state = !this.dialogs.dialogDataPasien.state;
         }

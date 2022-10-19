@@ -71,9 +71,11 @@
                                                     <v-btn small @click="selectMethod(item, 'show')">
                                                         <v-icon small>far fa-eye</v-icon>
                                                     </v-btn>
-                                                    <!-- <v-btn small @click="selectMethod(item, 'edit')">
-                                                        <v-icon small>far fa-edit</v-icon>
-                                                    </v-btn> -->
+                                                    <a :href="`/api/v1/print-rekamedis-pasien/${item.id_}?print=1`">
+                                                        <v-btn small>
+                                                            <v-icon small>far fa-print</v-icon>
+                                                        </v-btn>
+                                                    </a>
                                                     <v-btn small @click="selectMethod(item, 'delete')"
                                                         v-if="web.delete">
                                                         <v-icon small>far fa-trash</v-icon>

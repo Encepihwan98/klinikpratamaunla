@@ -16,7 +16,7 @@
                   <v-list-item-icon>
                     <v-icon class="p-4" color="white" x-large>far fa-stethoscope</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title class="text-right text-h5 font-weight-bold">900000</v-list-item-title>
+                  <v-list-item-title class="text-right text-h5 font-weight-bold">{{dashboard.totalToday}}</v-list-item-title>
                 </v-list-item>
                 <v-card-text class="text-h6">Total Pasien Hari ini</v-card-text>
               </v-card>
@@ -27,7 +27,7 @@
                   <v-list-item-icon>
                     <v-icon class="p-4" color="white" x-large>far fa-stethoscope</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title class="text-right text-h5 font-weight-bold">900000</v-list-item-title>
+                  <v-list-item-title class="text-right text-h5 font-weight-bold">{{dashboard.totalMonth}}</v-list-item-title>
                 </v-list-item>
                 <v-card-text class="text-h6">Total Pasien Bulan Ini</v-card-text>
               </v-card>
@@ -38,7 +38,7 @@
                   <v-list-item-icon>
                     <v-icon class="p-4" color="white" x-large>far fa-stethoscope</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title class="text-right text-h5 font-weight-bold">900000</v-list-item-title>
+                  <v-list-item-title class="text-right text-h5 font-weight-bold">{{dashboard.totalAll}}</v-list-item-title>
                 </v-list-item>
                 <v-card-text class="text-h6">Total Pasien</v-card-text>
               </v-card>
@@ -51,7 +51,7 @@
                   <v-list-item-icon>
                     <v-icon class="p-4" color="white" x-large>far fa-stethoscope</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title class="text-right text-h5 font-weight-bold">900000</v-list-item-title>
+                  <v-list-item-title class="text-right text-h5 font-weight-bold">{{dashboard.totalUmum}}</v-list-item-title>
                 </v-list-item>
                 <v-card-text class="text-h6">Total Pasien Umum</v-card-text>
               </v-card>
@@ -62,7 +62,7 @@
                   <v-list-item-icon>
                     <v-icon class="p-4" color="white" x-large>far fa-stethoscope</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title class="text-right text-h5 font-weight-bold">900000</v-list-item-title>
+                  <v-list-item-title class="text-right text-h5 font-weight-bold">{{dashboard.totalBPJS}}</v-list-item-title>
                 </v-list-item>
                 <v-card-text class="text-h6">Total Pasien BPJS</v-card-text>
               </v-card>
@@ -73,7 +73,7 @@
                   <v-list-item-icon>
                     <v-icon class="p-4" color="white" x-large>far fa-pills</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title class="text-right text-h5 font-weight-bold">900000</v-list-item-title>
+                  <v-list-item-title class="text-right text-h5 font-weight-bold">{{dashboard.totalObat}}</v-list-item-title>
                 </v-list-item>
                 <v-card-text class="text-h6">Total Obat</v-card-text>
               </v-card>
@@ -86,9 +86,9 @@
                   <v-list-item-icon>
                     <v-icon class="p-4" color="white" x-large>far fa-money-bill</v-icon>
                   </v-list-item-icon>
-                  <v-list-item-title class="text-right text-h5 font-weight-bold">900000</v-list-item-title>
+                  <v-list-item-title class="text-right text-h6 font-weight-bold">Rp. {{formatPrice(dashboard.total)}}</v-list-item-title>
                 </v-list-item>
-                <v-card-text class="text-h6">Total Keungan</v-card-text>
+                <v-card-text color="white" class="text-h6">Total Keungan</v-card-text>
               </v-card>
             </v-col>
           </v-row>
@@ -113,6 +113,9 @@ export default {
         update: false,
         delete: false,
       },
+      dashboard: {
+
+      },
       isDrawerOpen: true,
       data: {
         data: [],
@@ -121,7 +124,24 @@ export default {
       currentUser: {},
     };
   },
-  methods: {},
+  methods: {
+    formatPrice(value) {
+      let val = (value / 1).toFixed(2).replace('.', ',')
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+    },
+    setSelectDashboard() {
+      axios.get(`/api/v1/dashboard/`).then((res) => {
+        if (res.status === 200) {
+          this.dashboard = res.data.data;
+        } else {
+          this.makeDefaultNotification(
+            response.data.status,
+            response.data.message
+          );
+        }
+      });
+    },
+  },
   created() {
     if (this.modules.length > 0) {
       let access = this.redirectIfNotHaveAccess(this.modules, this.$route.path);
@@ -131,6 +151,7 @@ export default {
         this.web = access;
       }
     }
+    this.setSelectDashboard();
     this.currentUser = this.requestCurrentUser();
   },
   watch: {

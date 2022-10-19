@@ -10,6 +10,7 @@ use App\Http\Controllers\PasienController;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\DokterController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KategoriObatController;
 use App\Http\Controllers\ModuleWithRoleController;
 use App\Http\Controllers\ObatController;
@@ -46,11 +47,14 @@ Route::prefix('v1')->group(function () {
         // Create New User
         // Route::post('register', 'AuthController@register');
         // Login User
+        
+        Route::get('print-rekamedis-pasien/{id}', [ RekamedisController::class,'listRekamedisPasien']);
         Route::post('login', [AuthController::class, 'login']);
         Route::get('print-nota/{id}', [PembayaranController::class,'printNota']);
         Route::get('laporan-keungan', [PembayaranController::class,'printLaporanKeungan']);
 
         Route::get('laporan-obat', [ObatController::class,'printLapObat']);
+        Route::get('laporan-pasien', [PasienController::class,'laporanPasien']);
         Route::get('print-kartuberobat/{id}', [PasienController::class,'printPdf']);
         Route::get('surat-keterangan/{id}', [PasienController::class,'SuratKeterangan']);
         Route::get('surat-rujukan/{id}', [RujukanController::class,'printSuratRujukan']);
@@ -68,7 +72,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('r-modules', ModuleWithRoleController::class);
 
             
-
+            Route::get('dashboard', [HomeController::class, 'dashboard']);
             
             
             Route::post('my-modules', [ModuleController::class, 'myModule']);

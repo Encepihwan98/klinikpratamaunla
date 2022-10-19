@@ -14,6 +14,8 @@ use App\Models\DetailResep;
 use Namshi\JOSE\Signer\SecLib\RSA;
 use Svg\Tag\Rect;
 
+use PDF;
+
 class RekamedisController extends Controller
 {
     /**
@@ -278,14 +280,21 @@ class RekamedisController extends Controller
 
     public function listRekamedisPasien(Request $request, $id)
     {
-        // dd($id);
         $data = Rekammedis::join('registrasi_pasiens','rekammedis.registrasi_id','=','registrasi_pasiens.id')
         ->join('pasiens','registrasi_pasiens.pasien_id','=','pasiens.id')
         ->where('pasiens.id', $id)
-        ->select('rekammedis.id','rekammedis.bb','rekammedis.tb','rekammedis.tgl','rekammedis.tensi','rekammedis.keluhan','anamnesis','registrasi_pasiens.jenis_pembayaran')
+        ->select('rekammedis.id','rekammedis.bb','rekammedis.tb','rekammedis.tgl','rekammedis.tensi','rekammedis.keluhan','anamnesis','registrasi_pasiens.jenis_pembayaran','pasiens.nama')
         ->paginate(10);
+        $rekamedis = $data->first();
+        // dd($nama);
+        if($request->print == 1){
+            $pdf = PDF::loadView('pdf.rekamedispasien',['data' => $data, 'rekamedis' => $rekamedis]);
+            $pdf->setPaper('a4','portrait');
 
-        return response()->json(['data' => $data,  'message' => 'Successfully.', 'status' => 'success']);
+            return $pdf->stream('rekamedis-pasien'.time().'.pdf');
+        }else{
+            return response()->json(['data' => $data,  'message' => 'Successfully.', 'status' => 'success']);
+        }
     }
 
     public function getRekamedis(Request $request) {

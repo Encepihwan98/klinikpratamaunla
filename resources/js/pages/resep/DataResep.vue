@@ -45,7 +45,6 @@
                                         <v-select v-model="filter.limit" dense :items="['1', '2', '3', '4']"
                                             label="Tampilkan" outlined></v-select>
                                     </v-col>
-
                                     <v-col class="d-flex" cols="12" sm="8">
                                         <v-text-field v-model="filter.searchQuery" dense append-icon="far fa-search"
                                             outlined clearable label="Search" type="text" @click:append="filterPage('')"

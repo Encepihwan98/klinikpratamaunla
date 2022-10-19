@@ -31,7 +31,7 @@ class PasienController extends Controller
             $id = (int) $id;
             $id += 1;
             $id  = "PS" . str_pad($id, 4, "0", STR_PAD_LEFT);
-
+            // dd($data);
             return response()->json(['data' => $data, 'id' => $id, 'message' => 'Successfully.', 'status' => 'success']);
         } else {
             $data = Pasien::join('registrasi_pasiens', 'pasiens.id', '=', 'registrasi_pasiens.pasien_id')
@@ -296,6 +296,19 @@ class PasienController extends Controller
             $pdf->setPaper('a4','portrait');
             return $pdf->stream('surat-sehat'.time().'.pdf');
         }
+    }
 
+    public function laporanPasien(Request $request) {
+        $from = $request->awal;
+        $to = $request->akhir;
+        // dd($from);
+        $data = RegistrasiPasien::join('pasiens','registrasi_pasiens.pasien_id','=','pasiens.id')
+        ->whereBetween('tgl',[$from, $to])
+        ->select('registrasi_pasiens.id','registrasi_pasiens.pasien_id','registrasi_pasiens.jenis_pembayaran','registrasi_pasiens.tgl','pasiens.nama','pasiens.jenis_kelamin','pasiens.alamat')
+        ->get();
+        // dd($data);
+        $pdf = PDF::loadView('pdf.laporanpasien',['data' => $data, 'from' => $from, 'to' => $to]);
+        $pdf->setPaper('a4','portrait');
+        return $pdf->stream('laporan-pasien'.time().'.pdf');
     }
 }
