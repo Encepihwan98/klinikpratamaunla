@@ -17,12 +17,11 @@ class ObatController extends Controller
     {
         if(isset($request->limit)){
             $data = $this->filter($request);
-            // dd($data);
+            $totalObat = Obat::count();
         }else{
             $data = Obat::all();
         }
-
-        return response()->json(['data' => $data,'message' => 'Successfully.', 'status'=>'success']);
+        return response()->json(['data' => $data,'total' => $totalObat,'message' => 'Successfully.', 'status'=>'success']);
     }
 
     /**
@@ -150,11 +149,15 @@ class ObatController extends Controller
 
     public function global_function(Request $request)
     {
+        // dd($request->obat);
         if (isset($request->limit)) {
             $data = $this->filter($request);
-        } else {
+        }else if ($request->obat == 1){
             $data = Obat::all();
+        } else {
+            $data = Obat::where('stock','>', 12)->get();
         }
+        
         return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
     }
 

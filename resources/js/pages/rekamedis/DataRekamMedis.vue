@@ -13,7 +13,7 @@
                                     <p class="font-weight-bold">
                                         <v-icon small>far fa-edit</v-icon>Total Rekam Medis
                                     </p>
-                                    <p class="text-h3">9</p>
+                                    <p class="text-h3">{{totalRekamedis}}</p>
                                 </v-container>
                             </v-card>
                         </v-col>
@@ -23,7 +23,7 @@
                                     <p class="font-weight-bold">
                                         <v-icon small>far fa-edit</v-icon>Total Rekam Medis Hari ini
                                     </p>
-                                    <p class="text-h3">1</p>
+                                    <p class="text-h3">{{totalToday}}</p>
                                 </v-container>
                             </v-card>
                         </v-col>
@@ -157,6 +157,8 @@ export default {
                 isTableLoad: false,
                 filterOpen: false,
             },
+            totalRekamedis: 0,
+            totalToday: 0,
             tindakan: {
                 items: [],
                 data: {}
@@ -403,13 +405,16 @@ export default {
                 "&sortBy=" +
                 this.filter.sortBy +
                 "&orderBy=" +
-                this.filter.orderBy;
+                this.filter.orderBy + 
+                "&rekamedis=1";
             axios
                 .get(url)
                 .then((response) => {
                     // console.log(response);
                     // if (response.status == 200) {
                     this.data = response.data.data;
+                    this.totalRekamedis = response.data.totalRekamedis;
+                    this.totalToday = response.data.totalToday;
                     this.filter.page = response.data.data.current_page;
                     this.web.isTableLoad = false;
                     this.getCurrentUser();

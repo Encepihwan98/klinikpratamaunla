@@ -13,7 +13,7 @@
                                     <p class="font-weight-bold">
                                         <v-icon small>far fa-edit</v-icon>Total Resep Obat
                                     </p>
-                                    <p class="text-h3">2</p>
+                                    <p class="text-h3">{{totalResep}}</p>
                                 </v-container>
                             </v-card>
                         </v-col>
@@ -23,7 +23,7 @@
                                     <p class="font-weight-bold">
                                         <v-icon small>far fa-edit</v-icon>Total Resep Obat Hari ini
                                     </p>
-                                    <p class="text-h3">2</p>
+                                    <p class="text-h3">{{totalToday}}</p>
                                 </v-container>
                             </v-card>
                         </v-col>
@@ -129,6 +129,8 @@ export default {
     },
     data() {
         return {
+            totalToday : 0,
+            totalResep :0,
             _url: "",
             _urlResep: "",
             resep: {},
@@ -364,13 +366,16 @@ export default {
                 "&sortBy=" +
                 this.filter.sortBy +
                 "&orderBy=" +
-                this.filter.orderBy;
+                this.filter.orderBy +
+                "&resep=1";
             axios
                 .get(url)
                 .then((response) => {
                     // console.log(response);
                     if (response.status == 200) {
                         this.data = response.data.data;
+                        this.totalResep = response.data.totalResep;
+                        this.totalToday = response.data.totalResepToday;
                         this.filter.page = response.data.data.current_page;
                         this.web.isTableLoad = false;
                         this.getCurrentUser();

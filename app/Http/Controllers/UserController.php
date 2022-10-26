@@ -59,7 +59,7 @@ class UserController extends Controller
             'username' => 'required|unique:users',
             'address' => 'required',
             'phone' => 'required|unique:users',
-            'email' => 'required|unique:users|email:rfc,dns',
+            // 'email' => 'required|unique:users|email:rfc,dns',
             'password' => 'required|min:6|confirmed',
             'status' => 'required',
             'roles' => 'required'

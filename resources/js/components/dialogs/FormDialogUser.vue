@@ -82,7 +82,7 @@
                     :rules="
                       condition == 'update'
                         ? []
-                        : [rules.required, rules.min(6)]
+                        : [rules.required, rules.password]
                     "
                     :append-icon="
                       input.password_state ? 'mdi-eye' : 'mdi-eye-off'
@@ -258,6 +258,7 @@ export default {
         password_confirmation_state: false,
       },
       rules: {
+        password: (v) =>  /^(?=.*[0-9])(?=.*[A-Z])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/.test(v) || "Password min 8, huruf besar, kecil, angka, simbol",
         email: (v) => /.+@.+\..+/.test(v) || "Format email tidak valid.",
         required: (v) => !!v || "Tolong isi form.",
         match: (v) =>

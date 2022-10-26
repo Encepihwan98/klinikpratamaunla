@@ -242,7 +242,7 @@ export default {
             });
         },
         setSelectedObat() {
-            axios.get(`/api/v1/list-obat/`).then((res) => {
+            axios.get(`/api/v1/list-obat/?obat=1`).then((res) => {
                 if (res.status === 200) {
                     res.data.data.forEach((v) => {
                         this.obat.items.push(v.nama);

@@ -429,6 +429,7 @@ export default {
                             response.data.message
                         );
                         this.clear();
+                        this.$router.push({path: '/pemeriksaan/pemeriksaan-perawat'});
                         this.filterPage();
                     }
                 })

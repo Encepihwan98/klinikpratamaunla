@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dokter;
 use Illuminate\Http\Request;
 use App\Models\Pasien;
 use App\Models\RegistrasiPasien;
@@ -239,11 +240,15 @@ class PasienController extends Controller
         return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
     }
 
-    public function statusGetCheckup()
+    public function statusGetCheckup(Request $request)
     {
+        $dokter = Dokter::where('user_id', $request->user()->id)->first();
+        // dd($dokter);
         $data = Pasien::join('registrasi_pasiens', 'pasiens.id', '=', 'registrasi_pasiens.pasien_id')
             ->where('registrasi_pasiens.status', '=', 'checkup')
+            ->where('registrasi_pasiens.dokter_id', $dokter->id)
             ->select('registrasi_pasiens.id', 'registrasi_pasiens.status', 'pasiens.nama', 'registrasi_pasiens.tgl', 'pasiens.id as pasien_id')->get();
+            // dd($data);
         return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
     }
 

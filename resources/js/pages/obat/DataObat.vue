@@ -10,9 +10,9 @@
                         <v-col cols="12" sm="12">
                             <v-card>
                                 <v-container>
-                                    <p class="text-h3">3</p>
+                                    <p class="text-h3">{{totalObat}}</p>
                                     <p class="font-weight-bold">
-                                        <v-icon small>far fa-edit</v-icon>Total Obat
+                                        <v-icon small class="mr-2">far fa-pills</v-icon>   Total Obat
                                     </p>
                                 </v-container>
                             </v-card>
@@ -74,9 +74,9 @@
                                                     <td>{{ item.satuan }}</td>
                                                     <td>{{ item.stock }}</td>
                                                     <td class="center-center">
-                                                        <v-btn small @click="selectMethod(null, 'show')">
+                                                        <!-- <v-btn small @click="selectMethod(null, 'show')">
                                                             <v-icon small>far fa-eye</v-icon>
-                                                        </v-btn>
+                                                        </v-btn> -->
                                                         <v-btn small @click="selectMethod(item, 'edit')"
                                                             v-if="web.update">
                                                             <v-icon small>far fa-edit</v-icon>
@@ -192,9 +192,10 @@ export default {
     },
     data() {
         return {
+            totalObat: 0,
             _url: "",
             urlPrint: "",
-            total_obat: 0,
+            
             obat: {},
             valid: false,
             web: {
@@ -515,7 +516,8 @@ export default {
                     if (response.status == 200) {
                         this.data = response.data.data;
                         // console.log(this.data.length);
-                        this.total_obat = data.length;
+                        this.totalObat = response.data.total;
+                        // this.total_obat = data.length;
                         // console.log(this.total_obat);
                         this.filter.page = response.data.data.current_page;
                         this.web.isTableLoad = false;

@@ -479,7 +479,7 @@ export default {
     },
     changeID(event) {
       if (event == "dokter") {
-        let currentID = this.pasien.dokter_id;
+        let currentID = this.pasien.dokter;
         this.dokter.data.forEach((v) => {
           if (v.nama == currentID) {
             this.pasien.dokter_id = v.id;

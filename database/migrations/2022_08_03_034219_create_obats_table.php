@@ -21,7 +21,7 @@ class CreateObatsTable extends Migration
             $table->integer('harga');
             $table->string('satuan',30);
             $table->integer('stock')->nullable();
-            $table->string('keterangan',20);
+            $table->text('keterangan');
             $table->timestamps();
 
             $table->foreign('kategori_id')

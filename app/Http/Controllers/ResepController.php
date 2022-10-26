@@ -7,6 +7,7 @@ use App\Models\Reseps;
 use App\Models\Obat;
 use App\Models\DetailResep;
 use App\Models\Pasien;
+use App\Models\Rekammedis;
 
 class ResepController extends Controller
 {
@@ -201,7 +202,13 @@ class ResepController extends Controller
 
     public function listPasien(Request $request)
     {
-        
+        // dd($request->rekamedis);
+        $totalRekamedis = Rekammedis::count();
+        $totalRToday = Rekammedis::where('created_at',date('Y-m-d'))->count();
+
+        $totalResep= Reseps::count();
+        $totalResepToday = Reseps::where('created_at',date('Y-m-d'))->count();
+
         $searchRequest = $request->searchQuery;
         $search = !empty($searchRequest) && $searchRequest != "null" ? $searchRequest : "";
         $data = Pasien::when(!empty($search), function ($query) use ($search) { // 6
@@ -219,7 +226,13 @@ class ResepController extends Controller
             'pasiens.dokter_id',
             // 'users.name as user_nama'
         )
-            ->paginate (10);
-        return response()->json(['data' => $data, 'message' => 'Successfully.', 'status' => 'success']);
+        ->paginate (10);
+        if($request->rekamedis == 1){
+            return response()->json(['data' => $data, 'totalToday' => $totalRToday,'totalRekamedis' => $totalRekamedis ,'message' => 'Successfully.', 'status' => 'success']);
+        }else if ($request->resep == 1){
+            return response()->json(['data' => $data, 'totalResepToday' => $totalResepToday,'totalResep' => $totalResep ,'message' => 'Successfully.', 'status' => 'success']);
+        }else{
+            return response()->json(['data' => $data,'message' => 'Successfully.', 'status' => 'success']);
+        }
     }
 }
